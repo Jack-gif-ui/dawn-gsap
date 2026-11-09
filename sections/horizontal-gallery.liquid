@@ -1,4 +1,4 @@
-<section class="hg" data-gsap-horizontal>
+<section class="hg" data-gsap-horizontal style="--hg-card-width: {{ section.settings.card_width }}vw;">
   <div class="hg__inner page-width">
     {%- if section.settings.heading != blank -%}
       <h2 class="hg__heading">{{ section.settings.heading }}</h2>
@@ -14,7 +14,11 @@
               {{
                 product.featured_image
                 | image_url: width: 900
-                | image_tag: loading: 'lazy', widths: '450, 700, 900', sizes: '(min-width: 750px) 30vw, 70vw', alt: product.featured_image.alt
+                | image_tag:
+                  loading: 'lazy',
+                  widths: '450, 700, 900',
+                  sizes: '(min-width: 750px) 30vw, 70vw',
+                  alt: product.featured_image.alt
               }}
             {%- endif -%}
           </div>
@@ -87,7 +91,16 @@
     padding: 0 5vw;
   }
   .hg.is-gsap .hg__item {
-    flex: 0 0 28vw;
+    flex: 0 0 var(--hg-card-width, 20vw);
+  }
+  .hg.is-gsap .hg__media {
+    aspect-ratio: 1 / 1;
+  }
+  .hg.is-gsap .hg__inner {
+    margin-bottom: 1.5rem;
+  }
+  .hg.is-gsap .hg__heading {
+    margin: 0;
   }
 {% endstylesheet %}
 
@@ -106,9 +119,18 @@
       "step": 1,
       "default": 8,
       "label": "商品数量"
+    },
+    {
+      "type": "range",
+      "id": "card_width",
+      "min": 15,
+      "max": 40,
+      "step": 1,
+      "unit": "vw",
+      "default": 20,
+      "label": "桌面端卡片宽度"
     }
   ],
   "presets": [{ "name": "横向滚动画廊" }]
 }
-
 {% endschema %}
