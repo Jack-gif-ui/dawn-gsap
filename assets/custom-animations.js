@@ -73,94 +73,106 @@
       });
   }
   // 效果 3：Bento 画廊（Flip + scrub，中间图扩展到全屏）
-  function initBentoFlip(root = document) {
-    const sections = root.querySelectorAll(
-      "[data-gsap-bento-flip]:not([data-gsap-init])",
-    );
-    if (!sections.length) return;
-    if (typeof Flip === "undefined") {
-      console.warn("[anim] Flip 未加载");
-      return;
-    }
-    const easeName =
-      typeof ExpoScaleEase !== "undefined" ? "expoScale(1, 5)" : "power2.inOut";
+    // 效果 3：Bento 画廊（直接补间 x/y/width/height，中间图扩展到全屏）
+  // 格子编号：[起始行, 起始列, 结束行, 结束列]（结束为开区间，和 CSS grid-area 一致）
+  const BENTO_TILE_AREAS = [
+    [1, 1, 3, 2],
+    [1, 2, 2, 3],
+    [1, 3, 3, 4],
+    [3, 1, 4, 2],
+    [3, 3, 5, 4],
+    [4, 1, 5, 2],
+    [4, 2, 5, 3],
+  ];
+  const BENTO_CENTER_AREA = [2, 2, 4, 3];
 
-    sections.forEach((section) => {
-      section.setAttribute("data-gsap-init", "");
-      const grid = section.querySelector("[data-gsap-bento-grid]");
-      const items = section.querySelectorAll("[data-gsap-bento-item]");
-      if (!grid || !items.length) return;
+  // 给定容器尺寸和网格参数，算出某个格子区域的矩形（网格整体在容器内居中）
+  function bentoRect(W, H, colW, rowH, gap, area) {
+    const [r1, c1, r2, c2] = area;
+    const gridW = colW * 3 + gap * 2;
+    const gridH = rowH * 4 + gap * 3;
+    const x0 = (W - gridW) / 2;
+    const y0 = (H - gridH) / 2;
+    return {
+      x: x0 + (c1 - 1) * (colW + gap),
+      y: y0 + (r1 - 1) * (rowH + gap),
+      width: (c2 - c1) * colW + (c2 - c1 - 1) * gap,
+      height: (r2 - r1) * rowH + (r2 - r1 - 1) * gap,
+    };
+  }
 
-      const desktop = window.matchMedia("(min-width: 750px)");
-      let ctx = null;
-      let timer;
-      let lastW = window.innerWidth;
-      let lastH = window.innerHeight;
+  function initBento(root = document) {
+    root.querySelectorAll('[data-gsap-bento-flip]:not([data-gsap-init])').forEach((section) => {
+      section.setAttribute('data-gsap-init', '');
+      const grid = section.querySelector('[data-gsap-bento-grid]');
+      const center = section.querySelector('[data-gsap-bento-center]');
+      const tiles = [...section.querySelectorAll('[data-gsap-bento-item]:not([data-gsap-bento-center])')];
+      if (!grid || !center) return;
 
-      const destroy = () => {
-        if (ctx) {
-          ctx.revert();
-          ctx = null;
-        }
-        grid.classList.remove("bf__grid--final");
-      };
+      const mm = gsap.matchMedia();
+      section._mm = mm;
 
-      const build = () => {
-        destroy();
-        if (!desktop.matches) return; // 手机端保持静态网格
+      mm.add('(min-width: 750px)', () => {
+        section.classList.add('is-gsap');
 
-        ctx = gsap.context(() => {
-          // 临时加上 final 类，记录最终状态
-          grid.classList.add("bf__grid--final");
-          const state = Flip.getState(items);
-          grid.classList.remove("bf__grid--final");
+        // 起点：每格 32.5vw × 23vh，间距 1vh；终点：每列 100vw，每行 49.5vh，间距 1vh
+        const startRect = (area) => {
+          const W = grid.clientWidth;
+          const H = grid.clientHeight;
+          return bentoRect(W, H, W * 0.325, H * 0.23, H * 0.01, area);
+        };
+        const endRect = (area) => {
+          const W = grid.clientWidth;
+          const H = grid.clientHeight;
+          return bentoRect(W, H, W, H * 0.495, H * 0.01, area);
+        };
 
-          const flip = Flip.to(state, { simple: true, ease: easeName });
+        const items = tiles
+          .slice(0, BENTO_TILE_AREAS.length)
+          .map((el, i) => ({ el, area: BENTO_TILE_AREAS[i] }));
+        items.push({ el: center, area: BENTO_CENTER_AREA });
 
-          gsap
-            .timeline({
-              scrollTrigger: {
-                trigger: section,
-                start: "top top",
-                end: "+=100%",
-                scrub: true,
-                pin: section,
-              },
-            })
-            .add(flip);
-
-          return () => gsap.set(items, { clearProps: "all" });
+        const tl = gsap.timeline({
+          defaults: { ease: 'none' },
+          scrollTrigger: {
+            trigger: section,
+            start: 'top top',
+            end: '+=100%',
+            scrub: true,
+            pin: true,
+            anticipatePin: 1,
+            invalidateOnRefresh: true,
+          },
         });
-      };
 
-      // 窗口尺寸变化后重新记录状态（防抖；触屏设备只在宽度变化时重建）
-      const onResize = () => {
-        clearTimeout(timer);
-        timer = setTimeout(() => {
-          const w = window.innerWidth;
-          const h = window.innerHeight;
-          if (w === lastW && (ScrollTrigger.isTouch || h === lastH)) return;
-          lastW = w;
-          lastH = h;
-          build();
-        }, 250);
-      };
+        items.forEach(({ el, area }) => {
+          tl.fromTo(
+            el,
+            {
+              x: () => startRect(area).x,
+              y: () => startRect(area).y,
+              width: () => startRect(area).width,
+              height: () => startRect(area).height,
+            },
+            {
+              x: () => endRect(area).x,
+              y: () => endRect(area).y,
+              width: () => endRect(area).width,
+              height: () => endRect(area).height,
+            },
+            0
+          );
+        });
 
-      build();
-      window.addEventListener("resize", onResize);
-
-      section._cleanup = () => {
-        clearTimeout(timer);
-        window.removeEventListener("resize", onResize);
-        destroy();
-      };
+        return () => section.classList.remove('is-gsap');
+      });
     });
   }
 
   function initAll(root = document) {
     initFadeUp(root);
     initHorizontal(root);
-    initBentoFlip(root);
+    initBento(root);
     // 后面的效果都在这里注册
   }
 

@@ -38,33 +38,32 @@
       "settings": {
         "image_overlay_opacity": 40,
         "image_height": "large",
-        "desktop_content_position": "bottom-center",
-        "show_text_box": false,
         "image_behavior": "none",
+        "desktop_content_position": "bottom-center",
         "desktop_content_alignment": "center",
+        "show_text_box": false,
         "color_scheme": "scheme-3",
-        "mobile_content_alignment": "center",
         "stack_images_on_mobile": false,
+        "mobile_content_alignment": "center",
         "show_text_below": false
       }
     },
     "featured_collection": {
       "type": "featured-collection",
       "settings": {
+        "collection": "all",
+        "products_to_show": 8,
         "title": "Featured products",
         "heading_size": "h2",
         "description": "",
         "show_description": false,
         "description_style": "body",
-        "collection": "all",
-        "products_to_show": 8,
         "columns_desktop": 4,
-        "color_scheme": "scheme-1",
+        "enable_desktop_slider": false,
         "full_width": false,
         "show_view_all": true,
         "view_all_style": "solid",
-        "enable_desktop_slider": false,
-        "swipe_on_mobile": false,
+        "color_scheme": "scheme-1",
         "image_ratio": "adapt",
         "image_shape": "default",
         "show_secondary_image": true,
@@ -72,13 +71,130 @@
         "show_rating": false,
         "quick_add": "none",
         "columns_mobile": "2",
+        "swipe_on_mobile": false,
         "padding_top": 44,
         "padding_bottom": 36
+      }
+    },
+    "horizontal_gallery_hraNJm": {
+      "type": "horizontal-gallery",
+      "name": "横向滚动画廊",
+      "settings": {
+        "heading": "新品推荐",
+        "collection": "frontpage",
+        "products_to_show": 8,
+        "card_width": 20
+      }
+    },
+    "rich_text_gPx6tz": {
+      "type": "rich-text",
+      "blocks": {
+        "heading_6Q9eeb": {
+          "type": "heading",
+          "settings": {
+            "heading": "Talk about your brand",
+            "heading_size": "h1"
+          }
+        },
+        "text_jGnmHF": {
+          "type": "text",
+          "settings": {
+            "text": "<p>Share information about your brand with your customers. Describe a product, make announcements, or welcome customers to your store.</p>"
+          }
+        },
+        "button_d6tzTq": {
+          "type": "button",
+          "settings": {
+            "button_label": "Button label",
+            "button_link": "",
+            "button_style_secondary": false,
+            "button_label_2": "",
+            "button_link_2": "",
+            "button_style_secondary_2": false
+          }
+        }
+      },
+      "block_order": [
+        "heading_6Q9eeb",
+        "text_jGnmHF",
+        "button_d6tzTq"
+      ],
+      "name": "t:sections.rich-text.presets.name",
+      "settings": {
+        "desktop_content_position": "center",
+        "content_alignment": "center",
+        "color_scheme": "",
+        "full_width": true,
+        "padding_top": 40,
+        "padding_bottom": 52
+      }
+    },
+    "bento_flip_gallery_TeJBE9": {
+      "type": "bento-flip-gallery",
+      "blocks": {
+        "tile_F7JqTH": {
+          "type": "tile",
+          "settings": {
+            "image": "shopify://shop_images/close-up-of-a-pine-tree-showing-texture-of-pine-needles.jpg"
+          }
+        },
+        "tile_MHdVg4": {
+          "type": "tile",
+          "settings": {
+            "image": "shopify://shop_images/the-man-in-the-hat.jpg"
+          }
+        },
+        "tile_PyqWq6": {
+          "type": "tile",
+          "settings": {
+            "image": "shopify://shop_images/business-owner-working-on-online-store.jpg"
+          }
+        },
+        "tile_yYWxnh": {
+          "type": "tile",
+          "settings": {
+            "image": "shopify://shop_images/retail-shopping-package.jpg"
+          }
+        },
+        "tile_tJBjgt": {
+          "type": "tile",
+          "settings": {
+            "image": "shopify://shop_images/woman-enjoying-coffee-and-book-in-the-kitchen.jpg"
+          }
+        },
+        "tile_AptkDc": {
+          "type": "tile",
+          "settings": {
+            "image": "shopify://shop_images/business-cat-in-office.jpg"
+          }
+        },
+        "tile_GBfPn6": {
+          "type": "tile",
+          "settings": {
+            "image": "shopify://shop_images/close-up-of-seasoned-chickpeas.jpg"
+          }
+        }
+      },
+      "block_order": [
+        "tile_F7JqTH",
+        "tile_MHdVg4",
+        "tile_PyqWq6",
+        "tile_yYWxnh",
+        "tile_tJBjgt",
+        "tile_AptkDc",
+        "tile_GBfPn6"
+      ],
+      "name": "Bento Flip 画廊",
+      "settings": {
+        "center_image": "shopify://shop_images/handful-of-acorns.jpg"
       }
     }
   },
   "order": [
     "image_banner",
-    "featured_collection"
+    "featured_collection",
+    "horizontal_gallery_hraNJm",
+    "rich_text_gPx6tz",
+    "bento_flip_gallery_TeJBE9"
   ]
 }
