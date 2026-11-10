@@ -1,0 +1,34 @@
+/* 二、三级面板：返回栏 */
+.js .menu-drawer__submenu .menu-drawer__close-button {
+  margin-top: 0;
+  padding: 1.8rem 3rem;
+  font-size: 1.2rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  background-color: rgba(var(--color-foreground), 0.04);
+  border-bottom: 1px solid rgba(var(--color-foreground), 0.08);
+}
+
+/* 菜单项：更大的字号 + 分隔线 */
+.js .menu-drawer__submenu .menu-drawer__menu li {
+  margin-bottom: 0;
+  border-bottom: 1px solid rgba(var(--color-foreground), 0.08);
+}
+.js .menu-drawer__submenu .menu-drawer__menu-item {
+  padding: 1.8rem 3rem;
+  font-size: 2rem;
+  transition: padding-left var(--duration-default) ease,
+    background-color var(--duration-default) ease;
+}
+
+/* 悬停/聚焦：文字右移，箭头也右移 */
+.js .menu-drawer__submenu .menu-drawer__menu-item:hover,
+.js .menu-drawer__submenu .menu-drawer__menu-item:focus-visible {
+  padding-left: 3.6rem;
+}
+.js .menu-drawer__submenu .menu-drawer__menu-item > .svg-wrapper {
+  transition: right var(--duration-default) ease;
+}
+.js .menu-drawer__submenu .menu-drawer__menu-item:hover > .svg-wrapper {
+  right: 2.4rem;
+}

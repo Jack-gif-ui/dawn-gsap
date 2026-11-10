@@ -4,7 +4,6 @@
   @param {boolean} [show_country_selector] - Whether to show the country selector. Defaults to `false`.
   @param {boolean} [show_language_selector] - Whether to show the language selector. Defaults to `false`.
   @param {boolean} [show_social_links] - Whether to show links for configured social accounts. Defaults to `false`.
-
   @param {object} [section] - The current header section context, supplied implicitly when rendered from that section and used for menu settings.
 
   @example
@@ -60,6 +59,16 @@
                             {{ link.title | escape }}
                           </button>
                           <ul class="menu-drawer__menu list-menu" role="list" tabindex="-1">
+                            {%- if link.url != blank -%}
+                              <li>
+                                <a
+                                  href="{{ link.url }}"
+                                  class="menu-drawer__menu-item link link--text list-menu__item focus-inset"
+                                >
+                                  Shop all {{ link.title | escape }}
+                                </a>
+                              </li>
+                            {%- endif -%}
                             {%- for childlink in link.links -%}
                               <li>
                                 {%- if childlink.links == blank -%}
@@ -105,6 +114,16 @@
                                         role="list"
                                         tabindex="-1"
                                       >
+                                        {%- if childlink.url != blank -%}
+                                          <li>
+                                            <a
+                                              href="{{ childlink.url }}"
+                                              class="menu-drawer__menu-item link link--text list-menu__item focus-inset"
+                                            >
+                                              Shop all {{ childlink.title | escape }}
+                                            </a>
+                                          </li>
+                                        {%- endif -%}
                                         {%- for grandchildlink in childlink.links -%}
                                           <li>
                                             <a

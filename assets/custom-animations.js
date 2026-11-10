@@ -72,7 +72,6 @@
         });
       });
   }
-  // 效果 3：Bento 画廊（Flip + scrub，中间图扩展到全屏）
     // 效果 3：Bento 画廊（直接补间 x/y/width/height，中间图扩展到全屏）
   // 格子编号：[起始行, 起始列, 结束行, 结束列]（结束为开区间，和 CSS grid-area 一致）
   const BENTO_TILE_AREAS = [
@@ -168,11 +167,70 @@
       });
     });
   }
+  
+    // 效果 4：抽屉菜单项依次入场（一级、二级、三级通用）
+  function initDrawerStagger(root = document) {
+    root.querySelectorAll('.menu-drawer-container:not([data-gsap-init])').forEach((main) => {
+      main.setAttribute('data-gsap-init', '');
+
+      const getItems = (details) => {
+        if (details === main) {
+          return main.querySelectorAll('.menu-drawer__navigation > .menu-drawer__menu > li');
+        }
+        const panel = details.querySelector(':scope > .menu-drawer__submenu');
+        if (!panel) return [];
+        const list = panel.querySelector(
+          ':scope > .menu-drawer__inner-submenu > .menu-drawer__menu, :scope > .menu-drawer__menu'
+        );
+        return list ? list.querySelectorAll(':scope > li') : [];
+      };
+
+      const observer = new MutationObserver((mutations) => {
+        mutations.forEach(({ target }) => {
+          const opening = target.classList.contains('menu-opening');
+          if (opening === !!target._gsapOpen) return;
+          target._gsapOpen = opening;
+
+          const items = getItems(target);
+          if (!items.length) return;
+
+          if (opening) {
+            gsap.fromTo(
+              items,
+              { opacity: 0, x: target === main ? -24 : 32 },
+              {
+                opacity: 1,
+                x: 0,
+                duration: 0.5,
+                ease: 'power3.out',
+                stagger: 0.06,
+                delay: target === main ? 0.1 : 0.15,
+                overwrite: true,
+                clearProps: 'transform,opacity',
+              }
+            );
+          } else {
+            gsap.killTweensOf(items);
+            gsap.set(items, { clearProps: 'transform,opacity' });
+          }
+        });
+      });
+
+      [main, ...main.querySelectorAll('details')].forEach((d) =>
+        observer.observe(d, { attributes: true, attributeFilter: ['class'] })
+      );
+      main._gsapObserver = observer;
+    });
+  }
+
+
+
 
   function initAll(root = document) {
     initFadeUp(root);
     initHorizontal(root);
     initBento(root);
+    initDrawerStagger(root);
     // 后面的效果都在这里注册
   }
 
@@ -193,5 +251,6 @@
         s._mm && s._mm.revert();
         s._cleanup && s._cleanup();
       });
+        e.target.querySelectorAll('.menu-drawer-container').forEach((d) => d._gsapObserver && d._gsapObserver.disconnect());
   });
 })();
