@@ -1,0 +1,139 @@
+<section class="bf" data-gsap-bento-flip>
+  <div class="bf__grid" data-gsap-bento-grid>
+    {%- for block in section.blocks -%}
+      <div class="bf__item bf__item--{{ forloop.index }}" data-gsap-bento-item {{ block.shopify_attributes }}>
+        {%- if block.settings.image -%}
+          {{
+            block.settings.image
+            | image_url: width: 1000
+            | image_tag: loading: 'lazy', widths: '400, 600, 800, 1000', sizes: '(min-width: 750px) 33vw, 50vw', class: 'bf__img'
+          }}
+        {%- else -%}
+          {{ 'image' | placeholder_svg_tag: 'bf__img placeholder-svg' }}
+        {%- endif -%}
+      </div>
+    {%- endfor -%}
+
+    <div class="bf__item bf__item--center" data-gsap-bento-item>
+      {%- if section.settings.center_image -%}
+        {{
+          section.settings.center_image
+          | image_url: width: 2400
+          | image_tag: loading: 'lazy', widths: '800, 1200, 1600, 2400', sizes: '100vw', class: 'bf__img'
+        }}
+      {%- else -%}
+        {{ 'image' | placeholder_svg_tag: 'bf__img placeholder-svg' }}
+      {%- endif -%}
+    </div>
+  </div>
+</section>
+
+{% stylesheet %}
+  /* 手机端：普通两列网格，不做动画 */
+  .bf {
+    position: relative;
+    overflow: hidden;
+  }
+  .bf__grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.8rem;
+    padding: 0.8rem;
+  }
+  .bf__item {
+    position: relative;
+    aspect-ratio: 1 / 1;
+    overflow: hidden;
+    border-radius: 12px;
+  }
+  .bf__item--center {
+    order: -1;
+    grid-column: 1 / -1;
+    aspect-ratio: 4 / 3;
+  }
+  .bf__img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  /* 桌面端：还原 demo 的 bento 布局 */
+  @media (min-width: 750px) {
+    .bf {
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .bf__grid {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      flex: none;
+      padding: 0;
+      gap: 1vh;
+      grid-template-columns: repeat(3, 32.5vw);
+      grid-template-rows: repeat(4, 23vh);
+      justify-content: center;
+      align-content: center;
+    }
+    /* JS 临时加上这个类来记录"最终状态" */
+    .bf__grid.bf__grid--final {
+      grid-template-columns: repeat(3, 100vw);
+      grid-template-rows: repeat(4, 49.5vh);
+      gap: 1vh;
+    }
+    .bf__item {
+      aspect-ratio: auto;
+      border-radius: 0;
+      overflow: visible;
+    }
+    .bf__item--center {
+      order: 0;
+      grid-column: auto;
+      z-index: 2;
+    }
+    .bf__item--1 { grid-area: 1 / 1 / 3 / 2; }
+    .bf__item--2 { grid-area: 1 / 2 / 2 / 3; }
+    .bf__item--center { grid-area: 2 / 2 / 4 / 3; }
+    .bf__item--3 { grid-area: 1 / 3 / 3 / 4; }
+    .bf__item--4 { grid-area: 3 / 1 / 4 / 2; }
+    .bf__item--5 { grid-area: 3 / 3 / 5 / 4; }
+    .bf__item--6 { grid-area: 4 / 1 / 5 / 2; }
+    .bf__item--7 { grid-area: 4 / 2 / 5 / 3; }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Bento Flip 画廊",
+  "tag": "section",
+  "max_blocks": 7,
+  "settings": [
+    {
+      "type": "image_picker",
+      "id": "center_image",
+      "label": "中间图片（滚动时放大到全屏）"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "tile",
+      "name": "周围图片",
+      "settings": [
+        { "type": "image_picker", "id": "image", "label": "图片" }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Bento Flip 画廊",
+      "blocks": [
+        { "type": "tile" }, { "type": "tile" }, { "type": "tile" }, { "type": "tile" },
+        { "type": "tile" }, { "type": "tile" }, { "type": "tile" }
+      ]
+    }
+  ]
+}
+{% endschema %}
