@@ -223,7 +223,31 @@
     });
   }
 
+  // 效果 5：按钮悬停光晕，跟随鼠标
+  function initHeroGlow(root = document) {
+    root.querySelectorAll('.hero__button:not([data-gsap-init])').forEach((btn) => {
+      btn.setAttribute('data-gsap-init', '');
+      const glow = btn.querySelector('.hero__glow');
+      if (!glow) return;
 
+      const xTo = gsap.quickTo(glow, 'left', { duration: 0.3, ease: 'power3' });
+      const yTo = gsap.quickTo(glow, 'top', { duration: 0.3, ease: 'power3' });
+
+      btn.addEventListener('pointerenter', (e) => {
+        if (e.pointerType !== 'mouse') return;
+        const r = btn.getBoundingClientRect();
+        gsap.set(glow, { left: e.clientX - r.left, top: e.clientY - r.top });
+        gsap.to(glow, { opacity: 1, duration: 0.2 });
+      });
+      btn.addEventListener('pointermove', (e) => {
+        if (e.pointerType !== 'mouse') return;
+        const r = btn.getBoundingClientRect();
+        xTo(e.clientX - r.left);
+        yTo(e.clientY - r.top);
+      });
+      btn.addEventListener('pointerleave', () => gsap.to(glow, { opacity: 0, duration: 0.3 }));
+    });
+  }
 
 
   function initAll(root = document) {
@@ -231,6 +255,7 @@
     initHorizontal(root);
     initBento(root);
     initDrawerStagger(root);
+    initHeroGlow(root);
     // 后面的效果都在这里注册
   }
 

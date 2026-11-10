@@ -6,3 +6,27 @@
 .shopify-section.section-header.animate.shopify-section-header-hidden {
   transition: top 0.4s ease;
 }
+
+
+/* ===== 透明 header（首页） ===== */
+
+/* 1. banner 上移到 header 下方 */
+.header-transparent #MainContent > .shopify-section:first-child {
+  margin-top: calc(-1 * var(--header-height, 0px));
+}
+
+/* 2. 在页面顶部时：背景透明、文字图标变白 */
+.header-transparent
+  .section-header:not(.scrolled-past-header):not(.menu-open):not(:hover)
+  .header-wrapper {
+  background-color: transparent;
+  background-image: none;
+  border-bottom-color: transparent;
+  --color-foreground: 255, 255, 255;
+  --color-base-text: 255, 255, 255;
+}
+
+/* 3. 切换时的过渡 */
+.header-transparent .header-wrapper {
+  transition: background-color 0.3s ease;
+}
