@@ -351,6 +351,10 @@
 
       this.currentScrollTop = 0;
       this.preventReveal = false;
+
+
+           
+      this.upDistance = 0;
       this.predictiveSearches = this.querySelectorAll('predictive-search');
 
       this.onScrollHandler = this.onScroll.bind(this);
@@ -381,10 +385,42 @@
       observer.observe(this.header);
     }
 
+    // onScroll() {
+    //   const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+
+    //   if ([...this.predictiveSearches].some((predictiveSearch) => predictiveSearch.isOpen)) return;
+
+    //   if (scrollTop > this.currentScrollTop && scrollTop > this.headerBounds.bottom) {
+    //     this.header.classList.add('scrolled-past-header');
+    //     if (this.preventHide) return;
+    //     requestAnimationFrame(this.hide.bind(this));
+    //   } else if (scrollTop < this.currentScrollTop && scrollTop > this.headerBounds.bottom) {
+    //     this.header.classList.add('scrolled-past-header');
+    //     if (!this.preventReveal) {
+    //       requestAnimationFrame(this.reveal.bind(this));
+    //     } else {
+    //       window.clearTimeout(this.isScrolling);
+
+    //       this.isScrolling = setTimeout(() => {
+    //         this.preventReveal = false;
+    //       }, 66);
+
+    //       requestAnimationFrame(this.hide.bind(this));
+    //     }
+    //   } else if (scrollTop <= this.headerBounds.top) {
+    //     this.header.classList.remove('scrolled-past-header');
+    //     requestAnimationFrame(this.reset.bind(this));
+    //   }
+
+    //   this.currentScrollTop = scrollTop;
+    // }
     onScroll() {
       const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
 
       if ([...this.predictiveSearches].some((predictiveSearch) => predictiveSearch.isOpen)) return;
+
+      // 向下滚动时清零向上累计距离
+      if (scrollTop > this.currentScrollTop) this.upDistance = 0;
 
       if (scrollTop > this.currentScrollTop && scrollTop > this.headerBounds.bottom) {
         this.header.classList.add('scrolled-past-header');
@@ -392,8 +428,15 @@
         requestAnimationFrame(this.hide.bind(this));
       } else if (scrollTop < this.currentScrollTop && scrollTop > this.headerBounds.bottom) {
         this.header.classList.add('scrolled-past-header');
+
+        // 累计向上滚动的距离，超过阈值才出现
+        this.upDistance += this.currentScrollTop - scrollTop;
+        const revealThreshold = this.mobileMediaQuery.matches ? 40 : 80;
+
         if (!this.preventReveal) {
-          requestAnimationFrame(this.reveal.bind(this));
+          if (this.upDistance >= revealThreshold) {
+            requestAnimationFrame(this.reveal.bind(this));
+          }
         } else {
           window.clearTimeout(this.isScrolling);
 
@@ -404,6 +447,7 @@
           requestAnimationFrame(this.hide.bind(this));
         }
       } else if (scrollTop <= this.headerBounds.top) {
+        this.upDistance = 0;
         this.header.classList.remove('scrolled-past-header');
         requestAnimationFrame(this.reset.bind(this));
       }
@@ -411,6 +455,7 @@
       this.currentScrollTop = scrollTop;
     }
 
+    
     hide() {
       if (this.headerIsAlwaysSticky) return;
       this.header.classList.add('shopify-section-header-hidden', 'shopify-section-header-sticky');

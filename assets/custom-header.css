@@ -1,0 +1,8 @@
+/* 粘性 header：出现用更长、更均匀的过渡，隐藏稍快 */
+/* 粘性 header：出现用更长、更均匀的过渡，隐藏稍快 */
+.shopify-section.section-header.animate {
+  transition: top 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.shopify-section.section-header.animate.shopify-section-header-hidden {
+  transition: top 0.4s ease;
+}
