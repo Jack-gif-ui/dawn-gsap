@@ -1,0 +1,16 @@
+{
+  "sections": {
+    "main": {
+      "type": "article-guide",
+      "settings": {}
+    },
+    "related": {
+      "type": "blog-carousel",
+      "settings": {
+        "heading": "Related Posts",
+        "post_limit": 9
+      }
+    }
+  },
+  "order": ["main", "related"]
+}
