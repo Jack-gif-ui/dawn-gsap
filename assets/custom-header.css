@@ -30,3 +30,18 @@
 .header-transparent .header-wrapper {
   transition: background-color 0.3s ease;
 }
+
+/* Logo 行与菜单行之间的分隔线（和下方的 border-bottom 同色同粗） */
+.header--top-center .header__inline-menu {
+  position: relative;
+}
+.header--top-center .header__inline-menu::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 50%;
+  width: 100vw;
+  transform: translateX(-50%);
+  border-top: 0.1rem solid rgba(var(--color-foreground), 0.08);
+  pointer-events: none;
+}
