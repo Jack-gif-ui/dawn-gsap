@@ -1,0 +1,513 @@
+{%- liquid
+  assign blog = section.settings.blog
+  assign limit = section.settings.post_limit
+  assign cols = section.settings.columns | plus: 0
+  assign cols_tablet = cols | at_most: 2
+  assign has_articles = false
+  if blog != blank and blog.articles.size > 0
+    assign has_articles = true
+  endif
+-%}
+
+<blog-carousel
+  class="bc"
+  {% if section.settings.loop %}
+    data-loop
+  {% endif %}
+  style="
+    --bc-cols: {{ cols }};
+    --bc-cols-t: {{ cols_tablet }};
+    --bc-ratio: {{ section.settings.image_ratio }};
+    --bc-radius: {{ section.settings.card_radius }}px;
+    --bc-tag: {{ section.settings.tag_color }};
+    --bc-pt: {{ section.settings.padding_top }}px;
+    --bc-pb: {{ section.settings.padding_bottom }}px;
+  "
+>
+  <div class="bc__wrap page-width">
+    <div class="bc__head">
+      {%- if section.settings.heading != blank -%}
+        <h2 class="bc__heading">{{ section.settings.heading | escape }}</h2>
+      {%- endif -%}
+
+      {%- if section.settings.line_style != 'none' -%}
+        <div class="bc__progress bc__progress--{{ section.settings.line_style }}" aria-hidden="true">
+          <span class="bc__progress-fill" data-bc-fill></span>
+        </div>
+      {%- endif -%}
+
+      <div class="bc__nav">
+        <button type="button" class="bc__arrow bc__arrow--prev" data-bc-prev aria-label="Previous articles">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+            <path d="M20 12H4M10 6l-6 6 6 6"/>
+          </svg>
+        </button>
+        <button type="button" class="bc__arrow bc__arrow--next" data-bc-next aria-label="Next articles">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+            <path d="M4 12h16M14 6l6 6-6 6"/>
+          </svg>
+        </button>
+      </div>
+
+      <div class="bc__dots">
+        <button type="button" class="bc__dot is-active" data-bc-pill="prev" aria-label="Previous article"></button>
+        <button type="button" class="bc__dot" data-bc-pill="next" aria-label="Next article"></button>
+      </div>
+    </div>
+
+    <ul class="bc__track" data-bc-track role="list">
+      {%- if has_articles -%}
+        {%- for article in blog.articles limit: limit -%}
+          {%- liquid
+            assign words = article.content | strip_html | split: ' ' | size
+            assign minutes = words | divided_by: 200.0 | ceil | at_least: 1
+            assign img_alt = article.image.alt | default: article.title
+          -%}
+          <li class="bc__card">
+            <article class="bc__article">
+              <div class="bc__media">
+                {%- if article.image -%}
+                  {{
+                    article.image
+                    | image_url: width: 1000
+                    | image_tag:
+                      loading: 'lazy',
+                      widths: '400, 600, 800, 1000',
+                      sizes: '(min-width: 990px) 33vw, (min-width: 750px) 50vw, 82vw',
+                      alt: img_alt,
+                      class: 'bc__img'
+                  }}
+                {%- else -%}
+                  {{ 'image' | placeholder_svg_tag: 'bc__img placeholder-svg' }}
+                {%- endif -%}
+              </div>
+
+              <div class="bc__body">
+                {%- if section.settings.show_tag -%}
+                  {%- if article.tags.size > 0 -%}
+                    <p class="bc__tag">{{ article.tags.first | escape }}</p>
+                  {%- else -%}
+                    <p class="bc__tag bc__tag--empty" aria-hidden="true">&nbsp;</p>
+                  {%- endif -%}
+                {%- endif -%}
+
+                <h3 class="bc__title">
+                  <a href="{{ article.url }}" class="bc__link">{{ article.title | escape }}</a>
+                </h3>
+
+                {%- if section.settings.show_excerpt -%}
+                  <p class="bc__excerpt">{{ article.excerpt_or_content | strip_html | truncate: 110 }}</p>
+                {%- endif -%}
+
+                <p class="bc__meta">
+                  {{ article.published_at | time_tag: '%b %d, %Y' }}
+                  {%- if section.settings.show_read_time -%}
+                    <span class="bc__sep" aria-hidden="true"></span>
+                    <span>{{ minutes }} min read</span>
+                  {%- endif -%}
+                </p>
+              </div>
+            </article>
+          </li>
+        {%- endfor -%}
+      {%- else -%}
+        {%- for i in (1..3) -%}
+          <li class="bc__card">
+            <article class="bc__article">
+              <div class="bc__media">{{ 'image' | placeholder_svg_tag: 'bc__img placeholder-svg' }}</div>
+              <div class="bc__body">
+                <h3 class="bc__title">Blog post title</h3>
+                <p class="bc__meta">Select a blog in section settings</p>
+              </div>
+            </article>
+          </li>
+        {%- endfor -%}
+      {%- endif -%}
+    </ul>
+  </div>
+</blog-carousel>
+
+<script src="{{ 'blog-carousel.js' | asset_url }}" defer="defer"></script>
+
+{% stylesheet %}
+  blog-carousel {
+    display: block;
+  }
+  .bc {
+    --bc-gap: 1.6rem;
+    --bc-bleed: 1.5rem;
+    padding: var(--bc-pt, 36px) 0 var(--bc-pb, 36px);
+  }
+
+  /* 标题行（移动端：标题 + 指示器） */
+  .bc__head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 2rem;
+    margin-bottom: 2.4rem;
+  }
+  .bc__heading {
+    margin: 0;
+    font-family: var(--font-heading-family);
+    font-size: clamp(2.2rem, 2.6vw, 4rem);
+    font-weight: 800;
+    line-height: 1.1;
+    text-transform: uppercase;
+  }
+  .bc__progress,
+  .bc__nav {
+    display: none;
+  }
+
+  /* 移动端指示器 */
+  .bc__dots {
+    display: flex;
+    flex: none;
+    align-items: center;
+    gap: 0.6rem;
+  }
+  .bc__dot {
+    position: relative;
+    width: 1.4rem;
+    height: 0.6rem;
+    padding: 0;
+    border: 0;
+    border-radius: 999px;
+    background: rgba(var(--color-foreground), 0.12);
+    cursor: pointer;
+    transition: width 0.35s ease, background-color 0.35s ease;
+  }
+  .bc__dot::after {
+    content: '';
+    position: absolute;
+    inset: -1rem -0.3rem;
+  }
+  .bc__dot.is-active {
+    width: 4rem;
+    background: rgb(var(--color-foreground));
+  }
+
+  /* 轨道：手机端右侧出血到屏幕边缘，露出下一张 */
+  .bc__track {
+    display: flex;
+    gap: var(--bc-gap);
+    margin: 0 calc(-1 * var(--bc-bleed)) 0 0;
+    padding: 0 var(--bc-bleed) 0 0;
+    list-style: none;
+    overflow-x: auto;
+    overflow-y: hidden;
+    overscroll-behavior-x: contain;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+  }
+  .bc__track::-webkit-scrollbar {
+    display: none;
+  }
+  .bc__card {
+    display: flex;
+    flex: 0 0 82%;
+    scroll-snap-align: start;
+    scroll-snap-stop: always;
+  }
+
+  /* 卡片 */
+  .bc__article {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    overflow: hidden;
+    border-radius: var(--bc-radius, 20px);
+    background: rgba(var(--color-foreground), 0.04);
+  }
+  .bc__media {
+    aspect-ratio: var(--bc-ratio, 16 / 9);
+    overflow: hidden;
+    background: rgba(var(--color-foreground), 0.08);
+  }
+  .bc__img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.8s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .bc__article:hover .bc__img {
+    transform: scale(1.06);
+  }
+  .bc__body {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    gap: 1rem;
+    padding: 2.4rem 2.4rem 2.6rem;
+  }
+  .bc__tag {
+    margin: 0;
+    color: var(--bc-tag, #2b6cb0);
+    font-size: 1.2rem;
+    font-weight: 700;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+  }
+  .bc__title {
+    display: -webkit-box;
+    margin: 0;
+    overflow: hidden;
+    font-family: var(--font-heading-family);
+    font-size: clamp(1.8rem, 1.7vw, 2.6rem);
+    font-weight: 800;
+    line-height: 1.2;
+    text-transform: uppercase;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+  }
+  /* 整张卡片可点：标题链接撑满卡片 */
+  .bc__link {
+    color: inherit;
+    text-decoration: none;
+  }
+  .bc__link::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+  }
+  .bc__link:focus-visible::after {
+    outline: 2px solid rgb(var(--color-foreground));
+    outline-offset: -2px;
+    border-radius: var(--bc-radius, 20px);
+  }
+  .bc__excerpt {
+    margin: 0;
+    color: rgba(var(--color-foreground), 0.7);
+    font-size: 1.5rem;
+    line-height: 1.6;
+  }
+  .bc__meta {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin: auto 0 0;
+    padding-top: 2rem;
+    color: rgba(var(--color-foreground), 0.5);
+    font-size: 1.3rem;
+    font-weight: 700;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+  }
+  .bc__sep {
+    width: 2px;
+    height: 1.1em;
+    background: currentColor;
+  }
+
+  /* 内容不足一屏时隐藏导航 */
+  .bc.is-static .bc__progress,
+  .bc.is-static .bc__nav,
+  .bc.is-static .bc__dots {
+    visibility: hidden;
+  }
+
+  /* 平板和桌面 */
+  @media (min-width: 750px) {
+    .bc {
+      --bc-gap: 2.4rem;
+    }
+
+    /* 三列：标题占 36%，中间是细线，右边是箭头 */
+    .bc__head {
+      display: grid;
+      grid-template-columns: 36% 1fr auto;
+      align-items: center;
+      gap: 0;
+      margin-bottom: 3.2rem;
+    }
+    .bc__dots {
+      display: none;
+    }
+
+    .bc__progress {
+      grid-column: 2;
+      position: relative;
+      display: block;
+      height: 1px;
+      margin-right: 1.8rem;
+      overflow: hidden;
+      background: rgba(var(--color-foreground), 0.12);
+    }
+    .bc__progress--progress {
+      height: 2px;
+    }
+    .bc__progress-fill {
+      position: absolute;
+      inset: 0 auto 0 0;
+      display: none;
+      width: 100%;
+      background: rgb(var(--color-foreground));
+    }
+    .bc__progress--progress .bc__progress-fill {
+      display: block;
+    }
+
+    .bc__nav {
+      grid-column: 3;
+      display: flex;
+      gap: 1.2rem;
+    }
+    .bc__arrow {
+      display: grid;
+      place-items: center;
+      width: 5.6rem;
+      height: 5.6rem;
+      padding: 0;
+      border: 0;
+      border-radius: 1.4rem;
+      background: rgba(var(--color-foreground), 0.04);
+      color: rgb(var(--color-foreground));
+      cursor: pointer;
+      transition: background-color 0.3s ease, color 0.3s ease, opacity 0.3s ease, transform 0.15s ease;
+    }
+    .bc__arrow svg {
+      width: 2.4rem;
+      height: 2.4rem;
+    }
+    /* 悬停：黑底白箭头（只在有鼠标的设备上生效） */
+    @media (hover: hover) {
+      .bc__arrow:hover {
+        background: rgb(var(--color-foreground));
+        color: rgb(var(--color-background));
+      }
+    }
+    .bc__arrow:active {
+      transform: scale(0.95);
+    }
+    .bc__arrow:focus-visible {
+      outline: 2px solid rgb(var(--color-foreground));
+      outline-offset: 2px;
+    }
+    .bc__arrow.is-disabled {
+      opacity: 0.35;
+      pointer-events: none;
+    }
+
+    .bc__track {
+      margin: 0;
+      padding: 0;
+    }
+    .bc__card {
+      flex-basis: calc((100% - (var(--bc-cols-t, 2) - 1) * var(--bc-gap)) / var(--bc-cols-t, 2));
+    }
+  }
+
+  @media (min-width: 990px) {
+    .bc__card {
+      flex-basis: calc((100% - (var(--bc-cols, 3) - 1) * var(--bc-gap)) / var(--bc-cols, 3));
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Blog 轮播",
+  "tag": "section",
+  "settings": [
+    { "type": "text", "id": "heading", "label": "标题", "default": "Blog & Articles" },
+    {
+      "type": "blog",
+      "id": "blog",
+      "label": "博客",
+      "info": "文章内容在后台「博客文章」里编辑"
+    },
+    {
+      "type": "range",
+      "id": "post_limit",
+      "min": 3,
+      "max": 12,
+      "step": 1,
+      "label": "最多显示文章数",
+      "default": 6
+    },
+    {
+      "type": "select",
+      "id": "columns",
+      "label": "桌面端每屏显示",
+      "default": "3",
+      "options": [
+        { "value": "2", "label": "2 篇" },
+        { "value": "3", "label": "3 篇" },
+        { "value": "4", "label": "4 篇" }
+      ]
+    },
+    {
+      "type": "select",
+      "id": "line_style",
+      "label": "标题右侧细线（桌面端）",
+      "default": "line",
+      "options": [
+        { "value": "line", "label": "装饰细线" },
+        { "value": "progress", "label": "跟随滚动的进度线" },
+        { "value": "none", "label": "不显示" }
+      ]
+    },
+    {
+      "type": "checkbox",
+      "id": "loop",
+      "label": "循环滑动",
+      "info": "桌面端：到头后再点箭头回到另一端；移动端：滑到最右侧再向左滑，回到第一篇",
+      "default": true
+    },
+    {
+      "type": "select",
+      "id": "image_ratio",
+      "label": "封面图比例",
+      "default": "16 / 9",
+      "options": [
+        { "value": "16 / 9", "label": "16:9" },
+        { "value": "3 / 2", "label": "3:2" },
+        { "value": "4 / 3", "label": "4:3" },
+        { "value": "1 / 1", "label": "1:1" }
+      ]
+    },
+    {
+      "type": "range",
+      "id": "card_radius",
+      "min": 0,
+      "max": 32,
+      "step": 2,
+      "unit": "px",
+      "label": "卡片圆角",
+      "default": 20
+    },
+    { "type": "header", "content": "卡片内容" },
+    { "type": "checkbox", "id": "show_tag", "label": "显示标签（文章第一个标签）", "default": true },
+    { "type": "checkbox", "id": "show_excerpt", "label": "显示摘要", "default": false },
+    { "type": "checkbox", "id": "show_read_time", "label": "显示阅读时长", "default": true },
+    { "type": "color", "id": "tag_color", "label": "标签颜色", "default": "#2b6cb0" },
+    { "type": "header", "content": "间距" },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "上边距",
+      "default": 36
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "下边距",
+      "default": 36
+    }
+  ],
+  "presets": [{ "name": "Blog 轮播" }]
+}
+{% endschema %}

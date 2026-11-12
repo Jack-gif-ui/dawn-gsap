@@ -177,6 +177,26 @@
       "settings": {
         "center_image": "shopify://shop_images/handful-of-acorns.jpg"
       }
+    },
+    "blog_carousel_MBYypp": {
+      "type": "blog-carousel",
+      "name": "Blog 轮播",
+      "settings": {
+        "heading": "Blog & Articles",
+        "blog": "news",
+        "post_limit": 6,
+        "columns": "3",
+        "line_style": "line",
+        "loop": true,
+        "image_ratio": "16 / 9",
+        "card_radius": 20,
+        "show_tag": true,
+        "show_excerpt": false,
+        "show_read_time": true,
+        "tag_color": "#2b6cb0",
+        "padding_top": 36,
+        "padding_bottom": 36
+      }
     }
   },
   "order": [
@@ -184,6 +204,7 @@
     "featured_collection",
     "horizontal_gallery_hraNJm",
     "rich_text_gPx6tz",
-    "bento_flip_gallery_TeJBE9"
+    "bento_flip_gallery_TeJBE9",
+    "blog_carousel_MBYypp"
   ]
 }
