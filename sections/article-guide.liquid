@@ -49,7 +49,9 @@
         {%- comment -%} 移动端目录：折叠在标题下方 {%- endcomment -%}
         <details class="ag__toc-m" data-ag-toc>
           <summary>{{ section.settings.toc_title | escape }}</summary>
-          <ul class="ag__toc-list" data-ag-toc-list role="list"></ul>
+          <div class="ag__toc-panel">
+            <ul class="ag__toc-list" data-ag-toc-list role="list"></ul>
+          </div>
         </details>
 
         <div class="ag__content" data-ag-content>
@@ -65,19 +67,22 @@
                 href="https://www.facebook.com/sharer/sharer.php?u={{ share_url }}"
                 target="_blank"
                 rel="noopener"
-              >Facebook</a>
+                >Facebook</a
+              >
               <a
                 class="ag__share-btn"
                 href="https://twitter.com/intent/tweet?text={{ share_title }}&url={{ share_url }}"
                 target="_blank"
                 rel="noopener"
-              >X</a>
+                >X</a
+              >
               <a
                 class="ag__share-btn"
                 href="https://www.linkedin.com/sharing/share-offsite/?url={{ share_url }}"
                 target="_blank"
                 rel="noopener"
-              >LinkedIn</a>
+                >LinkedIn</a
+              >
               <button type="button" class="ag__share-btn" data-ag-copy data-label="Copy link" data-done="Copied">
                 Copy link
               </button>
@@ -90,12 +95,7 @@
                 {{
                   section.settings.author_image
                   | image_url: width: 240
-                  | image_tag:
-                    loading: 'lazy',
-                    width: 120,
-                    height: 120,
-                    alt: article.author,
-                    class: 'ag__author-img'
+                  | image_tag: loading: 'lazy', width: 120, height: 120, alt: article.author, class: 'ag__author-img'
                 }}
               {%- endif -%}
               <div class="ag__author-body">
@@ -255,14 +255,18 @@
   .ag__toc-m summary::-webkit-details-marker {
     display: none;
   }
-  .ag__toc-m summary::after {
+   .ag__toc-m summary::after {
     content: '+';
     font-size: 2.4rem;
     font-weight: 400;
     line-height: 1;
+    transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1);
   }
-  .ag__toc-m[open] summary::after {
-    content: '\2212';
+  .ag__toc-m.is-open summary::after {
+    transform: rotate(45deg);
+  }
+  .ag__toc-panel {
+    overflow: hidden;
   }
   .ag__toc-m .ag__toc-list {
     margin: 0 2rem 2rem;

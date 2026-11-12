@@ -4,13 +4,14 @@ if (!customElements.get('article-guide')) {
       this.contentEl = this.querySelector('[data-ag-content]');
       if (!this.contentEl) return;
 
-      this.tocBlocks = [...this.querySelectorAll('[data-ag-toc]')];
       this.tocLists = [...this.querySelectorAll('[data-ag-toc-list]')];
       this.reduce = window.matchMedia('(prefers-reduced-motion: reduce)');
       this.minHeadings = parseInt(this.dataset.minHeadings || '2', 10);
       this.entries = [];
       this.currentId = null;
       this.ticking = false;
+      this.mobileToc = this.querySelector('details.ag__toc-m');
+      this.tocWantOpen = false;
 
       this.wrapTables();
       this.collectHeadings();
@@ -42,6 +43,9 @@ if (!customElements.get('article-guide')) {
       window.removeEventListener('scroll', this.onScroll);
       window.removeEventListener('resize', this.onScroll);
       window.removeEventListener('load', this.onLoad);
+      if (window.gsap && this.mobileToc) {
+        gsap.killTweensOf(this.mobileToc.querySelectorAll('.ag__toc-panel, li'));
+      }
     }
 
     // 表格外面包一层，窄屏时横向滚动，不撑破版面
@@ -105,14 +109,22 @@ if (!customElements.get('article-guide')) {
     }
 
     handleClick(e) {
+      // 移动端目录标题：接管原生的展开折叠，改成带动画的
+      const summary = e.target.closest('.ag__toc-m > summary');
+      if (summary) {
+        e.preventDefault();
+        this.toggleToc();
+        return;
+      }
+
       const link = e.target.closest('a[data-ag-link]');
       if (link) {
         e.preventDefault();
         const id = link.dataset.agLink;
-        const details = link.closest('details');
-        if (details && details.open) {
-          // 先收起移动端目录，再滚动，否则收起造成的位移会让定位偏掉
-          details.open = false;
+        if (link.closest('.ag__toc-m') && this.tocWantOpen) {
+          // 点击条目后立即收起（不播动画），再滚动，
+          // 否则收起过程中的位移会让滚动目标偏掉
+          this.toggleToc(false, true);
           requestAnimationFrame(() => this.goTo(id));
         } else {
           this.goTo(id);
@@ -130,6 +142,69 @@ if (!customElements.get('article-guide')) {
             setTimeout(() => (copy.textContent = label), 2000);
           })
           .catch(() => {});
+      }
+    }
+
+    // 移动端目录：展开或收起。force 为 true/false 时强制指定，instant 为 true 时不播动画
+    toggleToc(force, instant = false) {
+      const details = this.mobileToc;
+      const panel = details && details.querySelector('.ag__toc-panel');
+      if (!details || !panel) return;
+
+      const items = [...panel.querySelectorAll('li')];
+      const open = typeof force === 'boolean' ? force : !this.tocWantOpen;
+      this.tocWantOpen = open;
+      details.classList.toggle('is-open', open);
+
+      if (window.gsap) gsap.killTweensOf([panel, ...items]);
+
+      // 没有 GSAP、用户开了"减少动态效果"、或要求立即切换：直接切
+      if (!window.gsap || this.reduce.matches || instant) {
+        panel.style.height = '';
+        panel.style.opacity = '';
+        items.forEach((li) => {
+          li.style.opacity = '';
+          li.style.transform = '';
+        });
+        details.open = open;
+        return;
+      }
+
+      if (open) {
+        // 如果正好在收起的途中再点，从当前高度接着展开
+        const from = details.open ? panel.offsetHeight : 0;
+        const fromOpacity = details.open ? Number(gsap.getProperty(panel, 'opacity')) : 0;
+        details.open = true;
+
+        gsap.fromTo(
+          panel,
+          { height: from, opacity: fromOpacity },
+          { height: 'auto', opacity: 1, duration: 0.5, ease: 'power3.out', clearProps: 'height,opacity' }
+        );
+        gsap.fromTo(
+          items,
+          { opacity: 0, y: 10 },
+          {
+            opacity: 1,
+            y: 0,
+            duration: 0.4,
+            ease: 'power2.out',
+            stagger: Math.min(0.04, 0.4 / Math.max(items.length, 1)),
+            delay: 0.12,
+            clearProps: 'opacity,transform',
+          }
+        );
+      } else {
+        gsap.to(panel, {
+          height: 0,
+          opacity: 0,
+          duration: 0.35,
+          ease: 'power2.inOut',
+          onComplete: () => {
+            details.open = false;
+            gsap.set(panel, { clearProps: 'height,opacity' });
+          },
+        });
       }
     }
 
