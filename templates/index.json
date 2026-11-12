@@ -37,6 +37,105 @@
         "button_text": "#ffffff"
       }
     },
+    "marquee_strip_ADwFd4": {
+      "type": "marquee-strip",
+      "blocks": {
+        "person_M78HVF": {
+          "type": "person",
+          "settings": {
+            "image": "shopify://shop_images/bigxthaplug_d42c0948-6dd8-4d4e-bd5e-85667f93154e.jpg",
+            "name": "Name 7",
+            "verified": true,
+            "link": ""
+          }
+        },
+        "person_qADGR4": {
+          "type": "person",
+          "settings": {
+            "image": "shopify://shop_images/smokepurpp_27138c55-9e90-4380-9833-46dbc4b7cd4b.jpg",
+            "name": "Name One",
+            "verified": true,
+            "link": ""
+          }
+        },
+        "person_KWkCFf": {
+          "type": "person",
+          "settings": {
+            "image": "shopify://shop_images/fivio_foreign.jpg",
+            "name": "Name Two",
+            "verified": true,
+            "link": ""
+          }
+        },
+        "person_iUzxkC": {
+          "type": "person",
+          "settings": {
+            "image": "shopify://shop_images/lil_pump_dab52f51-c8ae-4916-b887-f51a30ba6321.jpg",
+            "name": "Name Three",
+            "verified": true,
+            "link": ""
+          }
+        },
+        "person_eczcJV": {
+          "type": "person",
+          "settings": {
+            "image": "shopify://shop_images/nelk.jpg",
+            "name": "Name Four",
+            "verified": true,
+            "link": ""
+          }
+        },
+        "person_tx7np9": {
+          "type": "person",
+          "settings": {
+            "image": "shopify://shop_images/rubi-rose.jpg",
+            "name": "Name Five",
+            "verified": true,
+            "link": ""
+          }
+        },
+        "person_98BwAp": {
+          "type": "person",
+          "settings": {
+            "image": "shopify://shop_images/tripple_redd.jpg",
+            "name": "Name Six",
+            "verified": true,
+            "link": ""
+          }
+        }
+      },
+      "block_order": [
+        "person_M78HVF",
+        "person_qADGR4",
+        "person_KWkCFf",
+        "person_iUzxkC",
+        "person_eczcJV",
+        "person_tx7np9",
+        "person_98BwAp"
+      ],
+      "name": "跑马灯条",
+      "settings": {
+        "show_avatar": true,
+        "show_badge": true,
+        "uppercase": true,
+        "separator": true,
+        "speed": 50,
+        "direction": "left",
+        "pause_on_hover": true,
+        "fade_edges": true,
+        "avatar_size": 30,
+        "avatar_size_mobile": 28,
+        "name_size": 14,
+        "name_size_mobile": 11,
+        "gap": 12,
+        "bg_color": "#ffffff",
+        "text_color": "#000000",
+        "line_color": "#e3e3e3",
+        "badge_color": "#5395e9",
+        "padding_top": 0,
+        "padding_bottom": 30
+      }
+    },
     "featured_collection": {
       "type": "featured-collection",
       "settings": {
@@ -201,6 +300,7 @@
   },
   "order": [
     "hero_banner_XtUR67",
+    "marquee_strip_ADwFd4",
     "featured_collection",
     "horizontal_gallery_hraNJm",
     "rich_text_gPx6tz",
