@@ -1,0 +1,38 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+{
+  "sections": {
+    "main": {
+      "type": "blog-list",
+      "settings": {
+        "heading": "Jewelry Blog",
+        "heading_size": "l",
+        "heading_scale": 100,
+        "subheading": "Need a quick answer to one of our top questions? We got you.",
+        "subheading_size": "m",
+        "list_heading": "All blogs",
+        "per_page": 9,
+        "columns": "3",
+        "image_ratio": "16 / 9",
+        "card_radius": 6,
+        "show_tag": true,
+        "show_read_time": true,
+        "tag_color": "#2b8fd4",
+        "show_search": true,
+        "search_placeholder": "Search blog posts by title...",
+        "padding_top": 40,
+        "padding_bottom": 80
+      }
+    }
+  },
+  "order": [
+    "main"
+  ]
+}

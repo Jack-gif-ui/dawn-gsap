@@ -1,0 +1,13 @@
+{%- if predictive_search.performed -%}
+  <div data-bs-root>
+    {%- for article in predictive_search.resources.articles -%}
+      {%- render 'blog-card', article: article -%}
+    {%- endfor -%}
+  </div>
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "Blog search results"
+}
+{% endschema %}

@@ -13,9 +13,21 @@
   "sections": {
     "footer": {
       "type": "footer",
+      "blocks": {
+        "link_list_BaV8Nk": {
+          "type": "link_list",
+          "settings": {
+            "heading": "ABOUT",
+            "menu": "about"
+          }
+        }
+      },
+      "block_order": [
+        "link_list_BaV8Nk"
+      ],
       "settings": {
-        "color_scheme": "scheme-1",
-        "newsletter_enable": true,
+        "color_scheme": "scheme-4",
+        "newsletter_enable": false,
         "newsletter_heading": "Subscribe to our emails",
         "enable_follow_on_shop": true,
         "show_social": true,
