@@ -132,6 +132,16 @@
                   {%- endif -%}
                 {%- endif -%}
               </div>
+              {%- if section.settings.enable_card_badges -%}
+                {%- render 'card-badges',
+                  card_product: card_product,
+                  stock_text: section.settings.badge_stock_text,
+                  sale_text: section.settings.badge_sale_text,
+                  soldout_text: section.settings.badge_soldout_text,
+                  color: section.settings.badge_color,
+                  scale: section.settings.badge_scale
+                -%}
+              {%- endif -%}
             </div>
           {%- endif -%}
           <div class="card__content">

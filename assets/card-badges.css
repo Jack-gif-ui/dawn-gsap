@@ -1,0 +1,51 @@
+/* 商品卡图片左上角的矩形徽章（紧贴边角，不留边距） */
+.cb {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 5; /* 高于图片和多图翻页的箭头、分段条 */
+  display: flex;
+  align-items: stretch;
+  pointer-events: none; /* 徽章只是展示，鼠标和触摸穿过它，点击仍然落在图片上 */
+}
+.cb__item {
+  display: inline-flex;
+  align-items: center;
+  box-sizing: border-box;
+  padding: calc(0.7rem * var(--cb-scale, 1)) calc(0.9rem * var(--cb-scale, 1));
+  border: 1px solid transparent;
+  font-size: calc(0.95rem * var(--cb-scale, 1));
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  line-height: 1.1;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+.cb__item--stock {
+  background: #fff;
+  color: var(--cb-color, #2b6ea9);
+  border-color: rgba(43, 110, 169, 0.25);
+  border-color: color-mix(in srgb, var(--cb-color, #2b6ea9) 25%, #fff);
+}
+.cb__item--sale {
+  background: var(--cb-color, #2b6ea9);
+  color: #fff;
+  border-color: var(--cb-color, #2b6ea9);
+}
+.cb__item--soldout {
+  background: #4a4a4a;
+  color: #fff;
+  border-color: #4a4a4a;
+}
+
+@media (min-width: 750px) {
+  .cb__item {
+    padding: calc(0.9rem * var(--cb-scale, 1)) calc(1.2rem * var(--cb-scale, 1));
+    font-size: calc(1.2rem * var(--cb-scale, 1));
+  }
+}
+
+/* 启用后，隐藏 Dawn 原来的 Sale / Sold out 圆角徽章，避免重复 */
+.product-grid--card-badges .card__badge {
+  display: none;
+}

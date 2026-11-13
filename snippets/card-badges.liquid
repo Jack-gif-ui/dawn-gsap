@@ -1,0 +1,42 @@
+{% doc %}
+  商品卡图片左上角的矩形徽章：有货徽章 + 折扣徽章；售罄时只显示售罄徽章。
+
+  @param {object} card_product - 商品
+  @param {string} [stock_text] - 有货徽章文字，默认 In stock，留空则不显示
+  @param {string} [sale_text] - 折扣徽章文字，默认 {percent}% OFF。{percent} 会换成按划线价算出的折扣百分比
+  @param {string} [soldout_text] - 售罄徽章文字，默认 Sold out
+  @param {string} [color] - 主色，默认 #2b6ea9
+  @param {number} [scale] - 大小百分比，默认 100
+{% enddoc %}
+
+{%- liquid
+  assign stock = stock_text | default: 'In stock'
+  assign sale = sale_text | default: '{percent}% OFF'
+  assign soldout = soldout_text | default: 'Sold out'
+  assign placeholder = '{percent}'
+
+  assign cp = card_product.compare_at_price
+  assign pr = card_product.price
+  assign percent = 0
+  if cp > pr
+    assign percent = cp | minus: pr | times: 100.0 | divided_by: cp | round
+  endif
+-%}
+
+<div
+  class="cb"
+  style="--cb-color: {{ color | default: '#2b6ea9' }}; --cb-scale: {{ scale | default: 100 | divided_by: 100.0 }};"
+>
+  {%- if card_product.available -%}
+    {%- if stock != blank -%}
+      <span class="cb__item cb__item--stock">{{ stock | escape }}</span>
+    {%- endif -%}
+    {%- if percent > 0 and sale != blank -%}
+      <span class="cb__item cb__item--sale">{{ sale | replace: placeholder, percent | escape }}</span>
+    {%- endif -%}
+  {%- else -%}
+    {%- if soldout != blank -%}
+      <span class="cb__item cb__item--soldout">{{ soldout | escape }}</span>
+    {%- endif -%}
+  {%- endif -%}
+</div>

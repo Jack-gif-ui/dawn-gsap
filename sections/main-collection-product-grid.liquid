@@ -7,7 +7,9 @@
   {{ 'card-gallery.css' | asset_url | stylesheet_tag }}
   <script src="{{ 'card-gallery.js' | asset_url }}" defer="defer"></script>
 {%- endif -%}
-
+{%- if section.settings.enable_card_badges -%}
+  {{ 'card-badges.css' | asset_url | stylesheet_tag }}
+{%- endif -%}
 {% if section.settings.image_shape == 'blob' %}
   {{ 'mask-blobs.css' | asset_url | stylesheet_tag }}
 {%- endif -%}
@@ -159,6 +161,7 @@
                   grid product-grid grid--{{ section.settings.columns_mobile }}-col-tablet-down
                   grid--{{ section.settings.columns_desktop }}-col-desktop
                   {% if section.settings.quick_add == 'bulk' %} collection-quick-add-bulk{% endif %}
+                  {% if section.settings.enable_card_badges %} product-grid--card-badges{% endif %}
                 "
               >
                 {% assign skip_card_product_styles = false %}
@@ -375,6 +378,52 @@
       "default": true,
       "label": "跳过商品媒体里的最后一张图（比如盒子图）",
       "info": "商品媒体只有 1 张图时不跳过"
+    },    {
+      "type": "header",
+      "content": "商品卡徽章"
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_card_badges",
+      "default": false,
+      "label": "启用商品卡矩形徽章",
+      "info": "替换 Dawn 原来的 Sale / Sold out 圆角徽章，显示在图片左上角"
+    },
+    {
+      "type": "text",
+      "id": "badge_stock_text",
+      "default": "In stock",
+      "label": "有货徽章文字",
+      "info": "留空则不显示这个徽章"
+    },
+    {
+      "type": "text",
+      "id": "badge_sale_text",
+      "default": "{percent}% OFF",
+      "label": "折扣徽章文字",
+      "info": "{percent} 会自动换成按划线价算出的折扣百分比；也可以直接写固定文字，比如 70% OFF。没有折扣的商品不显示"
+    },
+    {
+      "type": "text",
+      "id": "badge_soldout_text",
+      "default": "Sold out",
+      "label": "售罄徽章文字"
+    },
+    {
+      "type": "color",
+      "id": "badge_color",
+      "default": "#2b6ea9",
+      "label": "徽章主色"
+    },
+    {
+      "type": "range",
+      "id": "badge_scale",
+      "min": 70,
+      "max": 140,
+      "step": 5,
+      "unit": "%",
+      "default": 100,
+      "label": "徽章大小"
     },
     {
       "type": "checkbox",
