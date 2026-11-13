@@ -1,0 +1,142 @@
+marquee-strip {
+    display: block;
+  }
+  .ms {
+    padding: var(--ms-pt, 0) 0 var(--ms-pb, 30px);
+    background: var(--ms-bg, #fff);
+    color: var(--ms-text, #000);
+    overflow: hidden;
+  }
+  .ms-empty {
+    padding: 2rem 0;
+    text-align: center;
+    opacity: 0.6;
+  }
+
+  .ms__wrap {
+    overflow: hidden;
+  }
+  .ms--fade .ms__wrap {
+    -webkit-mask-image: linear-gradient(to right, transparent 0%, #000 4%, #000 96%, transparent 100%);
+    mask-image: linear-gradient(to right, transparent 0%, #000 4%, #000 96%, transparent 100%);
+  }
+  .ms__track {
+    display: flex;
+    width: max-content;
+  }
+
+  /* 两份内容各自向左位移自己的整个宽度，循环时无缝衔接 */
+  .ms__group {
+    display: flex;
+    flex: none;
+    align-items: center;
+    justify-content: space-around;
+    gap: var(--ms-gap, 12px);
+    min-width: 100vw;
+    margin: 0;
+    padding: 0 var(--ms-gap, 12px) 0 0;
+    list-style: none;
+    animation: ms-scroll var(--ms-duration, 40s) linear infinite;
+    will-change: transform;
+  }
+  .ms--right .ms__group {
+    animation-direction: reverse;
+  }
+  .ms--pause .ms__wrap:hover .ms__group,
+  .ms.is-offscreen .ms__group {
+    animation-play-state: paused;
+  }
+  @keyframes ms-scroll {
+    to {
+      transform: translateX(-100%);
+    }
+  }
+
+  .ms__item {
+    flex: none;
+  }
+  .ms--sep .ms__item {
+    border-right: 1px solid var(--ms-line, #e3e3e3);
+  }
+  .ms__inner {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 3px 10px 3px 4px;
+    color: inherit;
+    text-decoration: none;
+  }
+  a.ms__inner:hover .ms__name {
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+
+  .ms__avatar {
+    flex: none;
+    box-sizing: border-box;
+    width: var(--ms-avatar-m, 28px);
+    height: var(--ms-avatar-m, 28px);
+    padding: 2px;
+    border: 2px solid var(--ms-line, #e3e3e3);
+    border-radius: 50%;
+  }
+  .ms__img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    object-fit: cover;
+  }
+  .ms__initial {
+    display: grid;
+    place-items: center;
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    background: var(--ms-line, #e3e3e3);
+    font-size: 1.1rem;
+    font-weight: 700;
+  }
+
+  .ms__name {
+    font-size: var(--ms-name-m, 11px);
+    font-weight: 700;
+    line-height: 1;
+    letter-spacing: 0;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+  .ms--normalcase .ms__name {
+    text-transform: none;
+  }
+  .ms__badge {
+    display: inline-flex;
+    flex: none;
+    color: var(--ms-badge, #5395e9);
+  }
+
+  @media (min-width: 750px) {
+    .ms__avatar {
+      width: var(--ms-avatar, 30px);
+      height: var(--ms-avatar, 30px);
+    }
+    .ms__name {
+      font-size: var(--ms-name, 14px);
+    }
+  }
+
+  /* 减少动态效果：不播放，改成可以手动横向滑动，并隐藏复制出来的那份 */
+  @media (prefers-reduced-motion: reduce) {
+    .ms__wrap {
+      overflow-x: auto;
+      -webkit-mask-image: none;
+      mask-image: none;
+    }
+    .ms__group {
+      min-width: 0;
+      animation: none;
+    }
+    .ms__group[aria-hidden='true'] {
+      display: none;
+    }
+  }

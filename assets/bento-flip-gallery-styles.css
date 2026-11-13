@@ -1,0 +1,76 @@
+/* 手机端：普通两列网格，不做动画 */
+  .bf {
+    position: relative;
+    overflow: hidden;
+  }
+  .bf__grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.8rem;
+    padding: 0.8rem;
+  }
+  .bf__item {
+    position: relative;
+    aspect-ratio: 1 / 1;
+    min-height: 0;
+    overflow: hidden;
+    border-radius: 12px;
+  }
+  .bf__item--center {
+    order: -1;
+    grid-column: 1 / -1;
+    aspect-ratio: 4 / 3;
+  }
+  /* 图片绝对定位填满盒子，矩形图自动裁切 */
+  .bf__img {
+    position: absolute;
+    inset: 0;
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  /* 桌面端：bento 布局（JS 未接管时的静态版本） */
+  @media (min-width: 750px) {
+    .bf {
+      height: 100vh;
+    }
+    .bf__grid {
+      height: 100%;
+      box-sizing: border-box;
+      padding: 0;
+      gap: 1vh;
+      grid-template-columns: repeat(3, 32.5vw);
+      grid-template-rows: repeat(4, 23vh);
+      justify-content: center;
+      align-content: center;
+    }
+    .bf__item {
+      aspect-ratio: auto;
+      border-radius: 0;
+    }
+    .bf__item--center {
+      order: 0;
+      z-index: 2;
+      grid-area: 2 / 2 / 4 / 3;
+    }
+    .bf__item--1 { grid-area: 1 / 1 / 3 / 2; }
+    .bf__item--2 { grid-area: 1 / 2 / 2 / 3; }
+    .bf__item--3 { grid-area: 1 / 3 / 3 / 4; }
+    .bf__item--4 { grid-area: 3 / 1 / 4 / 2; }
+    .bf__item--5 { grid-area: 3 / 3 / 5 / 4; }
+    .bf__item--6 { grid-area: 4 / 1 / 5 / 2; }
+    .bf__item--7 { grid-area: 4 / 2 / 5 / 3; }
+
+    /* GSAP 接管后：每张图绝对定位，位置和尺寸全由 JS 控制 */
+    .bf.is-gsap .bf__grid {
+      display: block;
+      position: relative;
+    }
+    .bf.is-gsap .bf__item {
+      position: absolute;
+      left: 0;
+      top: 0;
+    }
+  }

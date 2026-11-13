@@ -1,0 +1,71 @@
+.hg {
+    padding: 4rem 0;
+  }
+  .hg__heading {
+    margin: 0 0 2rem;
+  }
+  .hg__track {
+    display: flex;
+    gap: 2rem;
+    list-style: none;
+    margin: 0;
+    padding: 0 2rem;
+    /* 默认（手机端 / 减少动态效果）：原生横向滑动 */
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+  }
+  .hg__item {
+    flex: 0 0 70vw;
+    scroll-snap-align: start;
+  }
+  .hg__link {
+    display: block;
+    text-decoration: none;
+    color: inherit;
+  }
+  .hg__media {
+    aspect-ratio: 4 / 5;
+    overflow: hidden;
+    background: rgba(0, 0, 0, 0.05);
+  }
+  .hg__media img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+  .hg__title {
+    margin: 1rem 0 0.25rem;
+  }
+  .hg__price {
+    margin: 0;
+    opacity: 0.7;
+  }
+
+  /* 只有 GSAP 接管后才启用（桌面端） */
+  .hg.is-gsap {
+    padding: 0;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    overflow: hidden;
+  }
+  .hg.is-gsap .hg__track {
+    overflow: visible;
+    scroll-snap-type: none;
+    width: max-content;
+    padding: 0 5vw;
+  }
+  .hg.is-gsap .hg__item {
+    flex: 0 0 var(--hg-card-width, 20vw);
+  }
+  .hg.is-gsap .hg__media {
+    aspect-ratio: 1 / 1;
+  }
+  .hg.is-gsap .hg__inner {
+    margin-bottom: 1.5rem;
+  }
+  .hg.is-gsap .hg__heading {
+    margin: 0;
+  }
