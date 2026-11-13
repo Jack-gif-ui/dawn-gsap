@@ -3,6 +3,10 @@
 {{ 'component-price.css' | asset_url | stylesheet_tag }}
 {{ 'collection-promo.css' | asset_url | stylesheet_tag }}
 <script src="{{ 'collection-promo.js' | asset_url }}" defer="defer"></script>
+{%- if section.settings.enable_card_gallery -%}
+  {{ 'card-gallery.css' | asset_url | stylesheet_tag }}
+  <script src="{{ 'card-gallery.js' | asset_url }}" defer="defer"></script>
+{%- endif -%}
 
 {% if section.settings.image_shape == 'blob' %}
   {{ 'mask-blobs.css' | asset_url | stylesheet_tag }}
@@ -175,14 +179,17 @@
                       card_product: product,
                       media_aspect_ratio: section.settings.image_ratio,
                       image_shape: section.settings.image_shape,
-                      show_secondary_image: section.settings.show_secondary_image,
+                      show_secondary_image: false,
                       show_vendor: section.settings.show_vendor,
                       show_rating: section.settings.show_rating,
                       lazy_load: lazy_load,
                       skip_styles: skip_card_product_styles,
                       quick_add: section.settings.quick_add,
                       section_id: section.id,
-                      product_view_context: 'collection'
+                      product_view_context: 'collection',
+                      card_gallery: section.settings.enable_card_gallery,
+                      gallery_max: section.settings.gallery_max,
+                      gallery_skip_last: section.settings.gallery_skip_last
                     %}
                   </li>
                   {%- assign skip_card_product_styles = true -%}
@@ -341,11 +348,33 @@
       "default": "default",
       "label": "t:sections.all.image_shape.label"
     },
+
+    {
+      "type": "header",
+      "content": "商品卡多图翻页"
+    },
     {
       "type": "checkbox",
-      "id": "show_secondary_image",
+      "id": "enable_card_gallery",
       "default": false,
-      "label": "t:sections.main-collection-product-grid.settings.show_secondary_image.label"
+      "label": "启用商品卡多图翻页",
+      "info": "图片顺序：商品的「列表页卡片图片」在前，商品媒体在后。商品最终不足 2 张图时，仍显示原来的单张图"
+    },
+    {
+      "type": "range",
+      "id": "gallery_max",
+      "min": 2,
+      "max": 12,
+      "step": 1,
+      "default": 8,
+      "label": "每个商品最多显示几张图"
+    },
+    {
+      "type": "checkbox",
+      "id": "gallery_skip_last",
+      "default": true,
+      "label": "跳过商品媒体里的最后一张图（比如盒子图）",
+      "info": "商品媒体只有 1 张图时不跳过"
     },
     {
       "type": "checkbox",

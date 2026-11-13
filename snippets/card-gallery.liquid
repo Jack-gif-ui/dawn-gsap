@@ -1,0 +1,106 @@
+{% doc %}
+  商品卡多图翻页：列表页专用图（custom.card_gallery）在前，详情页图片在后（可跳过最后一张）。
+  最终图片少于 2 张时什么都不输出，调用方要回退到原来的图片渲染。
+
+  @param {object} card_product - 商品
+  @param {boolean} [lazy_load] - 第一张图是否懒加载
+  @param {number} [max_images] - 最多显示几张，默认 8
+  @param {boolean} [skip_last] - 详情页有 2 张及以上图片时，是否跳过最后一张，默认 true
+  @param {string} [sizes] - 图片的 sizes 属性
+{% enddoc %}
+
+{%- liquid
+  assign p = card_product
+  assign max = max_images | default: 8 | at_least: 2
+
+  assign skip = true
+  if skip_last == false
+    assign skip = false
+  endif
+
+  assign total = p.images.size
+
+  assign detail_count = total
+  if skip and total > 1
+    assign detail_count = total | minus: 1
+  endif
+  assign detail = p.images | slice: 0, detail_count
+
+  assign extras = p.metafields.custom.card_gallery.value
+  if extras == blank
+    assign extras = '' | split: ','
+  endif
+
+  assign all = extras | concat: detail
+  assign all = all | slice: 0, max
+  assign count = all.size
+
+  assign widths = '165,360,533,720,940,1066' | split: ','
+  assign img_sizes = sizes | default: '(min-width: 990px) 25vw, 50vw'
+-%}
+
+{%- if count > 1 -%}
+  <card-gallery
+    class="cg"
+    data-count="{{ count }}"
+    data-extras="{{ extras.size }}"
+    data-detail="{{ detail.size }}"
+  >
+    <div class="cg__track" data-cg-track>
+      {%- for img in all -%}
+        {%- liquid
+          assign alt = img.alt | default: p.title | escape
+          assign img_src = img | image_url: width: 533
+        -%}
+        {%- capture img_srcset -%}
+          {%- for w in widths -%}
+            {%- assign wn = w | plus: 0 -%}
+            {{ img | image_url: width: wn }} {{ wn }}w{% unless forloop.last %}, {% endunless %}
+          {%- endfor -%}
+        {%- endcapture -%}
+
+        {%- comment -%} 每张图都是指向商品页的链接：点图片能跳转，在图片上横向滑动也能翻页 {%- endcomment -%}
+        <a class="cg__slide" href="{{ p.url }}" tabindex="-1" aria-hidden="true" data-cg-slide>
+          {%- if forloop.first -%}
+            <img
+              src="{{ img_src }}"
+              srcset="{{ img_srcset }}"
+              sizes="{{ img_sizes }}"
+              alt="{{ alt }}"
+              width="{{ img.width | default: 1000 }}"
+              height="{{ img.height | default: 1250 }}"
+              loading="{% if lazy_load == false %}eager{% else %}lazy{% endif %}"
+              decoding="async"
+            >
+          {%- else -%}
+            <img
+              src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7"
+              data-src="{{ img_src }}"
+              data-srcset="{{ img_srcset }}"
+              sizes="{{ img_sizes }}"
+              alt="{{ alt }}"
+              width="{{ img.width | default: 1000 }}"
+              height="{{ img.height | default: 1250 }}"
+              decoding="async"
+            >
+          {%- endif -%}
+        </a>
+      {%- endfor -%}
+    </div>
+
+    <button type="button" class="cg__btn cg__btn--prev" data-cg-prev aria-label="Previous image">
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M15 5l-7 7 7 7"/>
+      </svg>
+    </button>
+    <button type="button" class="cg__btn cg__btn--next" data-cg-next aria-label="Next image">
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M9 5l7 7-7 7"/>
+      </svg>
+    </button>
+
+    <div class="cg__bar" aria-hidden="true" style="--cg-count: {{ count }};">
+      <span class="cg__thumb" data-cg-thumb></span>
+    </div>
+  </card-gallery>
+{%- endif -%}
