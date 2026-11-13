@@ -1,0 +1,22 @@
+{% doc %}
+  心愿按钮：商品卡图片右上角的空心心，点击变实心。
+  状态存在浏览器 localStorage 里，由 assets/wishlist.js 管理。
+
+  @param {object} card_product - 商品
+{% enddoc %}
+
+{%- assign wl_title = card_product.title | escape -%}
+<button
+  type="button"
+  class="wl-btn"
+  data-wishlist-toggle
+  data-handle="{{ card_product.handle }}"
+  data-label-add="Add {{ wl_title }} to wishlist"
+  data-label-remove="Remove {{ wl_title }} from wishlist"
+  aria-pressed="false"
+  aria-label="Add {{ wl_title }} to wishlist"
+>
+  <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+    <path d="M12 20s-7-4.4-7-10a4.2 4.2 0 0 1 7-3 4.2 4.2 0 0 1 7 3c0 5.6-7 10-7 10z"/>
+  </svg>
+</button>

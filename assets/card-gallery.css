@@ -126,7 +126,7 @@ card-gallery {
    把整个图片区（card__inner）抬到它上面，才能在图片上悬停、点箭头、横向滑动。
    card__inner 里还包含 Sale 等徽章，它们也跟着浮在上方。 */
 .card .card__inner:has(.card__media--gallery) {
-  z-index: 3;
+  z-index: 2;
 }
 
 /* 用更高的优先级，盖过 Dawn 自己给 .card__media 设的 z-index */

@@ -144,6 +144,9 @@
               {%- endif -%}
             </div>
           {%- endif -%}
+          {%- if section.settings.enable_wishlist and card_product.featured_media -%}
+            {%- render 'wishlist-heart', card_product: card_product -%}
+          {%- endif -%}
           <div class="card__content">
             <div class="card__information">
               <h3

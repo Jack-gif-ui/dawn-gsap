@@ -253,6 +253,7 @@
         "badge_soldout_text": "Sold out",
         "badge_color": "#2b6ea9",
         "badge_scale": 70,
+        "enable_wishlist": true,
         "show_vendor": false,
         "show_rating": false,
         "quick_add": "none",
