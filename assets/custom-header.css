@@ -45,3 +45,6 @@
   border-top: 0.1rem solid rgba(var(--color-foreground), 0.08);
   pointer-events: none;
 }
+.header-wrapper {
+  overflow-x: clip;
+}

@@ -1,0 +1,94 @@
+{% doc %}
+  集合页信息标签卡片（只展示，不可点击）：
+  纯色背景，一列圆角胶囊，每个胶囊「可选图标 + 文字」。
+
+  @param {object} block - 区块里的 promo_info 块
+  @param {number} position - 当前页内，这张卡片插在第几个商品之后
+  @param {string} ratio - 商品图比例设置（adapt / portrait / square）
+{% enddoc %}
+
+{%- liquid
+  assign s = block.settings
+
+  assign ratio_percent = 100
+  if ratio == 'portrait'
+    assign ratio_percent = 125
+  endif
+
+  assign has_text = false
+  for i in (1..6)
+    assign text_key = 'text_' | append: i
+    if s[text_key] != blank
+      assign has_text = true
+    endif
+  endfor
+
+  assign show_card = has_text
+  if request.design_mode
+    assign show_card = true
+  endif
+-%}
+
+{%- if show_card -%}
+  <li
+    class="grid__item promo-grid-item{% if settings.animations_reveal_on_scroll %} scroll-trigger animate--slide-in{% endif %}"
+    {% if settings.animations_reveal_on_scroll %}
+      data-cascade
+      style="--animation-order: {{ position }};"
+    {% endif %}
+    {{ block.shopify_attributes }}
+  >
+    <div
+      class="promo-card promo-card--info"
+      style="
+        --promo-ratio: {{ ratio_percent }}%;
+        --promo-info-bg: {{ s.bg_color }};
+        --promo-info-accent: {{ s.accent_color }};
+        --promo-chip-size: {{ s.text_size }};
+        --promo-chip-gap: {{ s.chip_gap }};
+      "
+    >
+      <div class="promo-info">
+        <ul class="promo-chips{% if s.align == 'left' %} promo-chips--left{% endif %}" role="list">
+          {%- for i in (1..6) -%}
+            {%- liquid
+              assign text_key = 'text_' | append: i
+              assign icon_key = 'icon_' | append: i
+              assign c_text = s[text_key]
+              assign c_icon = s[icon_key]
+            -%}
+            {%- if c_text != blank -%}
+              <li class="promo-chip">
+                {%- if c_icon != blank and c_icon != 'none' -%}
+                  <span class="promo-chip__icon" aria-hidden="true">
+                    {%- case c_icon -%}
+                      {%- when 'truck' -%}
+                        <svg viewBox="0 0 24 24"><path d="M2 6h11v9H2z"/><path d="M13 9h4l3 3v3h-7"/><circle cx="6" cy="17.5" r="1.8"/><circle cx="17" cy="17.5" r="1.8"/></svg>
+                      {%- when 'pin' -%}
+                        <svg viewBox="0 0 24 24"><path d="M12 21s7-6.2 7-11.5a7 7 0 0 0-14 0C5 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.5"/></svg>
+                      {%- when 'shield' -%}
+                        <svg viewBox="0 0 24 24"><path d="M12 3l7 2.7v5.6c0 4.5-3 8-7 9.7-4-1.7-7-5.2-7-9.7V5.7z"/><path d="M8.8 12l2.2 2.2 4.2-4.4"/></svg>
+                      {%- when 'star' -%}
+                        <svg viewBox="0 0 24 24"><path d="M12 2.8l2.9 5.9 6.5.9-4.7 4.6 1.1 6.5-5.8-3.1-5.8 3.1 1.1-6.5-4.7-4.6 6.5-.9z"/></svg>
+                      {%- when 'lock' -%}
+                        <svg viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>
+                      {%- when 'check' -%}
+                        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9.5"/><path d="M8 12.5l2.7 2.7L16 9.8"/></svg>
+                      {%- when 'gift' -%}
+                        <svg viewBox="0 0 24 24"><rect x="3" y="8" width="18" height="4" rx="1"/><path d="M5 12v8h14v-8"/><path d="M12 8v12"/><path d="M12 8c-1-3.2-5-3.5-5-1.2 0 1.2 2 1.2 5 1.2zm0 0c1-3.2 5-3.5 5-1.2 0 1.2-2 1.2-5 1.2z"/></svg>
+                      {%- when 'heart' -%}
+                        <svg viewBox="0 0 24 24"><path d="M12 20s-7-4.4-7-10a4.2 4.2 0 0 1 7-3 4.2 4.2 0 0 1 7 3c0 5.6-7 10-7 10z"/></svg>
+                      {%- when 'card' -%}
+                        <svg viewBox="0 0 24 24"><rect x="3" y="5.5" width="18" height="13" rx="2"/><path d="M3 10h18"/><path d="M7 15h3"/></svg>
+                    {%- endcase -%}
+                  </span>
+                {%- endif -%}
+                <span class="promo-chip__text">{{ c_text | escape }}</span>
+              </li>
+            {%- endif -%}
+          {%- endfor -%}
+        </ul>
+      </div>
+    </div>
+  </li>
+{%- endif -%}

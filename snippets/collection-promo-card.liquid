@@ -1,6 +1,6 @@
 {% doc %}
   集合页商品网格里的营销卡片，有两种：
-  - promo_image：纯图片，可切换成 2×2 四宫格
+  - promo_image：纯图片，可切换成 2×2 四宫格（每格可带名字和认证徽章）
   - promo_content：背景图或背景色，加两行文字和一张前景图
 
   @param {object} block - 区块里的块
@@ -125,9 +125,17 @@
       </{{ tag }}>
 
     {%- elsif s.use_quad -%}
-      {%- comment -%} 四宫格：外层不能是链接，每一格各自决定是否带链接 {%- endcomment -%}
+      {%- comment -%} 四宫格：外层不能是链接，每一格各自决定是否带链接、名字和徽章 {%- endcomment -%}
       <div class="promo-card promo-card--quad" style="--promo-ratio: {{ ratio_percent }}%;">
-        <div class="promo-quad" style="--promo-quad-gap: {{ s.quad_gap | default: 4 }}px;">
+        <div
+          class="promo-quad{% if s.name_align == 'left' %} promo-quad--left{% endif %}"
+          style="
+            --promo-quad-gap: {{ s.quad_gap | default: 4 }}px;
+            --promo-name: {{ s.name_size | default: 7 }};
+            --promo-shade: {{ s.name_shade | default: 50 | divided_by: 100.0 }};
+            --promo-badge: {{ s.badge_color | default: '#2f9bf0' }};
+          "
+        >
           {%- for i in (1..4) -%}
             {%- liquid
               case i
@@ -135,27 +143,37 @@
                   assign t_image = s.image
                   assign t_link = s.link
                   assign t_alt = s.alt
+                  assign t_name = s.name_1
+                  assign t_badge = s.show_badge_1
                 when 2
                   assign t_image = s.image_2
                   assign t_link = s.link_2
                   assign t_alt = s.alt_2
+                  assign t_name = s.name_2
+                  assign t_badge = s.show_badge_2
                 when 3
                   assign t_image = s.image_3
                   assign t_link = s.link_3
                   assign t_alt = s.alt_3
+                  assign t_name = s.name_3
+                  assign t_badge = s.show_badge_3
                 when 4
                   assign t_image = s.image_4
                   assign t_link = s.link_4
                   assign t_alt = s.alt_4
+                  assign t_name = s.name_4
+                  assign t_badge = s.show_badge_4
               endcase
 
               assign t_tag = 'div'
               if t_link != blank
                 assign t_tag = 'a'
               endif
+
+              assign t_img_alt = t_alt | default: t_name
             -%}
             <{{ t_tag }}
-              class="promo-tile"
+              class="promo-tile{% if t_name != blank %} promo-tile--named{% endif %}"
               {% if t_link != blank %}
                 href="{{ t_link }}"
                 {% if t_alt != blank %}
@@ -171,11 +189,24 @@
                     loading: img_loading,
                     widths: '200, 300, 450, 600',
                     sizes: tile_sizes,
-                    alt: t_alt,
+                    alt: t_img_alt,
                     class: 'promo-card__img'
                 }}
               {%- else -%}
                 {{ 'image' | placeholder_svg_tag: 'promo-card__img placeholder-svg' }}
+              {%- endif -%}
+
+              {%- if t_name != blank -%}
+                <span class="promo-tile__name">
+                  <span class="promo-tile__name-text">{{ t_name | escape }}</span>
+                  {%- if t_badge -%}
+                    <svg class="promo-tile__badge" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                      <circle cx="12" cy="12" r="11" fill="currentColor"/>
+                      <path d="M7 12.6l3.3 3.3L17 9.2" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                    <span class="visually-hidden">(verified)</span>
+                  {%- endif -%}
+                </span>
               {%- endif -%}
             </{{ t_tag }}>
           {%- endfor -%}

@@ -126,3 +126,447 @@ a.promo-tile:focus-visible {
   outline: 0.2rem solid rgb(var(--color-foreground));
   outline-offset: -0.3rem;
 }
+
+/* ===== 四宫格：名字 + 认证徽章 ===== */
+.promo-tile {
+  container-type: inline-size; /* 让名字的字号按这一格的宽度缩放 */
+}
+.promo-tile--named::after {
+  content: '';
+  position: absolute;
+  inset: auto 0 0 0;
+  z-index: 1;
+  height: 55%;
+  background: linear-gradient(to top, rgba(0, 0, 0, var(--promo-shade, 0.5)), rgba(0, 0, 0, 0));
+  pointer-events: none;
+}
+.promo-tile__name {
+  position: absolute;
+  inset: auto 0 0 0;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.3em;
+  padding: 0 5px 6px;
+  padding: 0 5cqw 7cqw;
+  color: #fff;
+  /* 先写 rem 作为不支持容器查询的浏览器的退路，再写 cqw */
+  font-size: calc(var(--promo-name, 7) * 0.3rem);
+  font-size: calc(var(--promo-name, 7) * 1cqw);
+  font-weight: 700;
+  line-height: 1.2;
+  text-align: center;
+  text-shadow: 0 1px 8px rgba(0, 0, 0, 0.35);
+}
+.promo-tile__name-text {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.promo-tile__badge {
+  flex: none;
+  width: 1.05em;
+  height: 1.05em;
+  color: var(--promo-badge, #2f9bf0);
+}
+.promo-quad--left .promo-tile__name {
+  justify-content: flex-start;
+  padding-left: 6cqw;
+  text-align: left;
+}
+
+/* ===== 信息标签卡片（只展示）===== */
+.promo-card--info {
+  container-type: inline-size; /* 里面的 cqw 以卡片宽度为基准 */
+  background: var(--promo-info-bg, #f9f9f9);
+}
+.promo-info {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.4rem;
+  padding: 5.4cqw;
+}
+.promo-chips {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  gap: calc(var(--promo-chip-gap, 4) * 1cqw);
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.promo-chip {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6em;
+  padding: 1.2rem 1.4rem;
+  padding: 4.5cqw 5cqw;
+  border: 1px solid rgba(43, 110, 169, 0.3);
+  border: 1px solid color-mix(in srgb, var(--promo-info-accent, #2b6ea9) 30%, transparent);
+  border-radius: 999px;
+  background: rgba(43, 110, 169, 0.1);
+  background: color-mix(in srgb, var(--promo-info-accent, #2b6ea9) 10%, transparent);
+  color: var(--promo-info-accent, #2b6ea9);
+  font-size: calc(var(--promo-chip-size, 42) * 0.03rem);
+  font-size: calc(var(--promo-chip-size, 42) * 0.1cqw);
+  font-weight: 700;
+  line-height: 1.1;
+  text-align: center;
+}
+.promo-chips--left .promo-chip {
+  justify-content: flex-start;
+  text-align: left;
+}
+.promo-chip__icon {
+  display: inline-flex;
+  flex: none;
+  width: 1.2em;
+  height: 1.2em;
+}
+.promo-chip__icon svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.promo-chip__text {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+
+
+/* ===== 弹窗信息卡片：网格里的竖卡 ===== */
+.promo-card--modal {
+  container-type: inline-size;
+  background: var(--pm-card-bg, #fff);
+  cursor: pointer;
+}
+.promo-bnpl {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+}
+/* 底部图贴底，中间留白（和参考站一致） */
+.promo-bnpl--pin {
+  justify-content: space-between;
+}
+.promo-bnpl__top {
+  display: flex;
+  flex: none;
+  flex-direction: column;
+}
+.promo-bnpl__top-img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+.promo-bnpl__text {
+  padding: 1.2rem 1.2rem 1.4rem;
+  padding: 4cqw 4cqw 4.5cqw;
+  text-align: center;
+}
+.promo-bnpl__l1,
+.promo-bnpl__l2,
+.promo-bnpl__l3,
+.promo-bnpl__note {
+  margin: 0;
+}
+.promo-bnpl__l1,
+.promo-bnpl__l2 {
+  font-family: var(--font-heading-family);
+  font-size: 3.6rem;
+  font-size: calc(13cqw * var(--pm-scale, 1));
+  font-weight: 800;
+  line-height: 1;
+  text-transform: uppercase;
+}
+.promo-bnpl__l1 {
+  color: var(--pm-c1, #4d4d4d);
+}
+.promo-bnpl__l2 {
+  color: var(--pm-c2, #3aa8f0);
+}
+.promo-bnpl__l3 {
+  margin-top: 3cqw;
+  color: var(--pm-c3, #8c8c8c);
+  font-size: 1.8rem;
+  font-size: calc(6.4cqw * var(--pm-scale, 1));
+  font-weight: 800;
+  line-height: 1.1;
+  text-transform: uppercase;
+}
+.promo-bnpl__note {
+  margin-top: 3.5cqw;
+  color: var(--pm-cn, #8c8c8c);
+  font-size: 1.4rem;
+  font-size: calc(5.2cqw * var(--pm-scale, 1));
+  font-weight: 700;
+  line-height: 1.2;
+}
+.promo-bnpl__note-strong {
+  display: block;
+  color: var(--pm-cs, #111);
+  font-weight: 800;
+}
+
+/* 通栏按钮；::after 撑满整张卡片，用来显示键盘焦点框 */
+.promo-bnpl__btn {
+  position: static;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 2cqw;
+  width: 100%;
+  padding: 1.2rem;
+  padding: 3.8cqw 3cqw;
+  border: 0;
+  border-radius: 0;
+  background: var(--pm-btn-bg, #3aa8f0);
+  color: var(--pm-btn-text, #fff);
+  font-family: inherit;
+  font-size: 1.5rem;
+  font-size: calc(5.4cqw * var(--pm-scale, 1));
+  font-weight: 800;
+  line-height: 1;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+.promo-bnpl__btn::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+}
+.promo-bnpl__btn svg {
+  flex: none;
+  width: 1.1em;
+  height: 1.1em;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2.2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+/* 悬停变深：用背景混色，不能用 filter（filter 会让 ::after 缩回按钮大小） */
+.promo-card--modal:hover .promo-bnpl__btn {
+  background: color-mix(in srgb, var(--pm-btn-bg, #3aa8f0) 88%, #000);
+}
+.promo-bnpl__btn:focus-visible {
+  outline: none;
+}
+.promo-bnpl__btn:focus-visible::after {
+  outline: 0.3rem solid rgb(var(--color-foreground));
+  outline-offset: -0.6rem;
+}
+
+/* 底部：背景图 + 叠在上面的 logo 图 */
+.promo-bnpl__bottom {
+  position: relative;
+  flex: none;
+  line-height: 0;
+}
+.promo-bnpl__bg {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+.promo-bnpl__logos {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: var(--pm-logos-w, 76%);
+  height: auto;
+  transform: translate(-50%, -50%);
+}
+/* 没有背景图，只有 logo 图时：正常排在流里 */
+.promo-bnpl__bottom--plain {
+  padding: 4cqw;
+  text-align: center;
+}
+.promo-bnpl__bottom--plain .promo-bnpl__logos {
+  position: static;
+  display: inline-block;
+  transform: none;
+}
+
+/* ===== 弹窗 ===== */
+html.promo-modal-open {
+  overflow: hidden;
+  padding-right: var(--promo-scrollbar, 0px);
+}
+.promo-modal {
+  position: fixed;
+  inset: 0;
+  /* 宽度不超过屏幕的 88%，也不超过屏幕高度的 60%（卡片是 2:3，高度 = 1.5 倍宽度，保证整张都在屏幕内） */
+  width: min(88vw, var(--pm-width, 340px), 60vh);
+  max-width: none;
+  height: fit-content;
+  max-height: none;
+  margin: auto;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: #111;
+  overflow: visible; /* 叉号一半在弹窗外面 */
+  container-type: inline-size; /* 里面所有 cqw 都以弹窗宽度为基准，整体等比缩放 */
+}
+.promo-modal::backdrop {
+  background: rgba(0, 0, 0, 0.55);
+}
+.promo-modal[open] {
+  animation: promo-modal-in 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.promo-modal[open]::backdrop {
+  animation: promo-backdrop-in 0.3s ease;
+}
+@keyframes promo-modal-in {
+  from {
+    opacity: 0;
+    transform: translateY(2rem) scale(0.97);
+  }
+}
+@keyframes promo-backdrop-in {
+  from {
+    opacity: 0;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .promo-modal[open],
+  .promo-modal[open]::backdrop {
+    animation: none;
+  }
+}
+
+/* 固定 2:3 的竖卡；三组内容（标题图、要点、logo）上中下均匀分开。
+   内容如果比 2:3 更高，卡片会自动撑高，不会裁切 */
+.promo-modal__box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  gap: 3cqw;
+  aspect-ratio: 341 / 511;
+  max-height: 92vh;
+  max-height: 92dvh;
+  padding: 2.4rem 1.5rem 2rem;
+  padding: 7cqw 4.4cqw 6cqw;
+  overflow-y: auto; /* 只是兜底：正常情况内容放得下，不会出现滚动条 */
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+  border-radius: 0;
+  box-shadow: 0 1.6rem 4rem rgba(0, 0, 0, 0.35);
+  background-color: var(--pm-bg-color, #fff);
+  background-position: center;
+  background-size: cover;
+  text-align: center;
+}
+/* 标题图组：两张标题图（或文字标题）紧挨着，作为一组 */
+.promo-modal__head {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4.4cqw;
+  width: 100%;
+}
+/* body 包裹层不参与布局，让要点列表和 logo 图直接成为 box 的子项 */
+.promo-modal__body {
+  display: contents;
+}
+.promo-modal__heading {
+  margin: 0;
+  font-family: var(--font-heading-family);
+  font-size: 2.6rem;
+  font-size: 8cqw;
+  font-weight: 800;
+  line-height: 1.1;
+  text-transform: uppercase;
+}
+.promo-modal__title {
+  display: block;
+  width: var(--pm-title-w, 82%);
+  height: auto;
+}
+.promo-modal__subtitle {
+  display: block;
+  width: var(--pm-sub-w, 82%);
+  height: auto;
+}
+.promo-modal__logos {
+  display: block;
+  width: var(--pm-mlogos-w, 62%);
+  height: auto;
+}
+.promo-modal__list {
+  align-self: stretch;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  color: #111;
+  font-size: 1.4rem;
+  font-size: 4cqw;
+  line-height: 1.45;
+  text-align: left;
+}
+.promo-modal__list li {
+  position: relative;
+  margin: 0 0 2cqw;
+  padding-left: 4.7cqw;
+}
+.promo-modal__list li:last-child {
+  margin-bottom: 0;
+}
+.promo-modal__list li::before {
+  content: '';
+  position: absolute;
+  top: 0.55em;
+  left: 0;
+  border-style: solid;
+  border-width: 0.4rem 0 0.4rem 0.6rem;
+  border-width: 1.1cqw 0 1.1cqw 1.7cqw;
+  border-color: transparent transparent transparent var(--pm-accent, #1593e5);
+}
+
+.promo-modal__close {
+  position: absolute;
+  top: -1.2rem;
+  right: -1.2rem;
+  z-index: 2;
+  display: grid;
+  place-items: center;
+  width: 3.6rem;
+  height: 3.6rem;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: var(--pm-accent, #1593e5);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+  color: #fff;
+  cursor: pointer;
+}
+.promo-modal__close svg {
+  width: 1.7rem;
+  height: 1.7rem;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 3;
+  stroke-linecap: round;
+}
+.promo-modal__close:focus-visible {
+  outline: 0.2rem solid #fff;
+  outline-offset: 0.2rem;
+}

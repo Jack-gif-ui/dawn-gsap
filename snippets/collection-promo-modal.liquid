@@ -1,0 +1,238 @@
+{% doc %}
+  集合页「弹窗信息卡片」：网格里一张竖卡，点任意位置打开信息弹窗。
+
+  @param {object} block - 区块里的 promo_modal 块
+  @param {number} position - 当前页内，这张卡片插在第几个商品之后
+  @param {string} ratio - 商品图比例设置（adapt / portrait / square）
+  @param {number} columns_desktop - 桌面端列数
+  @param {string} columns_mobile - 手机端列数
+{% enddoc %}
+
+{%- liquid
+  assign s = block.settings
+
+  assign ratio_percent = 100
+  if ratio == 'portrait'
+    assign ratio_percent = 125
+  endif
+
+  assign dialog_id = 'PromoModal-' | append: block.id
+  assign scale = s.text_scale | divided_by: 100.0
+  assign btn_label = s.btn_label | default: 'Learn more'
+  assign modal_heading = s.modal_heading | default: s.line_1 | default: 'Details'
+  assign modal_layout = s.modal_layout | default: 'cols'
+
+  assign img_loading = 'lazy'
+  if position <= 2
+    assign img_loading = 'eager'
+  endif
+
+  assign vw_desktop = 100 | divided_by: columns_desktop
+  assign mobile_cols = columns_mobile | plus: 0
+  assign vw_mobile = 100 | divided_by: mobile_cols
+  assign img_sizes = '(min-width: 750px) ' | append: vw_desktop | append: 'vw, ' | append: vw_mobile | append: 'vw'
+
+  assign show_card = false
+  if s.top_image != blank or s.line_1 != blank or s.line_2 != blank or s.bottom_bg != blank or s.bottom_logos != blank
+    assign show_card = true
+  endif
+  if request.design_mode
+    assign show_card = true
+  endif
+-%}
+
+{%- if show_card -%}
+  <li
+    class="grid__item promo-grid-item{% if settings.animations_reveal_on_scroll %} scroll-trigger animate--slide-in{% endif %}"
+    {% if settings.animations_reveal_on_scroll %}
+      data-cascade
+      style="--animation-order: {{ position }};"
+    {% endif %}
+    {{ block.shopify_attributes }}
+  >
+    {%- comment -%} data-promo-open 放在卡片外层：点击卡片内任意位置都会命中它 {%- endcomment -%}
+    <div
+      class="promo-card promo-card--modal"
+      data-promo-open="{{ dialog_id }}"
+      style="
+        --promo-ratio: {{ ratio_percent }}%;
+        --pm-card-bg: {{ s.card_bg }};
+        --pm-c1: {{ s.line_1_color }};
+        --pm-c2: {{ s.line_2_color }};
+        --pm-c3: {{ s.line_3_color }};
+        --pm-cn: {{ s.note_color }};
+        --pm-cs: {{ s.note_strong_color }};
+        --pm-scale: {{ scale }};
+        --pm-btn-bg: {{ s.btn_bg }};
+        --pm-btn-text: {{ s.btn_text_color }};
+        --pm-logos-w: {{ s.logos_width }}%;
+      "
+    >
+      <div class="promo-bnpl{% if s.bottom_pin %} promo-bnpl--pin{% endif %}">
+        <div class="promo-bnpl__top">
+          {%- if s.top_image != blank -%}
+            {{
+              s.top_image
+              | image_url: width: 800
+              | image_tag:
+                loading: img_loading,
+                widths: '300, 450, 600, 800',
+                sizes: img_sizes,
+                alt: s.top_alt,
+                class: 'promo-bnpl__top-img'
+            }}
+          {%- endif -%}
+
+          <div class="promo-bnpl__text">
+            {%- if s.line_1 != blank -%}
+              <p class="promo-bnpl__l1">{{ s.line_1 | escape }}</p>
+            {%- endif -%}
+            {%- if s.line_2 != blank -%}
+              <p class="promo-bnpl__l2">{{ s.line_2 | escape }}</p>
+            {%- endif -%}
+            {%- if s.line_3 != blank -%}
+              <p class="promo-bnpl__l3">{{ s.line_3 | escape }}</p>
+            {%- endif -%}
+            {%- if s.note != blank or s.note_strong != blank -%}
+              <p class="promo-bnpl__note">
+                {{- s.note | escape -}}
+                {%- if s.note_strong != blank -%}
+                  <strong class="promo-bnpl__note-strong">{{ s.note_strong | escape }}</strong>
+                {%- endif -%}
+              </p>
+            {%- endif -%}
+          </div>
+
+          {%- comment -%} 真正的按钮，供键盘和读屏使用；::after 撑满整张卡片用来显示焦点框 {%- endcomment -%}
+          <button
+            type="button"
+            class="promo-bnpl__btn"
+            data-promo-open="{{ dialog_id }}"
+            aria-haspopup="dialog"
+          >
+            <span>{{ btn_label | escape }}</span>
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12h16M14 6l6 6-6 6"/></svg>
+          </button>
+        </div>
+
+        {%- if s.bottom_bg != blank or s.bottom_logos != blank -%}
+          <div class="promo-bnpl__bottom{% if s.bottom_bg == blank %} promo-bnpl__bottom--plain{% endif %}">
+            {%- if s.bottom_bg != blank -%}
+              {{
+                s.bottom_bg
+                | image_url: width: 800
+                | image_tag:
+                  loading: 'lazy',
+                  widths: '300, 450, 600, 800',
+                  sizes: img_sizes,
+                  alt: '',
+                  class: 'promo-bnpl__bg'
+              }}
+            {%- endif -%}
+            {%- if s.bottom_logos != blank -%}
+              {{
+                s.bottom_logos
+                | image_url: width: 600
+                | image_tag:
+                  loading: 'lazy',
+                  widths: '200, 300, 450, 600',
+                  sizes: img_sizes,
+                  alt: s.bottom_logos_alt,
+                  class: 'promo-bnpl__logos'
+              }}
+            {%- endif -%}
+          </div>
+        {%- endif -%}
+      </div>
+    </div>
+
+    {%- comment -%} 弹窗放在卡片外面（li 里），避免被卡片的容器查询影响尺寸 {%- endcomment -%}
+    <dialog
+      id="{{ dialog_id }}"
+      class="promo-modal promo-modal--{{ modal_layout }}"
+      aria-labelledby="{{ dialog_id }}-title"
+      style="
+        --pm-accent: {{ s.accent_color }};
+        --pm-width: {{ s.modal_width }}px;
+        --pm-width-wide: {{ s.modal_width_wide | default: 920 }}px;
+        --pm-bg-color: {{ s.modal_bg_color }};
+        --pm-title-w: {{ s.modal_title_width }}%;
+        --pm-sub-w: {{ s.modal_subtitle_width }}%;
+        --pm-mlogos-w: {{ s.modal_logos_width }}%;
+      "
+    >
+      <button type="button" class="promo-modal__close" data-promo-close aria-label="Close">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>
+      </button>
+
+      <div
+        class="promo-modal__box"
+        {% if s.modal_bg != blank %}
+          style="background-image: url('{{ s.modal_bg | image_url: width: 1400 }}');"
+        {% endif %}
+      >
+        <div class="promo-modal__head">
+          <h2
+            id="{{ dialog_id }}-title"
+            class="promo-modal__heading{% if s.modal_title != blank %} visually-hidden{% endif %}"
+          >
+            {{- modal_heading | escape -}}
+          </h2>
+
+          {%- if s.modal_title != blank -%}
+            {{
+              s.modal_title
+              | image_url: width: 1000
+              | image_tag:
+                loading: 'lazy',
+                widths: '400, 600, 800, 1000',
+                sizes: '(min-width: 750px) 400px, 70vw',
+                alt: s.modal_title_alt,
+                class: 'promo-modal__title'
+            }}
+          {%- endif -%}
+
+          {%- if s.modal_subtitle != blank -%}
+            {{
+              s.modal_subtitle
+              | image_url: width: 800
+              | image_tag:
+                loading: 'lazy',
+                widths: '300, 500, 800',
+                sizes: '(min-width: 750px) 320px, 55vw',
+                alt: s.modal_subtitle_alt,
+                class: 'promo-modal__subtitle'
+            }}
+          {%- endif -%}
+        </div>
+
+        <div class="promo-modal__body">
+          {%- if s.modal_list != blank -%}
+            {%- assign list_items = s.modal_list | escape | newline_to_br | split: '<br />' -%}
+            <ul class="promo-modal__list" role="list">
+              {%- for item in list_items -%}
+                {%- assign line = item | strip -%}
+                {%- if line != blank -%}
+                  <li>{{ line }}</li>
+                {%- endif -%}
+              {%- endfor -%}
+            </ul>
+          {%- endif -%}
+
+          {%- if s.modal_logos != blank -%}
+            {{
+              s.modal_logos
+              | image_url: width: 800
+              | image_tag:
+                loading: 'lazy',
+                widths: '300, 500, 800',
+                sizes: '(min-width: 750px) 340px, 60vw',
+                alt: s.modal_logos_alt,
+                class: 'promo-modal__logos'
+            }}
+          {%- endif -%}
+        </div>
+      </div>
+    </dialog>
+  </li>
+{%- endif -%}

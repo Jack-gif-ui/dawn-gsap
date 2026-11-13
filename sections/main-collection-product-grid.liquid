@@ -2,6 +2,7 @@
 {{ 'component-card.css' | asset_url | stylesheet_tag }}
 {{ 'component-price.css' | asset_url | stylesheet_tag }}
 {{ 'collection-promo.css' | asset_url | stylesheet_tag }}
+<script src="{{ 'collection-promo.js' | asset_url }}" defer="defer"></script>
 
 {% if section.settings.image_shape == 'blob' %}
   {{ 'mask-blobs.css' | asset_url | stylesheet_tag }}
@@ -188,13 +189,29 @@
 
                   {%- for block in section.blocks -%}
                     {%- if block.settings.insert_after == product_position -%}
-                      {%- render 'collection-promo-card',
-                        block: block,
-                        position: product_position,
-                        ratio: section.settings.image_ratio,
-                        columns_desktop: section.settings.columns_desktop,
-                        columns_mobile: section.settings.columns_mobile
-                      -%}
+                      {%- if block.type == 'promo_info' -%}
+                        {%- render 'collection-promo-info',
+                          block: block,
+                          position: product_position,
+                          ratio: section.settings.image_ratio
+                        -%}
+                      {%- elsif block.type == 'promo_modal' -%}
+                        {%- render 'collection-promo-modal',
+                          block: block,
+                          position: product_position,
+                          ratio: section.settings.image_ratio,
+                          columns_desktop: section.settings.columns_desktop,
+                          columns_mobile: section.settings.columns_mobile
+                        -%}
+                      {%- else -%}
+                        {%- render 'collection-promo-card',
+                          block: block,
+                          position: product_position,
+                          ratio: section.settings.image_ratio,
+                          columns_desktop: section.settings.columns_desktop,
+                          columns_mobile: section.settings.columns_mobile
+                        -%}
+                      {%- endif -%}
                     {%- endif -%}
                   {%- endfor -%}
                 {%- endfor -%}
@@ -425,7 +442,7 @@
       "default": 36
     }
   ],
-   "blocks": [
+  "blocks": [
     {
       "type": "promo_image",
       "name": "图片卡片",
@@ -467,58 +484,113 @@
           "default": 4,
           "visible_if": "{{ block.settings.use_quad }}"
         },
-        {
-          "type": "image_picker",
-          "id": "image_2",
-          "label": "右上图片",
-          "visible_if": "{{ block.settings.use_quad }}"
-        },
-        {
-          "type": "text",
-          "id": "alt_2",
-          "label": "右上图片说明",
-          "visible_if": "{{ block.settings.use_quad }}"
-        },
+        { "type": "image_picker", "id": "image_2", "label": "右上图片", "visible_if": "{{ block.settings.use_quad }}" },
+        { "type": "text", "id": "alt_2", "label": "右上图片说明", "visible_if": "{{ block.settings.use_quad }}" },
         {
           "type": "url",
           "id": "link_2",
           "label": "右上图片链接（可选）",
           "visible_if": "{{ block.settings.use_quad }}"
         },
-        {
-          "type": "image_picker",
-          "id": "image_3",
-          "label": "左下图片",
-          "visible_if": "{{ block.settings.use_quad }}"
-        },
-        {
-          "type": "text",
-          "id": "alt_3",
-          "label": "左下图片说明",
-          "visible_if": "{{ block.settings.use_quad }}"
-        },
+        { "type": "image_picker", "id": "image_3", "label": "左下图片", "visible_if": "{{ block.settings.use_quad }}" },
+        { "type": "text", "id": "alt_3", "label": "左下图片说明", "visible_if": "{{ block.settings.use_quad }}" },
         {
           "type": "url",
           "id": "link_3",
           "label": "左下图片链接（可选）",
           "visible_if": "{{ block.settings.use_quad }}"
         },
-        {
-          "type": "image_picker",
-          "id": "image_4",
-          "label": "右下图片",
-          "visible_if": "{{ block.settings.use_quad }}"
-        },
-        {
-          "type": "text",
-          "id": "alt_4",
-          "label": "右下图片说明",
-          "visible_if": "{{ block.settings.use_quad }}"
-        },
+        { "type": "image_picker", "id": "image_4", "label": "右下图片", "visible_if": "{{ block.settings.use_quad }}" },
+        { "type": "text", "id": "alt_4", "label": "右下图片说明", "visible_if": "{{ block.settings.use_quad }}" },
         {
           "type": "url",
           "id": "link_4",
           "label": "右下图片链接（可选）",
+          "visible_if": "{{ block.settings.use_quad }}"
+        },
+
+        {
+          "type": "header",
+          "content": "四宫格：名字和认证徽章",
+          "visible_if": "{{ block.settings.use_quad }}"
+        },
+        {
+          "type": "text",
+          "id": "name_1",
+          "label": "左上名字",
+          "info": "留空则不显示",
+          "visible_if": "{{ block.settings.use_quad }}"
+        },
+        {
+          "type": "checkbox",
+          "id": "show_badge_1",
+          "label": "左上显示认证徽章",
+          "default": true,
+          "visible_if": "{{ block.settings.use_quad }}"
+        },
+        { "type": "text", "id": "name_2", "label": "右上名字", "visible_if": "{{ block.settings.use_quad }}" },
+        {
+          "type": "checkbox",
+          "id": "show_badge_2",
+          "label": "右上显示认证徽章",
+          "default": true,
+          "visible_if": "{{ block.settings.use_quad }}"
+        },
+        { "type": "text", "id": "name_3", "label": "左下名字", "visible_if": "{{ block.settings.use_quad }}" },
+        {
+          "type": "checkbox",
+          "id": "show_badge_3",
+          "label": "左下显示认证徽章",
+          "default": true,
+          "visible_if": "{{ block.settings.use_quad }}"
+        },
+        { "type": "text", "id": "name_4", "label": "右下名字", "visible_if": "{{ block.settings.use_quad }}" },
+        {
+          "type": "checkbox",
+          "id": "show_badge_4",
+          "label": "右下显示认证徽章",
+          "default": true,
+          "visible_if": "{{ block.settings.use_quad }}"
+        },
+        {
+          "type": "range",
+          "id": "name_size",
+          "min": 4,
+          "max": 14,
+          "step": 1,
+          "label": "名字大小",
+          "info": "数值是每张小图宽度的百分比，小图变窄时字会等比缩小",
+          "default": 7,
+          "visible_if": "{{ block.settings.use_quad }}"
+        },
+        {
+          "type": "select",
+          "id": "name_align",
+          "label": "名字对齐",
+          "default": "center",
+          "options": [
+            { "value": "center", "label": "居中" },
+            { "value": "left", "label": "靠左" }
+          ],
+          "visible_if": "{{ block.settings.use_quad }}"
+        },
+        {
+          "type": "range",
+          "id": "name_shade",
+          "min": 0,
+          "max": 80,
+          "step": 5,
+          "unit": "%",
+          "label": "底部渐变深浅",
+          "info": "让白色名字在亮图上也能看清",
+          "default": 50,
+          "visible_if": "{{ block.settings.use_quad }}"
+        },
+        {
+          "type": "color",
+          "id": "badge_color",
+          "label": "徽章颜色",
+          "default": "#2f9bf0",
           "visible_if": "{{ block.settings.use_quad }}"
         }
       ]
@@ -640,6 +712,356 @@
           "label": "顶部留白",
           "info": "数值是卡片宽度的百分比",
           "default": 7
+        }
+      ]
+    },
+    {
+      "type": "promo_info",
+      "name": "信息标签卡片（文字胶囊）",
+      "limit": 4,
+      "settings": [
+        {
+          "type": "range",
+          "id": "insert_after",
+          "min": 1,
+          "max": 36,
+          "step": 1,
+          "label": "插在第几个商品之后",
+          "info": "按每页的商品顺序计算，该页商品不够时不显示",
+          "default": 10
+        },
+
+        { "type": "header", "content": "样式" },
+        { "type": "color", "id": "bg_color", "label": "背景色", "default": "#f9f9f9" },
+        {
+          "type": "color",
+          "id": "accent_color",
+          "label": "主色（文字、图标、胶囊边框和底色）",
+          "default": "#2b6ea9"
+        },
+        {
+          "type": "range",
+          "id": "text_size",
+          "min": 30,
+          "max": 60,
+          "step": 1,
+          "label": "文字大小",
+          "info": "数值除以 10，是卡片宽度的百分比，卡片变窄时字会等比缩小",
+          "default": 42
+        },
+        {
+          "type": "range",
+          "id": "chip_gap",
+          "min": 2,
+          "max": 10,
+          "step": 1,
+          "label": "胶囊之间的间距",
+          "info": "数值是卡片宽度的百分比",
+          "default": 4
+        },
+        {
+          "type": "select",
+          "id": "align",
+          "label": "胶囊内容对齐",
+          "default": "center",
+          "options": [
+            { "value": "center", "label": "居中" },
+            { "value": "left", "label": "靠左" }
+          ]
+        },
+
+        { "type": "header", "content": "胶囊 1" },
+        { "type": "text", "id": "text_1", "label": "文字", "default": "24h Delivery Available" },
+        {
+          "type": "select",
+          "id": "icon_1",
+          "label": "图标",
+          "default": "truck",
+          "options": [
+            { "value": "none", "label": "无" },
+            { "value": "truck", "label": "卡车" },
+            { "value": "pin", "label": "定位" },
+            { "value": "shield", "label": "盾牌对勾" },
+            { "value": "star", "label": "星星" },
+            { "value": "lock", "label": "锁" },
+            { "value": "check", "label": "对勾" },
+            { "value": "gift", "label": "礼物" },
+            { "value": "heart", "label": "爱心" },
+            { "value": "card", "label": "银行卡" }
+          ]
+        },
+
+        { "type": "header", "content": "胶囊 2" },
+        { "type": "text", "id": "text_2", "label": "文字", "default": "Based in USA" },
+        {
+          "type": "select",
+          "id": "icon_2",
+          "label": "图标",
+          "default": "pin",
+          "options": [
+            { "value": "none", "label": "无" },
+            { "value": "truck", "label": "卡车" },
+            { "value": "pin", "label": "定位" },
+            { "value": "shield", "label": "盾牌对勾" },
+            { "value": "star", "label": "星星" },
+            { "value": "lock", "label": "锁" },
+            { "value": "check", "label": "对勾" },
+            { "value": "gift", "label": "礼物" },
+            { "value": "heart", "label": "爱心" },
+            { "value": "card", "label": "银行卡" }
+          ]
+        },
+
+        { "type": "header", "content": "胶囊 3" },
+        { "type": "text", "id": "text_3", "label": "文字", "default": "Doesn't Tarnish" },
+        {
+          "type": "select",
+          "id": "icon_3",
+          "label": "图标",
+          "default": "shield",
+          "options": [
+            { "value": "none", "label": "无" },
+            { "value": "truck", "label": "卡车" },
+            { "value": "pin", "label": "定位" },
+            { "value": "shield", "label": "盾牌对勾" },
+            { "value": "star", "label": "星星" },
+            { "value": "lock", "label": "锁" },
+            { "value": "check", "label": "对勾" },
+            { "value": "gift", "label": "礼物" },
+            { "value": "heart", "label": "爱心" },
+            { "value": "card", "label": "银行卡" }
+          ]
+        },
+
+        { "type": "header", "content": "胶囊 4" },
+        { "type": "text", "id": "text_4", "label": "文字", "default": "1M+ Customers" },
+        {
+          "type": "select",
+          "id": "icon_4",
+          "label": "图标",
+          "default": "star",
+          "options": [
+            { "value": "none", "label": "无" },
+            { "value": "truck", "label": "卡车" },
+            { "value": "pin", "label": "定位" },
+            { "value": "shield", "label": "盾牌对勾" },
+            { "value": "star", "label": "星星" },
+            { "value": "lock", "label": "锁" },
+            { "value": "check", "label": "对勾" },
+            { "value": "gift", "label": "礼物" },
+            { "value": "heart", "label": "爱心" },
+            { "value": "card", "label": "银行卡" }
+          ]
+        },
+
+        { "type": "header", "content": "胶囊 5" },
+        { "type": "text", "id": "text_5", "label": "文字", "default": "Buy Now Pay Later" },
+        {
+          "type": "select",
+          "id": "icon_5",
+          "label": "图标",
+          "default": "card",
+          "options": [
+            { "value": "none", "label": "无" },
+            { "value": "truck", "label": "卡车" },
+            { "value": "pin", "label": "定位" },
+            { "value": "shield", "label": "盾牌对勾" },
+            { "value": "star", "label": "星星" },
+            { "value": "lock", "label": "锁" },
+            { "value": "check", "label": "对勾" },
+            { "value": "gift", "label": "礼物" },
+            { "value": "heart", "label": "爱心" },
+            { "value": "card", "label": "银行卡" }
+          ]
+        },
+
+        { "type": "header", "content": "胶囊 6（可选）" },
+        { "type": "text", "id": "text_6", "label": "文字", "info": "留空则不显示" },
+        {
+          "type": "select",
+          "id": "icon_6",
+          "label": "图标",
+          "default": "none",
+          "options": [
+            { "value": "none", "label": "无" },
+            { "value": "truck", "label": "卡车" },
+            { "value": "pin", "label": "定位" },
+            { "value": "shield", "label": "盾牌对勾" },
+            { "value": "star", "label": "星星" },
+            { "value": "lock", "label": "锁" },
+            { "value": "check", "label": "对勾" },
+            { "value": "gift", "label": "礼物" },
+            { "value": "heart", "label": "爱心" },
+            { "value": "card", "label": "银行卡" }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "promo_modal",
+      "name": "弹窗信息卡片（点击出弹窗）",
+      "limit": 4,
+      "settings": [
+        {
+          "type": "range",
+          "id": "insert_after",
+          "min": 1,
+          "max": 36,
+          "step": 1,
+          "label": "插在第几个商品之后",
+          "info": "按每页的商品顺序计算，该页商品不够时不显示",
+          "default": 8
+        },
+
+        { "type": "header", "content": "卡片：顶部图片" },
+        { "type": "image_picker", "id": "top_image", "label": "顶部图片" },
+        { "type": "text", "id": "top_alt", "label": "顶部图片说明", "info": "纯装饰图可以留空" },
+
+        { "type": "header", "content": "卡片：文字" },
+        { "type": "text", "id": "line_1", "label": "第一行大字", "default": "Buy Now" },
+        { "type": "color", "id": "line_1_color", "label": "第一行颜色", "default": "#4d4d4d" },
+        { "type": "text", "id": "line_2", "label": "第二行大字", "default": "Pay Later" },
+        { "type": "color", "id": "line_2_color", "label": "第二行颜色", "default": "#3aa8f0" },
+        { "type": "text", "id": "line_3", "label": "第三行", "default": "No hidden fees" },
+        { "type": "color", "id": "line_3_color", "label": "第三行颜色", "default": "#8c8c8c" },
+        { "type": "text", "id": "note", "label": "说明文字", "default": "Payment plans for 12-36 months." },
+        { "type": "color", "id": "note_color", "label": "说明文字颜色", "default": "#8c8c8c" },
+        { "type": "text", "id": "note_strong", "label": "说明加粗文字", "default": "Hassle free!" },
+        { "type": "color", "id": "note_strong_color", "label": "加粗文字颜色", "default": "#111111" },
+        {
+          "type": "range",
+          "id": "text_scale",
+          "min": 70,
+          "max": 140,
+          "step": 5,
+          "unit": "%",
+          "label": "卡片文字整体大小",
+          "info": "在卡片宽度的基础上整体放大或缩小，卡片变窄时字会等比缩小",
+          "default": 100
+        },
+
+        { "type": "header", "content": "卡片：按钮" },
+        { "type": "text", "id": "btn_label", "label": "按钮文字", "default": "Get Started" },
+        { "type": "color", "id": "btn_bg", "label": "按钮背景", "default": "#3aa8f0" },
+        { "type": "color", "id": "btn_text_color", "label": "按钮文字颜色", "default": "#ffffff" },
+        { "type": "color", "id": "card_bg", "label": "卡片背景色", "default": "#ffffff" },
+
+        { "type": "header", "content": "卡片：底部图" },
+        { "type": "image_picker", "id": "bottom_bg", "label": "底部背景图" },
+        {
+          "type": "image_picker",
+          "id": "bottom_logos",
+          "label": "支付 logo 图",
+          "info": "叠在背景图中间，建议透明底 PNG"
+        },
+        {
+          "type": "text",
+          "id": "bottom_logos_alt",
+          "label": "logo 图说明",
+          "default": "Affirm, Afterpay and Shop Pay"
+        },
+        {
+          "type": "range",
+          "id": "logos_width",
+          "min": 40,
+          "max": 95,
+          "step": 1,
+          "unit": "%",
+          "label": "logo 图宽度",
+          "info": "占底部背景图宽度的百分比",
+          "default": 76
+        },
+        {
+          "type": "checkbox",
+          "id": "bottom_pin",
+          "label": "底部图贴在卡片底部（按钮和底图之间留白）",
+          "default": true
+        },
+
+        { "type": "header", "content": "弹窗：背景和标题图" },
+        { "type": "image_picker", "id": "modal_bg", "label": "弹窗背景图", "info": "纹理图，铺满弹窗" },
+        {
+          "type": "color",
+          "id": "modal_bg_color",
+          "label": "背景色",
+          "info": "没有背景图时使用",
+          "default": "#ffffff"
+        },
+        { "type": "image_picker", "id": "modal_title", "label": "标题图（BUY NOW PAY LATER）" },
+        {
+          "type": "text",
+          "id": "modal_title_alt",
+          "label": "标题图说明",
+          "info": "请填写图里的文字，对读屏器和搜索引擎有用",
+          "default": "Buy now pay later"
+        },
+        {
+          "type": "range",
+          "id": "modal_title_width",
+          "min": 30,
+          "max": 100,
+          "step": 1,
+          "unit": "%",
+          "label": "标题图宽度",
+          "default": 82
+        },
+        { "type": "image_picker", "id": "modal_subtitle", "label": "副标题图（NO HIDDEN FEES）" },
+        { "type": "text", "id": "modal_subtitle_alt", "label": "副标题图说明", "default": "No hidden fees" },
+        {
+          "type": "range",
+          "id": "modal_subtitle_width",
+          "min": 30,
+          "max": 100,
+          "step": 1,
+          "unit": "%",
+          "label": "副标题图宽度",
+          "default": 82
+        },
+        {
+          "type": "text",
+          "id": "modal_heading",
+          "label": "弹窗标题文字",
+          "info": "没有上传标题图时，用这行文字当标题；上传了图则只给读屏器读"
+        },
+
+        { "type": "header", "content": "弹窗：内容" },
+        {
+          "type": "textarea",
+          "id": "modal_list",
+          "label": "要点列表",
+          "info": "每行一条，前面会自动加蓝色三角",
+          "default": "We offer payment plans with Shop Pay, Affirm and Afterpay\nGet approved during checkout process\nDoesn't affect your credit score\nPayment plans up to 36 months\nBuyer protection benefits\nQuick & easy"
+        },
+        { "type": "image_picker", "id": "modal_logos", "label": "底部支付 logo 图" },
+        {
+          "type": "text",
+          "id": "modal_logos_alt",
+          "label": "logo 图说明",
+          "default": "Affirm, Afterpay and Pay Later"
+        },
+        {
+          "type": "range",
+          "id": "modal_logos_width",
+          "min": 30,
+          "max": 100,
+          "step": 1,
+          "unit": "%",
+          "label": "logo 图宽度",
+          "default": 62
+        },
+
+        { "type": "header", "content": "弹窗：样式" },
+        { "type": "color", "id": "accent_color", "label": "强调色（三角、叉号按钮）", "default": "#1593e5" },
+        {
+          "type": "range",
+          "id": "modal_width",
+          "min": 280,
+          "max": 640,
+          "step": 10,
+          "unit": "px",
+          "label": "弹窗宽度",
+          "info": "弹窗固定是 2:3 的竖卡，高度是宽度的 1.5 倍；内容会等比缩放。手机上不超过屏幕宽度的 88%",
+          "default": 340
         }
       ]
     }

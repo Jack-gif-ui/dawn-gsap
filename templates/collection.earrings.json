@@ -20,6 +20,72 @@
     "product-grid": {
       "type": "main-collection-product-grid",
       "blocks": {
+        "promo_modal_JCLJyX": {
+          "type": "promo_modal",
+          "settings": {
+            "insert_after": 8,
+            "top_image": "shopify://shop_images/collection-card-4-1.png",
+            "top_alt": "",
+            "line_1": "Buy Now",
+            "line_1_color": "#4d4d4d",
+            "line_2": "Pay Later",
+            "line_2_color": "#3aa8f0",
+            "line_3": "No hidden fees",
+            "line_3_color": "#8c8c8c",
+            "note": "Payment plans for 12-36 months.",
+            "note_color": "#8c8c8c",
+            "note_strong": "Hassle free!",
+            "note_strong_color": "#111111",
+            "text_scale": 100,
+            "btn_label": "Get Started",
+            "btn_bg": "#3aa8f0",
+            "btn_text_color": "#ffffff",
+            "card_bg": "#ffffff",
+            "bottom_bg": "shopify://shop_images/collection-card-4-2.png",
+            "bottom_logos": "shopify://shop_images/collection-card-5-3.png",
+            "bottom_logos_alt": "Affirm, Afterpay and Shop Pay",
+            "logos_width": 76,
+            "bottom_pin": true,
+            "modal_bg": "shopify://shop_images/cc5fb618-1b68-4fc8-9a9a-0617b5014fdc.jpg",
+            "modal_bg_color": "#ffffff",
+            "modal_title": "shopify://shop_images/BUY-NOW-PAY-LATER_1.png",
+            "modal_title_alt": "Buy now pay later",
+            "modal_title_width": 65,
+            "modal_subtitle": "shopify://shop_images/NO-HIDDEN-FEES_1.png",
+            "modal_subtitle_alt": "No hidden fees",
+            "modal_subtitle_width": 53,
+            "modal_heading": "",
+            "modal_list": "We offer payment plans with Shop Pay, Affirm and Afterpay\nGet approved during checkout process\nDoesn't affect your credit score\nPayment plans up to 36 months\nBuyer protection benefits\nQuick & easy",
+            "modal_logos": "shopify://shop_images/Group_1000004164.png",
+            "modal_logos_alt": "Affirm, Afterpay and Pay Later",
+            "modal_logos_width": 54,
+            "accent_color": "#1593e5",
+            "modal_width": 300
+          }
+        },
+        "promo_info_QXrLRx": {
+          "type": "promo_info",
+          "settings": {
+            "insert_after": 14,
+            "bg_color": "#f9f9f9",
+            "accent_color": "#2b6ea9",
+            "text_size": 42,
+            "chip_gap": 4,
+            "align": "center",
+            "text_1": "24h Delivery Available",
+            "icon_1": "truck",
+            "text_2": "Based in USA",
+            "icon_2": "pin",
+            "text_3": "Doesn't Tarnish",
+            "icon_3": "shield",
+            "text_4": "1M+ Customers",
+            "icon_4": "star",
+            "text_5": "Buy Now Pay Later",
+            "icon_5": "card",
+            "text_6": "",
+            "icon_6": "none"
+          }
+        },
         "promo-1": {
           "type": "promo_image",
           "settings": {
@@ -34,7 +100,19 @@
             "alt_3": "",
             "link_3": "",
             "alt_4": "",
-            "link_4": ""
+            "link_4": "",
+            "name_1": "",
+            "show_badge_1": true,
+            "name_2": "",
+            "show_badge_2": true,
+            "name_3": "",
+            "show_badge_3": true,
+            "name_4": "",
+            "show_badge_4": true,
+            "name_size": 7,
+            "name_align": "center",
+            "name_shade": 50,
+            "badge_color": "#2f9bf0"
           }
         },
         "promo_content_EVMHdC": {
@@ -76,7 +154,19 @@
             "link_3": "",
             "image_4": "shopify://shop_images/tripple-redd.png",
             "alt_4": "",
-            "link_4": ""
+            "link_4": "",
+            "name_1": "BigXthaPlug",
+            "show_badge_1": true,
+            "name_2": "Rick Ross",
+            "show_badge_2": true,
+            "name_3": "Lil Pump",
+            "show_badge_3": true,
+            "name_4": "Rich The Kid",
+            "show_badge_4": true,
+            "name_size": 7,
+            "name_align": "center",
+            "name_shade": 50,
+            "badge_color": "#2f9bf0"
           }
         },
         "promo-3": {
@@ -93,7 +183,19 @@
             "alt_3": "",
             "link_3": "",
             "alt_4": "",
-            "link_4": ""
+            "link_4": "",
+            "name_1": "",
+            "show_badge_1": true,
+            "name_2": "",
+            "show_badge_2": true,
+            "name_3": "",
+            "show_badge_3": true,
+            "name_4": "",
+            "show_badge_4": true,
+            "name_size": 7,
+            "name_align": "center",
+            "name_shade": 50,
+            "badge_color": "#2f9bf0"
           }
         },
         "promo-4": {
@@ -110,11 +212,25 @@
             "alt_3": "",
             "link_3": "",
             "alt_4": "",
-            "link_4": ""
+            "link_4": "",
+            "name_1": "",
+            "show_badge_1": true,
+            "name_2": "",
+            "show_badge_2": true,
+            "name_3": "",
+            "show_badge_3": true,
+            "name_4": "",
+            "show_badge_4": true,
+            "name_size": 7,
+            "name_align": "center",
+            "name_shade": 50,
+            "badge_color": "#2f9bf0"
           }
         }
       },
       "block_order": [
+        "promo_modal_JCLJyX",
+        "promo_info_QXrLRx",
         "promo-1",
         "promo_content_EVMHdC",
         "promo-2",
