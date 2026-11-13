@@ -11,16 +11,9 @@
 
   const getDialog = () => document.getElementById('SiteDrawer');
 
-  const lock = () => {
-    // 先量出滚动条宽度，锁定后用同样宽度补上，页面不会跳
-    const bar = window.innerWidth - root.clientWidth;
-    root.style.setProperty('--site-drawer-scrollbar', (bar > 0 ? bar : 0) + 'px');
-    root.classList.add(LOCK);
-  };
-  const unlock = () => {
-    root.classList.remove(LOCK);
-    root.style.removeProperty('--site-drawer-scrollbar');
-  };
+  // 锁滚动只加一个类，滚动条位置由 CSS 的 scrollbar-gutter 保留，不再测量、不再补偿
+  const lock = () => root.classList.add(LOCK);
+  const unlock = () => root.classList.remove(LOCK);
 
   // ===== 人物卡片：无缝循环、匀速向左自动滚动 =====
   const players = new WeakMap();

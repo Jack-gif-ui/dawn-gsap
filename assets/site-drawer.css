@@ -1,7 +1,7 @@
 /* ===== 抽屉外壳 ===== */
 html.site-drawer-open {
   overflow: hidden;
-  padding-right: var(--site-drawer-scrollbar, 0px);
+  scrollbar-gutter: stable; /* 滚动条隐藏后，仍然保留它占的位置，页面宽度不变 */
 }
 .site-drawer {
   position: fixed;
@@ -54,6 +54,38 @@ html.site-drawer-open {
   color: var(--sd-text, #111);
   container-type: inline-size; /* 里面的 cqw 以抽屉宽度为基准 */
 }
+
+/* 抽屉内部上下滚动的滚动条：细、淡。
+   Firefox 用标准属性；Chrome、Safari、Edge 用 ::-webkit-scrollbar。
+   Chrome 121 以后只要写了标准属性，就会忽略 ::-webkit-scrollbar，
+   所以在支持它的浏览器里，把标准属性重置回 auto，让下面的自定义样式生效 */
+.sd {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(0, 0, 0, 0.22) transparent; /* 滑块颜色 轨道颜色 */
+}
+@supports selector(::-webkit-scrollbar) {
+  .sd {
+    scrollbar-width: auto;
+    scrollbar-color: auto;
+  }
+  .sd::-webkit-scrollbar {
+    width: 6px;
+  }
+  .sd::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  .sd::-webkit-scrollbar-thumb {
+    border: 1px solid transparent; /* 配合 background-clip，滑块两边留一点空隙，看起来更细 */
+    border-radius: 999px;
+    background: rgba(0, 0, 0, 0.2);
+    background-clip: padding-box;
+  }
+  .sd:hover::-webkit-scrollbar-thumb {
+    background: rgba(0, 0, 0, 0.35);
+    background-clip: padding-box;
+  }
+}
+
 .sd__bar {
   position: sticky;
   top: 0;
@@ -217,9 +249,9 @@ html.site-drawer-open {
   text-transform: uppercase;
 }
 
-/* 人物横滑卡片：连续的人物块排成一行横向滑动 */
+/* 人物横滑卡片：连续的人物块排成一行横向滑动（自己的横向滚动条保持隐藏） */
 .sd__people {
- display: flex;
+  display: flex;
   gap: 1.2rem;
   margin: 0 -2rem;
   padding: 0 2rem;
