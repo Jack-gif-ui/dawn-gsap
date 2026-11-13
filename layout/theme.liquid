@@ -89,11 +89,11 @@
     %}
 
     {% style %}
-      {{ settings.type_body_font | font_face: font_display: 'swap' }}
-      {{ body_font_bold | font_face: font_display: 'swap' }}
-      {{ body_font_italic | font_face: font_display: 'swap' }}
-      {{ body_font_bold_italic | font_face: font_display: 'swap' }}
-      {{ settings.type_header_font | font_face: font_display: 'swap' }}
+      {{ settings.type_body_font | font_face: font_display: 'optional' }}
+      {{ body_font_bold | font_face: font_display: 'optional' }}
+      {{ body_font_italic | font_face: font_display: 'optional' }}
+      {{ body_font_bold_italic | font_face: font_display: 'optional' }}
+      {{ settings.type_header_font | font_face: font_display: 'optional' }}
 
       {% for scheme in settings.color_schemes -%}
         {% assign scheme_classes = scheme_classes | append: ', .color-' | append: scheme.id %}
@@ -309,6 +309,7 @@
     {%- unless settings.type_body_font.system? -%}
       {% comment %}theme-check-disable AssetPreload{% endcomment %}
       <link rel="preload" as="font" href="{{ settings.type_body_font | font_url }}" type="font/woff2" crossorigin>
+      <link rel="preload" as="font" href="{{ settings.type_body_font | font_modify: 'weight', 'bold' | font_url }}" type="font/woff2" crossorigin>
       {% comment %}theme-check-enable AssetPreload{% endcomment %}
     {%- endunless -%}
     {%- unless settings.type_header_font.system? -%}
@@ -355,6 +356,17 @@
     {%- endif -%}
 
     {% sections 'header-group' %}
+    <script>
+      /* 在 Hero 出现之前，先把页头高度写好，避免透明页头和 Hero 在脚本执行后才跳位 */
+      (function () {
+        var h = document.querySelector('.section-header');
+        if (h) {
+          var v = h.offsetHeight;
+          window.__headerHeightEarly = v;
+          document.documentElement.style.setProperty('--header-height', v + 'px');
+        }
+      })();
+    </script>
 
     <main
       id="MainContent"
