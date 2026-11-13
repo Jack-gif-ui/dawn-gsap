@@ -1,0 +1,209 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+{
+  "name": "抽屉",
+  "type": "aside",
+  "sections": {
+    "site-drawer": {
+      "type": "site-drawer",
+      "blocks": {
+        "banner-1": {
+          "type": "banner",
+          "settings": {
+            "image": "shopify://shop_images/buy_1_get_free_2.jpg",
+            "title": "Black Friday",
+            "subtitle": "View all",
+            "link": "",
+            "ratio": "2.3 / 1",
+            "overlay": 30,
+            "text_scale": 100
+          }
+        },
+        "banner-2": {
+          "type": "banner",
+          "settings": {
+            "image": "shopify://shop_images/chain-stack.jpg",
+            "title": "Build your chain stack",
+            "subtitle": "Select any 2 chains",
+            "link": "",
+            "ratio": "2.3 / 1",
+            "overlay": 30,
+            "text_scale": 100
+          }
+        },
+        "tile-1": {
+          "type": "tile",
+          "settings": {
+            "collection": "chain",
+            "label": "",
+            "link": ""
+          }
+        },
+        "tile-2": {
+          "type": "tile",
+          "settings": {
+            "collection": "earrings",
+            "label": "",
+            "link": ""
+          }
+        },
+        "tile-3": {
+          "type": "tile",
+          "settings": {
+            "collection": "glasses",
+            "label": "",
+            "link": ""
+          }
+        },
+        "tile-4": {
+          "type": "tile",
+          "settings": {
+            "collection": "accessories",
+            "label": "",
+            "link": ""
+          }
+        },
+        "heading-1": {
+          "type": "heading",
+          "settings": {
+            "text": "Worn by celebrities",
+            "align": "left"
+          }
+        },
+        "person-1": {
+          "type": "person",
+          "settings": {
+            "image": "shopify://shop_images/fivio-foreign-icecartel-custom-diamond-pendant-iced-out-2.jpg",
+            "name": "Name One",
+            "show_badge": true,
+            "link": ""
+          }
+        },
+        "person-2": {
+          "type": "person",
+          "settings": {
+            "image": "shopify://shop_images/Rubi-Rose-icecartel-custom-diamond-jewelry.jpg",
+            "name": "Name Two",
+            "show_badge": true,
+            "link": ""
+          }
+        },
+        "person-3": {
+          "type": "person",
+          "settings": {
+            "image": "shopify://shop_images/lil-mosey-icecartel-client-customer-review-jewelry-rapper.jpg",
+            "name": "Name Three",
+            "show_badge": true,
+            "link": ""
+          }
+        },
+        "person_NpmD7R": {
+          "type": "person",
+          "settings": {
+            "image": "shopify://shop_images/bigxthaplug-icecartel-2.jpg",
+            "name": "Name 4",
+            "show_badge": true,
+            "link": ""
+          }
+        },
+        "person_QTwEPn": {
+          "type": "person",
+          "settings": {
+            "image": "shopify://shop_images/icecartel-nelk-kyle-custom-pendant.jpg",
+            "name": "Name 5",
+            "show_badge": true,
+            "link": ""
+          }
+        },
+        "button-1": {
+          "type": "button",
+          "settings": {
+            "label": "Get quote for custom jewelry",
+            "link": "",
+            "bg_color": "#298fd1",
+            "text_color": "#ffffff",
+            "radius": 18
+          }
+        },
+        "chip-1": {
+          "type": "chip",
+          "settings": {
+            "label": "Contact support",
+            "link": ""
+          }
+        },
+        "chip-2": {
+          "type": "chip",
+          "settings": {
+            "label": "Track order",
+            "link": ""
+          }
+        },
+        "chip-3": {
+          "type": "chip",
+          "settings": {
+            "label": "Reviews",
+            "link": ""
+          }
+        },
+        "contact-1": {
+          "type": "contact",
+          "settings": {
+            "phone_label": "Call Us",
+            "phone": "+1 212 000 0000",
+            "email_label": "Email Us",
+            "email": "support@example.com",
+            "instagram_url": "",
+            "facebook_url": "",
+            "tiktok_url": "",
+            "youtube_url": "",
+            "pinterest_url": "",
+            "twitter_url": "",
+            "chat_url": "",
+            "chat_label": "WhatsApp"
+          }
+        }
+      },
+      "block_order": [
+        "banner-1",
+        "banner-2",
+        "tile-1",
+        "tile-2",
+        "tile-3",
+        "tile-4",
+        "heading-1",
+        "person-1",
+        "person-2",
+        "person-3",
+        "person_NpmD7R",
+        "person_QTwEPn",
+        "button-1",
+        "chip-1",
+        "chip-2",
+        "chip-3",
+        "contact-1"
+      ],
+      "settings": {
+        "logo_width": 140,
+        "bg_color": "#ffffff",
+        "text_color": "#111111",
+        "card_radius": 12,
+        "tile_ratio": "5 / 4",
+        "tablet_width": 520,
+        "animate": true,
+        "people_autoplay": true,
+        "people_speed": 50
+      }
+    }
+  },
+  "order": [
+    "site-drawer"
+  ]
+}

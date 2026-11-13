@@ -1,0 +1,479 @@
+<div
+  class="sd"
+  data-sd-root
+  data-width="{{ section.settings.tablet_width }}"
+  data-animate="{{ section.settings.animate }}"
+  style="
+    --sd-bg: {{ section.settings.bg_color }};
+    --sd-text: {{ section.settings.text_color }};
+    --sd-radius: {{ section.settings.card_radius }}px;
+    --sd-tile-ratio: {{ section.settings.tile_ratio }};
+    --sd-logo-w: {{ section.settings.logo_width }}px;
+  "
+>
+  <div class="sd__bar">
+    <a class="sd__logo" href="{{ routes.root_url }}">
+      {%- if section.settings.logo != blank -%}
+        {{
+          section.settings.logo
+          | image_url: width: 520
+          | image_tag: loading: 'lazy', widths: '260, 390, 520', sizes: '260px', alt: shop.name
+        }}
+      {%- else -%}
+        <span class="sd__logo-text">{{ shop.name | escape }}</span>
+      {%- endif -%}
+    </a>
+    <button type="button" class="sd__close" data-sd-close aria-label="Close menu">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 5l14 14M19 5L5 19"/></svg>
+    </button>
+  </div>
+
+  <div class="sd__body">
+    {%- assign prev = '' -%}
+    {%- for block in section.blocks -%}
+      {%- assign t = block.type -%}
+
+      {%- comment -%} 连续的 tile / person / chip 块，各自包进一个分组容器里 {%- endcomment -%}
+      {%- if prev != t -%}
+        {%- case prev -%}
+          {%- when 'tile', 'person', 'chip' -%}
+            </div>
+        {%- endcase -%}
+        {%- case t -%}
+          {%- when 'tile' -%}
+            <div class="sd__tiles">
+          {%- when 'person' -%}
+            <div
+              class="sd__people"
+              data-sd-people
+              data-sd-item
+              data-speed="{{ section.settings.people_speed }}"
+              data-autoplay="{{ section.settings.people_autoplay }}"
+            >
+          {%- when 'chip' -%}
+            <div class="sd__chips">
+        {%- endcase -%}
+      {%- endif -%}
+      {%- assign prev = t -%}
+
+      {%- case t -%}
+        {%- when 'banner' -%}
+          {%- assign b = block.settings -%}
+          {%- assign banner_tag = 'div' -%}
+          {%- if b.link != blank -%}
+            {%- assign banner_tag = 'a' -%}
+          {%- endif -%}
+          <{{ banner_tag }}
+            class="sd__banner"
+            data-sd-item
+            style="--sd-ratio: {{ b.ratio }}; --sd-overlay: {{ b.overlay | divided_by: 100.0 }}; --sd-ts: {{ b.text_scale | divided_by: 100.0 }};"
+            {% if b.link != blank %}
+              href="{{ b.link }}"
+            {% endif %}
+            {{ block.shopify_attributes }}
+          >
+            {%- if b.image != blank -%}
+              {{
+                b.image
+                | image_url: width: 1000
+                | image_tag: loading: 'lazy', widths: '500, 750, 1000', sizes: '(min-width: 750px) 520px, 92vw', alt: b.title
+              }}
+            {%- endif -%}
+            <span class="sd__banner-text">
+              {%- if b.title != blank -%}
+                <span class="sd__banner-title">{{ b.title | escape }}</span>
+              {%- endif -%}
+              {%- if b.subtitle != blank -%}
+                <span class="sd__banner-sub">{{ b.subtitle | escape }}</span>
+              {%- endif -%}
+            </span>
+          </{{ banner_tag }}>
+
+        {%- when 'tile' -%}
+          {%- liquid
+            assign c = block.settings.collection
+            assign tile_img = block.settings.image | default: c.image | default: c.featured_image
+            assign tile_label = block.settings.label | default: c.title
+            assign tile_url = block.settings.link | default: c.url
+          -%}
+          {%- if tile_url != blank or request.design_mode -%}
+            <a
+              class="sd__tile"
+              data-sd-item
+              {% if tile_url != blank %}
+                href="{{ tile_url }}"
+              {% endif %}
+              {{ block.shopify_attributes }}
+            >
+              <span class="sd__tile-media">
+                {%- if tile_img != blank -%}
+                  {{
+                    tile_img
+                    | image_url: width: 600
+                    | image_tag: loading: 'lazy', widths: '300, 450, 600', sizes: '(min-width: 750px) 240px, 45vw', alt: tile_label
+                  }}
+                {%- else -%}
+                  {{ 'image' | placeholder_svg_tag: 'placeholder-svg' }}
+                {%- endif -%}
+              </span>
+              <span class="sd__tile-label">{{ tile_label | escape }}</span>
+            </a>
+          {%- endif -%}
+
+        {%- when 'heading' -%}
+          {%- if block.settings.text != blank -%}
+            <p class="sd__heading" data-sd-item style="--sd-align: {{ block.settings.align }};" {{ block.shopify_attributes }}>
+              {{- block.settings.text | escape -}}
+            </p>
+          {%- endif -%}
+
+        {%- when 'person' -%}
+          {%- assign p = block.settings -%}
+          {%- assign person_tag = 'div' -%}
+          {%- if p.link != blank -%}
+            {%- assign person_tag = 'a' -%}
+          {%- endif -%}
+          <{{ person_tag }}
+            class="sd__person"
+            {% if p.link != blank %}
+              href="{{ p.link }}"
+            {% endif %}
+            {{ block.shopify_attributes }}
+          >
+            {%- if p.image != blank -%}
+              {{
+                p.image
+                | image_url: width: 520
+                | image_tag: loading: 'lazy', widths: '260, 390, 520', sizes: '(min-width: 750px) 210px, 40vw', alt: p.name
+              }}
+            {%- endif -%}
+            {%- if p.name != blank -%}
+              <span class="sd__person-name">
+                <span>{{ p.name | escape }}</span>
+                {%- if p.show_badge -%}
+                  <svg class="sd__badge" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                    <circle cx="12" cy="12" r="11" fill="currentColor"/>
+                    <path d="M7 12.6l3.3 3.3L17 9.2" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+                  </svg>
+                  <span class="visually-hidden">(verified)</span>
+                {%- endif -%}
+              </span>
+            {%- endif -%}
+          </{{ person_tag }}>
+
+        {%- when 'button' -%}
+          {%- if block.settings.label != blank -%}
+            <a
+              class="sd__btn"
+              data-sd-item
+              href="{{ block.settings.link | default: '#' }}"
+              style="--b-bg: {{ block.settings.bg_color }}; --b-text: {{ block.settings.text_color }}; --b-radius: {{ block.settings.radius }}px;"
+              {{ block.shopify_attributes }}
+            >
+              {{- block.settings.label | escape -}}
+            </a>
+          {%- endif -%}
+
+        {%- when 'chip' -%}
+          {%- if block.settings.label != blank -%}
+            <a class="sd__chip" data-sd-item href="{{ block.settings.link | default: '#' }}" {{ block.shopify_attributes }}>
+              {{- block.settings.label | escape -}}
+            </a>
+          {%- endif -%}
+
+        {%- when 'space' -%}
+          <div style="height: {{ block.settings.height }}px;" aria-hidden="true" {{ block.shopify_attributes }}></div>
+
+        {%- when 'contact' -%}
+          {%- liquid
+            assign ct = block.settings
+            assign ig = ct.instagram_url | default: settings.social_instagram_link
+            assign fb = ct.facebook_url | default: settings.social_facebook_link
+            assign tt = ct.tiktok_url | default: settings.social_tiktok_link
+            assign yt = ct.youtube_url | default: settings.social_youtube_link
+            assign pi = ct.pinterest_url | default: settings.social_pinterest_link
+            assign tw = ct.twitter_url | default: settings.social_twitter_link
+          -%}
+          <div class="sd__contact" data-sd-item {{ block.shopify_attributes }}>
+            {%- if ct.phone != blank -%}
+              <a class="sd__contact-item" href="tel:{{ ct.phone | remove: ' ' | remove: '-' | remove: '(' | remove: ')' }}">
+                <span class="sd__contact-label">
+                  <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2z"/></svg>
+                  {{ ct.phone_label | escape }}
+                </span>
+                <span class="sd__contact-value">{{ ct.phone | escape }}</span>
+              </a>
+            {%- endif -%}
+            {%- if ct.email != blank -%}
+              <a class="sd__contact-item" href="mailto:{{ ct.email }}">
+                <span class="sd__contact-label">
+                  <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6"/></svg>
+                  {{ ct.email_label | escape }}
+                </span>
+                <span class="sd__contact-value">{{ ct.email | escape }}</span>
+              </a>
+            {%- endif -%}
+
+            {%- if ig != blank or fb != blank or tt != blank or yt != blank or pi != blank or tw != blank or ct.chat_url != blank -%}
+              <div class="sd__social">
+                {%- if ig != blank -%}
+                  <a href="{{ ig }}" target="_blank" rel="noopener" aria-label="Instagram">{{ 'icon-instagram.svg' | inline_asset_content }}</a>
+                {%- endif -%}
+                {%- if fb != blank -%}
+                  <a href="{{ fb }}" target="_blank" rel="noopener" aria-label="Facebook">{{ 'icon-facebook.svg' | inline_asset_content }}</a>
+                {%- endif -%}
+                {%- if tt != blank -%}
+                  <a href="{{ tt }}" target="_blank" rel="noopener" aria-label="TikTok">{{ 'icon-tiktok.svg' | inline_asset_content }}</a>
+                {%- endif -%}
+                {%- if yt != blank -%}
+                  <a href="{{ yt }}" target="_blank" rel="noopener" aria-label="YouTube">{{ 'icon-youtube.svg' | inline_asset_content }}</a>
+                {%- endif -%}
+                {%- if pi != blank -%}
+                  <a href="{{ pi }}" target="_blank" rel="noopener" aria-label="Pinterest">{{ 'icon-pinterest.svg' | inline_asset_content }}</a>
+                {%- endif -%}
+                {%- if tw != blank -%}
+                  <a href="{{ tw }}" target="_blank" rel="noopener" aria-label="X">{{ 'icon-twitter.svg' | inline_asset_content }}</a>
+                {%- endif -%}
+                {%- if ct.chat_url != blank -%}
+                  <a class="sd__chat" href="{{ ct.chat_url }}" target="_blank" rel="noopener" aria-label="{{ ct.chat_label | escape }}">
+                    {%- if ct.chat_icon != blank -%}
+                      {{ ct.chat_icon | image_url: width: 96 | image_tag: loading: 'lazy', widths: '48, 96', sizes: '22px', alt: '' }}
+                    {%- else -%}
+                      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16v11H9l-5 4z"/><path d="M8 10h8M8 13h5"/></svg>
+                    {%- endif -%}
+                  </a>
+                {%- endif -%}
+              </div>
+            {%- endif -%}
+          </div>
+      {%- endcase -%}
+    {%- endfor -%}
+
+    {%- case prev -%}
+      {%- when 'tile', 'person', 'chip' -%}
+        </div>
+    {%- endcase -%}
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "抽屉内容",
+  "max_blocks": 50,
+  "settings": [
+    { "type": "header", "content": "外观" },
+    { "type": "image_picker", "id": "logo", "label": "顶部 logo", "info": "不选则显示店铺名称" },
+    {
+      "type": "range",
+      "id": "logo_width",
+      "min": 80,
+      "max": 260,
+      "step": 10,
+      "unit": "px",
+      "label": "logo 宽度",
+      "default": 150
+    },
+    { "type": "color", "id": "bg_color", "label": "背景色", "default": "#ffffff" },
+    { "type": "color", "id": "text_color", "label": "文字颜色", "default": "#111111" },
+    {
+      "type": "range",
+      "id": "card_radius",
+      "min": 0,
+      "max": 24,
+      "step": 2,
+      "unit": "px",
+      "label": "图片圆角",
+      "default": 12
+    },
+    {
+      "type": "select",
+      "id": "tile_ratio",
+      "label": "图片分类的图片比例",
+      "default": "5 / 4",
+      "options": [
+        { "value": "5 / 4", "label": "5:4（横）" },
+        { "value": "4 / 3", "label": "4:3（横）" },
+        { "value": "1 / 1", "label": "1:1（方）" },
+        { "value": "3 / 4", "label": "3:4（竖）" }
+      ]
+    },
+    {
+      "type": "range",
+      "id": "tablet_width",
+      "min": 400,
+      "max": 640,
+      "step": 10,
+      "unit": "px",
+      "label": "平板侧栏宽度",
+      "info": "手机上始终是整屏",
+      "default": 520
+    },
+    { "type": "checkbox", "id": "animate", "label": "打开时内容依次淡入", "default": true },
+    {
+      "type": "checkbox",
+      "id": "people_autoplay",
+      "label": "人物卡片自动向左循环滚动",
+      "default": true
+    },
+    {
+      "type": "range",
+      "id": "people_speed",
+      "min": 10,
+      "max": 120,
+      "step": 5,
+      "unit": "px",
+      "label": "自动滚动速度（每秒像素）",
+      "default": 40
+    }
+  ],
+  "blocks": [
+    {
+      "type": "banner",
+      "name": "活动 banner",
+      "settings": [
+        { "type": "image_picker", "id": "image", "label": "图片" },
+        { "type": "text", "id": "title", "label": "标题", "default": "Black Friday" },
+        { "type": "text", "id": "subtitle", "label": "副标题（带下划线）", "default": "View all" },
+        { "type": "url", "id": "link", "label": "链接" },
+        {
+          "type": "select",
+          "id": "ratio",
+          "label": "图片比例",
+          "default": "2.3 / 1",
+          "options": [
+            { "value": "2.3 / 1", "label": "2.3:1（扁）" },
+            { "value": "16 / 9", "label": "16:9" },
+            { "value": "3 / 2", "label": "3:2" }
+          ]
+        },
+        {
+          "type": "range",
+          "id": "overlay",
+          "min": 0,
+          "max": 70,
+          "step": 5,
+          "unit": "%",
+          "label": "图片遮罩深度",
+          "info": "让白色文字在亮图上也能看清",
+          "default": 30
+        },
+        {
+          "type": "range",
+          "id": "text_scale",
+          "min": 70,
+          "max": 140,
+          "step": 5,
+          "unit": "%",
+          "label": "文字大小",
+          "default": 100
+        }
+      ]
+    },
+    {
+      "type": "tile",
+      "name": "图片分类（连续的会排成两列）",
+      "settings": [
+        { "type": "collection", "id": "collection", "label": "集合", "info": "图片默认取集合自己的图，文字默认是集合名称" },
+        { "type": "image_picker", "id": "image", "label": "图片（覆盖集合图，可选）" },
+        { "type": "text", "id": "label", "label": "文字（覆盖集合名称，可选）" },
+        { "type": "url", "id": "link", "label": "链接（覆盖集合链接，可选）" }
+      ]
+    },
+    {
+      "type": "heading",
+      "name": "小标题",
+      "settings": [
+        { "type": "text", "id": "text", "label": "文字", "default": "Worn by celebrities" },
+        {
+          "type": "select",
+          "id": "align",
+          "label": "对齐",
+          "default": "left",
+          "options": [
+            { "value": "left", "label": "靠左" },
+            { "value": "center", "label": "居中" }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "person",
+      "name": "人物卡片（连续的会排成一行横滑）",
+      "settings": [
+        { "type": "image_picker", "id": "image", "label": "图片", "info": "建议 2:3 竖图" },
+        { "type": "text", "id": "name", "label": "名字" },
+        { "type": "checkbox", "id": "show_badge", "label": "显示认证徽章", "default": true },
+        { "type": "url", "id": "link", "label": "链接（可选）" }
+      ]
+    },
+    {
+      "type": "button",
+      "name": "大按钮",
+      "settings": [
+        { "type": "text", "id": "label", "label": "按钮文字", "default": "Get quote for custom jewelry" },
+        { "type": "url", "id": "link", "label": "链接" },
+        { "type": "color", "id": "bg_color", "label": "背景色", "default": "#298fd1" },
+        { "type": "color", "id": "text_color", "label": "文字颜色", "default": "#ffffff" },
+        {
+          "type": "range",
+          "id": "radius",
+          "min": 0,
+          "max": 30,
+          "step": 2,
+          "unit": "px",
+          "label": "圆角",
+          "default": 18
+        }
+      ]
+    },
+    {
+      "type": "chip",
+      "name": "小按钮（连续的排成一行）",
+      "settings": [
+        { "type": "text", "id": "label", "label": "文字", "default": "Contact support" },
+        { "type": "url", "id": "link", "label": "链接" }
+      ]
+    },
+    {
+      "type": "contact",
+      "name": "联系信息和社交图标",
+      "settings": [
+        { "type": "text", "id": "phone_label", "label": "电话标签", "default": "Call Us" },
+        { "type": "text", "id": "phone", "label": "电话", "default": "+1 212 000 0000" },
+        { "type": "text", "id": "email_label", "label": "邮箱标签", "default": "Email Us" },
+        { "type": "text", "id": "email", "label": "邮箱", "default": "support@example.com" },
+        { "type": "header", "content": "社交图标" },
+        {
+          "type": "paragraph",
+          "content": "不填的社交链接，会自动使用「主题设置 → 社交媒体」里已经配置的。"
+        },
+        { "type": "url", "id": "instagram_url", "label": "Instagram" },
+        { "type": "url", "id": "facebook_url", "label": "Facebook" },
+        { "type": "url", "id": "tiktok_url", "label": "TikTok" },
+        { "type": "url", "id": "youtube_url", "label": "YouTube" },
+        { "type": "url", "id": "pinterest_url", "label": "Pinterest" },
+        { "type": "url", "id": "twitter_url", "label": "X（Twitter）" },
+        { "type": "url", "id": "chat_url", "label": "聊天链接", "info": "比如 WhatsApp 的 https://wa.me/号码" },
+        { "type": "text", "id": "chat_label", "label": "聊天图标的名称", "default": "WhatsApp" },
+        { "type": "image_picker", "id": "chat_icon", "label": "聊天图标图片（可选）", "info": "不选则显示通用的聊天气泡" }
+      ]
+    },
+    {
+      "type": "space",
+      "name": "间距",
+      "settings": [
+        {
+          "type": "range",
+          "id": "height",
+          "min": 0,
+          "max": 80,
+          "step": 4,
+          "unit": "px",
+          "label": "高度",
+          "default": 16
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}
