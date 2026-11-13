@@ -1,0 +1,213 @@
+{% doc %}
+  集合页商品网格里的营销卡片，有两种：
+  - promo_image：纯图片，可切换成 2×2 四宫格
+  - promo_content：背景图或背景色，加两行文字和一张前景图
+
+  @param {object} block - 区块里的块
+  @param {number} position - 当前页内，这张卡片插在第几个商品之后
+  @param {string} ratio - 商品图比例设置（adapt / portrait / square）
+  @param {number} columns_desktop - 桌面端列数
+  @param {string} columns_mobile - 手机端列数
+{% enddoc %}
+
+{%- liquid
+  assign s = block.settings
+
+  assign ratio_percent = 100
+  if ratio == 'portrait'
+    assign ratio_percent = 125
+  endif
+
+  assign tag = 'div'
+  if s.link != blank
+    assign tag = 'a'
+  endif
+
+  assign img_loading = 'lazy'
+  if position <= 2
+    assign img_loading = 'eager'
+  endif
+
+  assign vw_desktop = 100 | divided_by: columns_desktop
+  assign mobile_cols = columns_mobile | plus: 0
+  assign vw_mobile = 100 | divided_by: mobile_cols
+  assign img_sizes = '(min-width: 750px) ' | append: vw_desktop | append: 'vw, ' | append: vw_mobile | append: 'vw'
+
+  assign tile_vw_desktop = vw_desktop | divided_by: 2.0
+  assign tile_vw_mobile = vw_mobile | divided_by: 2.0
+  assign tile_sizes = '(min-width: 750px) ' | append: tile_vw_desktop | append: 'vw, ' | append: tile_vw_mobile | append: 'vw'
+
+  assign show_card = false
+  if block.type == 'promo_content'
+    if s.heading != blank or s.eyebrow != blank or s.fg_image != blank or s.bg_image != blank
+      assign show_card = true
+    endif
+  elsif s.image != blank
+    assign show_card = true
+  elsif s.use_quad
+    if s.image_2 != blank or s.image_3 != blank or s.image_4 != blank
+      assign show_card = true
+    endif
+  endif
+  if request.design_mode
+    assign show_card = true
+  endif
+-%}
+
+{%- if show_card -%}
+  <li
+    class="grid__item promo-grid-item{% if settings.animations_reveal_on_scroll %} scroll-trigger animate--slide-in{% endif %}"
+    {% if settings.animations_reveal_on_scroll %}
+      data-cascade
+      style="--animation-order: {{ position }};"
+    {% endif %}
+    {{ block.shopify_attributes }}
+  >
+    {%- if block.type == 'promo_content' -%}
+      <{{ tag }}
+        class="promo-card promo-card--content"
+        style="
+          --promo-ratio: {{ ratio_percent }}%;
+          --promo-bg: {{ s.bg_color }};
+          --promo-text: {{ s.text_color }};
+          --promo-eyebrow: {{ s.eyebrow_size }};
+          --promo-h: {{ s.heading_size }};
+          --promo-fg: {{ s.fg_width }}%;
+          --promo-gap: {{ s.content_gap | default: 3 }};
+          --promo-pt: {{ s.content_padding_top | default: 7 }};
+        "
+        {% if s.link != blank %}
+          href="{{ s.link }}"
+        {% endif %}
+      >
+        {%- if s.bg_image != blank -%}
+          {{
+            s.bg_image
+            | image_url: width: 1000
+            | image_tag:
+              loading: img_loading,
+              widths: '300, 450, 600, 800, 1000',
+              sizes: img_sizes,
+              alt: '',
+              class: 'promo-card__img'
+          }}
+        {%- endif -%}
+
+        <div
+          class="promo-card__content promo-card__content--{{ s.content_valign }} promo-card__content--{{ s.text_align }}{% if s.fg_position == 'above' %} promo-card__content--reverse{% endif %}"
+        >
+          {%- if s.eyebrow != blank or s.heading != blank -%}
+            <div class="promo-card__text">
+              {%- if s.eyebrow != blank -%}
+                <p class="promo-card__eyebrow">{{ s.eyebrow | escape }}</p>
+              {%- endif -%}
+              {%- if s.heading != blank -%}
+                <p class="promo-card__title">{{ s.heading | escape | newline_to_br }}</p>
+              {%- endif -%}
+            </div>
+          {%- endif -%}
+
+          {%- if s.fg_image != blank -%}
+            <div class="promo-card__fg">
+              {{
+                s.fg_image
+                | image_url: width: 800
+                | image_tag:
+                  loading: img_loading,
+                  widths: '200, 400, 600, 800',
+                  sizes: img_sizes,
+                  alt: s.fg_alt,
+                  class: 'promo-card__fg-img'
+              }}
+            </div>
+          {%- endif -%}
+        </div>
+      </{{ tag }}>
+
+    {%- elsif s.use_quad -%}
+      {%- comment -%} 四宫格：外层不能是链接，每一格各自决定是否带链接 {%- endcomment -%}
+      <div class="promo-card promo-card--quad" style="--promo-ratio: {{ ratio_percent }}%;">
+        <div class="promo-quad" style="--promo-quad-gap: {{ s.quad_gap | default: 4 }}px;">
+          {%- for i in (1..4) -%}
+            {%- liquid
+              case i
+                when 1
+                  assign t_image = s.image
+                  assign t_link = s.link
+                  assign t_alt = s.alt
+                when 2
+                  assign t_image = s.image_2
+                  assign t_link = s.link_2
+                  assign t_alt = s.alt_2
+                when 3
+                  assign t_image = s.image_3
+                  assign t_link = s.link_3
+                  assign t_alt = s.alt_3
+                when 4
+                  assign t_image = s.image_4
+                  assign t_link = s.link_4
+                  assign t_alt = s.alt_4
+              endcase
+
+              assign t_tag = 'div'
+              if t_link != blank
+                assign t_tag = 'a'
+              endif
+            -%}
+            <{{ t_tag }}
+              class="promo-tile"
+              {% if t_link != blank %}
+                href="{{ t_link }}"
+                {% if t_alt != blank %}
+                  aria-label="{{ t_alt | escape }}"
+                {% endif %}
+              {% endif %}
+            >
+              {%- if t_image != blank -%}
+                {{
+                  t_image
+                  | image_url: width: 600
+                  | image_tag:
+                    loading: img_loading,
+                    widths: '200, 300, 450, 600',
+                    sizes: tile_sizes,
+                    alt: t_alt,
+                    class: 'promo-card__img'
+                }}
+              {%- else -%}
+                {{ 'image' | placeholder_svg_tag: 'promo-card__img placeholder-svg' }}
+              {%- endif -%}
+            </{{ t_tag }}>
+          {%- endfor -%}
+        </div>
+      </div>
+
+    {%- else -%}
+      <{{ tag }}
+        class="promo-card"
+        style="--promo-ratio: {{ ratio_percent }}%;"
+        {% if s.link != blank %}
+          href="{{ s.link }}"
+          {% if s.alt != blank %}
+            aria-label="{{ s.alt | escape }}"
+          {% endif %}
+        {% endif %}
+      >
+        {%- if s.image != blank -%}
+          {{
+            s.image
+            | image_url: width: 1000
+            | image_tag:
+              loading: img_loading,
+              widths: '300, 450, 600, 800, 1000',
+              sizes: img_sizes,
+              alt: s.alt,
+              class: 'promo-card__img'
+          }}
+        {%- else -%}
+          {{ 'image' | placeholder_svg_tag: 'promo-card__img placeholder-svg' }}
+        {%- endif -%}
+      </{{ tag }}>
+    {%- endif -%}
+  </li>
+{%- endif -%}

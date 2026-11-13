@@ -1,6 +1,7 @@
 {{ 'template-collection.css' | asset_url | stylesheet_tag }}
 {{ 'component-card.css' | asset_url | stylesheet_tag }}
 {{ 'component-price.css' | asset_url | stylesheet_tag }}
+{{ 'collection-promo.css' | asset_url | stylesheet_tag }}
 
 {% if section.settings.image_shape == 'blob' %}
   {{ 'mask-blobs.css' | asset_url | stylesheet_tag }}
@@ -157,6 +158,7 @@
               >
                 {% assign skip_card_product_styles = false %}
                 {%- for product in collection.products -%}
+                  {%- assign product_position = forloop.index -%}
                   {% assign lazy_load = false %}
                   {%- if forloop.index > 2 -%}
                     {%- assign lazy_load = true -%}
@@ -183,6 +185,18 @@
                     %}
                   </li>
                   {%- assign skip_card_product_styles = true -%}
+
+                  {%- for block in section.blocks -%}
+                    {%- if block.settings.insert_after == product_position -%}
+                      {%- render 'collection-promo-card',
+                        block: block,
+                        position: product_position,
+                        ratio: section.settings.image_ratio,
+                        columns_desktop: section.settings.columns_desktop,
+                        columns_mobile: section.settings.columns_mobile
+                      -%}
+                    {%- endif -%}
+                  {%- endfor -%}
                 {%- endfor -%}
               </ul>
 
@@ -409,6 +423,225 @@
       "unit": "px",
       "label": "t:sections.all.padding.padding_bottom",
       "default": 36
+    }
+  ],
+   "blocks": [
+    {
+      "type": "promo_image",
+      "name": "图片卡片",
+      "limit": 8,
+      "settings": [
+        {
+          "type": "range",
+          "id": "insert_after",
+          "min": 1,
+          "max": 36,
+          "step": 1,
+          "label": "插在第几个商品之后",
+          "info": "按每页的商品顺序计算，该页商品不够时不显示",
+          "default": 4
+        },
+        {
+          "type": "checkbox",
+          "id": "use_quad",
+          "label": "四宫格模式（该位置放 4 张图）",
+          "default": false
+        },
+        { "type": "image_picker", "id": "image", "label": "图片（四宫格时是左上）" },
+        { "type": "text", "id": "alt", "label": "图片说明", "info": "有链接时请填写，供读屏器使用" },
+        { "type": "url", "id": "link", "label": "链接（可选）" },
+
+        {
+          "type": "header",
+          "content": "四宫格：另外三张图",
+          "visible_if": "{{ block.settings.use_quad }}"
+        },
+        {
+          "type": "range",
+          "id": "quad_gap",
+          "min": 0,
+          "max": 16,
+          "step": 2,
+          "unit": "px",
+          "label": "四张图之间的间距",
+          "default": 4,
+          "visible_if": "{{ block.settings.use_quad }}"
+        },
+        {
+          "type": "image_picker",
+          "id": "image_2",
+          "label": "右上图片",
+          "visible_if": "{{ block.settings.use_quad }}"
+        },
+        {
+          "type": "text",
+          "id": "alt_2",
+          "label": "右上图片说明",
+          "visible_if": "{{ block.settings.use_quad }}"
+        },
+        {
+          "type": "url",
+          "id": "link_2",
+          "label": "右上图片链接（可选）",
+          "visible_if": "{{ block.settings.use_quad }}"
+        },
+        {
+          "type": "image_picker",
+          "id": "image_3",
+          "label": "左下图片",
+          "visible_if": "{{ block.settings.use_quad }}"
+        },
+        {
+          "type": "text",
+          "id": "alt_3",
+          "label": "左下图片说明",
+          "visible_if": "{{ block.settings.use_quad }}"
+        },
+        {
+          "type": "url",
+          "id": "link_3",
+          "label": "左下图片链接（可选）",
+          "visible_if": "{{ block.settings.use_quad }}"
+        },
+        {
+          "type": "image_picker",
+          "id": "image_4",
+          "label": "右下图片",
+          "visible_if": "{{ block.settings.use_quad }}"
+        },
+        {
+          "type": "text",
+          "id": "alt_4",
+          "label": "右下图片说明",
+          "visible_if": "{{ block.settings.use_quad }}"
+        },
+        {
+          "type": "url",
+          "id": "link_4",
+          "label": "右下图片链接（可选）",
+          "visible_if": "{{ block.settings.use_quad }}"
+        }
+      ]
+    },
+    {
+      "type": "promo_content",
+      "name": "内容卡片（背景+文字+图片）",
+      "limit": 8,
+      "settings": [
+        {
+          "type": "range",
+          "id": "insert_after",
+          "min": 1,
+          "max": 36,
+          "step": 1,
+          "label": "插在第几个商品之后",
+          "info": "按每页的商品顺序计算，该页商品不够时不显示",
+          "default": 4
+        },
+        { "type": "url", "id": "link", "label": "链接（可选）" },
+
+        { "type": "header", "content": "背景" },
+        { "type": "image_picker", "id": "bg_image", "label": "背景图", "info": "不选则使用下面的背景色" },
+        { "type": "color", "id": "bg_color", "label": "背景色", "default": "#f1f1f1" },
+
+        { "type": "header", "content": "文字" },
+        { "type": "text", "id": "eyebrow", "label": "上方小字", "default": "All orders ship with" },
+        {
+          "type": "textarea",
+          "id": "heading",
+          "label": "下方大字",
+          "info": "按回车换行",
+          "default": "CUSTOM\nJEWELRY BOX"
+        },
+        { "type": "color", "id": "text_color", "label": "文字颜色", "default": "#000000" },
+        {
+          "type": "range",
+          "id": "eyebrow_size",
+          "min": 3,
+          "max": 10,
+          "step": 1,
+          "label": "小字大小",
+          "info": "数值是卡片宽度的百分比，卡片变窄时字会等比缩小",
+          "default": 5
+        },
+        {
+          "type": "range",
+          "id": "heading_size",
+          "min": 6,
+          "max": 24,
+          "step": 1,
+          "label": "大字大小",
+          "info": "数值是卡片宽度的百分比",
+          "default": 12
+        },
+        {
+          "type": "select",
+          "id": "text_align",
+          "label": "对齐方式",
+          "default": "center",
+          "options": [
+            { "value": "center", "label": "居中" },
+            { "value": "left", "label": "靠左" }
+          ]
+        },
+
+        { "type": "header", "content": "前景图" },
+        { "type": "image_picker", "id": "fg_image", "label": "前景图", "info": "建议透明底 PNG" },
+        { "type": "text", "id": "fg_alt", "label": "前景图说明" },
+        {
+          "type": "range",
+          "id": "fg_width",
+          "min": 30,
+          "max": 100,
+          "step": 5,
+          "unit": "%",
+          "label": "前景图宽度",
+          "default": 100
+        },
+        {
+          "type": "select",
+          "id": "fg_position",
+          "label": "前景图位置",
+          "default": "below",
+          "options": [
+            { "value": "below", "label": "文字下方" },
+            { "value": "above", "label": "文字上方" }
+          ]
+        },
+
+        { "type": "header", "content": "排版间距" },
+        {
+          "type": "select",
+          "id": "content_valign",
+          "label": "内容上下位置",
+          "default": "start",
+          "options": [
+            { "value": "start", "label": "靠上（文字和图片紧挨）" },
+            { "value": "center", "label": "整体居中" },
+            { "value": "between", "label": "文字在上，图片贴底（中间留白）" }
+          ]
+        },
+        {
+          "type": "range",
+          "id": "content_gap",
+          "min": 0,
+          "max": 20,
+          "step": 1,
+          "label": "文字和图片的间距",
+          "info": "数值是卡片宽度的百分比。只在「靠上」「整体居中」时有效",
+          "default": 3
+        },
+        {
+          "type": "range",
+          "id": "content_padding_top",
+          "min": 0,
+          "max": 30,
+          "step": 1,
+          "label": "顶部留白",
+          "info": "数值是卡片宽度的百分比",
+          "default": 7
+        }
+      ]
     }
   ]
 }

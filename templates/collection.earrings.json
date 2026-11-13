@@ -1,0 +1,147 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+{
+  "sections": {
+    "banner": {
+      "type": "main-collection-banner",
+      "settings": {
+        "show_collection_description": true,
+        "show_collection_image": false,
+        "color_scheme": "scheme-1"
+      }
+    },
+    "product-grid": {
+      "type": "main-collection-product-grid",
+      "blocks": {
+        "promo-1": {
+          "type": "promo_image",
+          "settings": {
+            "insert_after": 1,
+            "use_quad": false,
+            "image": "shopify://shop_images/icecartel_girl_wearing_rimless_moissanite_sunglasses_1.jpg",
+            "alt": "",
+            "link": "",
+            "quad_gap": 4,
+            "alt_2": "",
+            "link_2": "",
+            "alt_3": "",
+            "link_3": "",
+            "alt_4": "",
+            "link_4": ""
+          }
+        },
+        "promo_content_EVMHdC": {
+          "type": "promo_content",
+          "settings": {
+            "insert_after": 6,
+            "link": "",
+            "bg_image": "shopify://shop_images/cc5fb618-1b68-4fc8-9a9a-0617b5014fdc.jpg",
+            "bg_color": "#f1f1f1",
+            "eyebrow": "All orders ship with",
+            "heading": "CUSTOM\nJEWELRY BOX",
+            "text_color": "#000000",
+            "eyebrow_size": 5,
+            "heading_size": 11,
+            "text_align": "center",
+            "fg_image": "shopify://shop_images/1026bc80-c8a9-4fc6-8e82-19f7b0d7c3d2.png",
+            "fg_alt": "",
+            "fg_width": 100,
+            "fg_position": "below",
+            "content_valign": "between",
+            "content_gap": 0,
+            "content_padding_top": 20
+          }
+        },
+        "promo-2": {
+          "type": "promo_image",
+          "settings": {
+            "insert_after": 6,
+            "use_quad": true,
+            "image": "shopify://shop_images/rubi-rose.png",
+            "alt": "",
+            "link": "",
+            "quad_gap": 4,
+            "image_2": "shopify://shop_images/nino-breeze.png",
+            "alt_2": "",
+            "link_2": "",
+            "image_3": "shopify://shop_images/favio-foreign.png",
+            "alt_3": "",
+            "link_3": "",
+            "image_4": "shopify://shop_images/tripple-redd.png",
+            "alt_4": "",
+            "link_4": ""
+          }
+        },
+        "promo-3": {
+          "type": "promo_image",
+          "settings": {
+            "insert_after": 10,
+            "use_quad": false,
+            "image": "shopify://shop_images/white-gold-vvs-stud-earrings-all-sizes-icecartel-updated-px-shine-one.jpg",
+            "alt": "",
+            "link": "",
+            "quad_gap": 4,
+            "alt_2": "",
+            "link_2": "",
+            "alt_3": "",
+            "link_3": "",
+            "alt_4": "",
+            "link_4": ""
+          }
+        },
+        "promo-4": {
+          "type": "promo_image",
+          "settings": {
+            "insert_after": 15,
+            "use_quad": false,
+            "image": "shopify://shop_images/all-boxes-icecartel-new-px.jpg",
+            "alt": "",
+            "link": "",
+            "quad_gap": 4,
+            "alt_2": "",
+            "link_2": "",
+            "alt_3": "",
+            "link_3": "",
+            "alt_4": "",
+            "link_4": ""
+          }
+        }
+      },
+      "block_order": [
+        "promo-1",
+        "promo_content_EVMHdC",
+        "promo-2",
+        "promo-3",
+        "promo-4"
+      ],
+      "settings": {
+        "products_per_page": 16,
+        "columns_desktop": 4,
+        "columns_mobile": "2",
+        "color_scheme": "scheme-1",
+        "image_ratio": "portrait",
+        "image_shape": "default",
+        "show_secondary_image": false,
+        "show_vendor": false,
+        "show_rating": false,
+        "quick_add": "none",
+        "enable_filtering": true,
+        "filter_type": "horizontal",
+        "enable_sorting": true,
+        "padding_top": 36,
+        "padding_bottom": 36
+      }
+    }
+  },
+  "order": [
+    "banner",
+    "product-grid"
+  ]
+}

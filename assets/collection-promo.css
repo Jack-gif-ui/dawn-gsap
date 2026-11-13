@@ -1,0 +1,128 @@
+/* 集合页营销图片卡片：和商品卡同级的 grid__item */
+.promo-grid-item {
+  display: flex;
+}
+.promo-card {
+  position: relative;
+  display: block;
+  flex: 1 1 auto;
+  width: 100%;
+  overflow: hidden;
+  border-radius: var(--product-card-corner-radius);
+  background: rgba(var(--color-foreground), 0.04);
+  color: inherit;
+  text-decoration: none;
+}
+/* 最小高度 = 商品图区域的比例；格子被同一行更高的商品卡撑高时，图片会跟着铺满整个格子 */
+.promo-card::before {
+  content: '';
+  display: block;
+  padding-bottom: var(--promo-ratio, 125%);
+}
+.promo-card__img {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.6s var(--ease-out-slow);
+}
+a.promo-card:hover .promo-card__img {
+  transform: scale(1.04);
+}
+a.promo-card:focus-visible {
+  outline: 0.2rem solid rgb(var(--color-foreground));
+  outline-offset: 0.3rem;
+}
+
+/* ===== 内容卡片：背景 + 文字 + 前景图 ===== */
+.promo-card--content {
+  container-type: inline-size; /* 让下面的 cqw 以卡片宽度为基准 */
+  background: var(--promo-bg, #f1f1f1);
+  color: var(--promo-text, #000);
+}
+.promo-card__content {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  /* 先写 rem 作为不支持容器查询的浏览器的退路，再写 cqw */
+  gap: calc(var(--promo-gap, 3) * 0.25rem);
+  gap: calc(var(--promo-gap, 3) * 1cqw);
+  padding: 1.6rem 1.4rem;
+  padding: calc(var(--promo-pt, 7) * 1cqw) 6cqw 6cqw;
+  text-align: center;
+}
+.promo-card__content--start { justify-content: flex-start; }
+.promo-card__content--center { justify-content: center; }
+.promo-card__content--between { justify-content: space-between; }
+.promo-card__content--left {
+  align-items: flex-start;
+  text-align: left;
+}
+.promo-card__content--reverse {
+  flex-direction: column-reverse;
+}
+
+.promo-card__text {
+  width: 100%;
+}
+/* 先写 rem 作为不支持容器查询的浏览器的退路，再写 cqw */
+.promo-card__eyebrow {
+  margin: 0 0 1.5cqw;
+  font-size: calc(var(--promo-eyebrow, 5) * 0.25rem);
+  font-size: calc(var(--promo-eyebrow, 5) * 1cqw);
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  line-height: 1.2;
+}
+.promo-card__title {
+  margin: 0;
+  font-family: var(--font-heading-family);
+  font-size: calc(var(--promo-h, 12) * 0.25rem);
+  font-size: calc(var(--promo-h, 12) * 1cqw);
+  font-weight: 800;
+  letter-spacing: 0.01em;
+  line-height: 1.1;
+  overflow-wrap: anywhere;
+}
+
+.promo-card__fg {
+  width: var(--promo-fg, 100%);
+  min-height: 0;
+}
+.promo-card__fg-img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+/* ===== 四宫格：一个格子里放 4 张图 ===== */
+.promo-quad {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-rows: repeat(2, minmax(0, 1fr));
+  gap: var(--promo-quad-gap, 4px);
+}
+.promo-tile {
+  position: relative;
+  display: block;
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+  background: rgba(var(--color-foreground), 0.04);
+  color: inherit;
+  text-decoration: none;
+}
+a.promo-tile:hover .promo-card__img {
+  transform: scale(1.04);
+}
+a.promo-tile:focus-visible {
+  outline: 0.2rem solid rgb(var(--color-foreground));
+  outline-offset: -0.3rem;
+}
