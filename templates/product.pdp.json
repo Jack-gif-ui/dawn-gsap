@@ -189,9 +189,84 @@
         "padding_top": 12,
         "padding_bottom": 40
       }
+    },
+    "celebrities": {
+      "type": "celebrity-carousel",
+      "blocks": {
+        "trippieRedd": {
+          "type": "person",
+          "settings": {
+            "name": "Trippie Redd",
+            "image": "shopify://shop_images/tripple_redd.jpg",
+            "show_badge": true
+          }
+        },
+        "lilPump": {
+          "type": "person",
+          "settings": {
+            "name": "Lil Pump",
+            "image": "shopify://shop_images/lil_pump_dab52f51-c8ae-4916-b887-f51a30ba6321.jpg",
+            "show_badge": true
+          }
+        },
+        "rubiRose": {
+          "type": "person",
+          "settings": {
+            "name": "Rubi Rose",
+            "image": "shopify://shop_images/Rubi-Rose-icecartel-custom-diamond-jewelry.jpg",
+            "show_badge": true
+          }
+        },
+        "fivioForeign": {
+          "type": "person",
+          "settings": {
+            "name": "Fivio Foreign",
+            "image": "shopify://shop_images/fivio-foreign-icecartel-custom-diamond-pendant-iced-out-2.jpg",
+            "show_badge": true
+          }
+        },
+        "ninoBreeze": {
+          "type": "person",
+          "settings": {
+            "name": "Nino Breeze",
+            "image": "shopify://shop_images/nino-breeze.png",
+            "show_badge": true
+          }
+        },
+        "lilMosey": {
+          "type": "person",
+          "settings": {
+            "name": "Lil Mosey",
+            "image": "shopify://shop_images/lil-mosey-icecartel-client-customer-review-jewelry-rapper.jpg",
+            "show_badge": true
+          }
+        },
+        "smokepurpp": {
+          "type": "person",
+          "settings": {
+            "name": "SmokePurpp",
+            "image": "shopify://shop_images/smokepurpp_27138c55-9e90-4380-9833-46dbc4b7cd4b.jpg",
+            "show_badge": true
+          }
+        }
+      },
+      "block_order": [
+        "trippieRedd",
+        "lilPump",
+        "rubiRose",
+        "fivioForeign",
+        "ninoBreeze",
+        "lilMosey",
+        "smokepurpp"
+      ],
+      "settings": {
+        "heading": "Worn by celebrities",
+        "heading_align": "left",
+        "people_autoplay": true,
+        "people_speed": 50,
+        "card_radius": 14
+      }
     }
   },
-  "order": [
-    "main"
-  ]
+  "order": ["main", "celebrities"]
 }

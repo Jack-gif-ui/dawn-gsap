@@ -1,0 +1,150 @@
+.celebrity-carousel {
+  --cc-card-width: 46%;
+  --cc-card-ratio: 7 / 10;
+  --cc-track-gap: 0.8rem;
+  --cc-inline-padding: 4vw;
+  --cc-badge-color: #35a9e5;
+  display: block;
+  padding-block: 3.2rem;
+}
+
+.celebrity-carousel__heading {
+  margin: 0 var(--cc-inline-padding) 2.4rem;
+  color: inherit;
+  font-size: clamp(2.1rem, 5.8vw, 3.2rem);
+  font-weight: 800;
+  letter-spacing: normal;
+  line-height: 1.1;
+  text-align: var(--cc-heading-align, left);
+  text-transform: uppercase;
+}
+
+.celebrity-carousel__track {
+  position: relative;
+  display: flex;
+  gap: var(--cc-track-gap);
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  scrollbar-width: none;
+  scroll-behavior: auto;
+}
+
+.celebrity-carousel__track::-webkit-scrollbar {
+  display: none;
+}
+
+.celebrity-carousel__track:focus-visible,
+.celebrity-carousel__card:focus-visible {
+  outline: 0.2rem solid currentColor;
+  outline-offset: -0.3rem;
+}
+
+.celebrity-carousel__card {
+  position: relative;
+  isolation: isolate;
+  display: block;
+  flex: 0 0 var(--cc-card-width);
+  min-width: 0;
+  aspect-ratio: var(--cc-card-ratio);
+  overflow: hidden;
+  border-radius: var(--cc-radius, 14px);
+  background: #222;
+  color: #fff;
+  text-decoration: none;
+}
+
+.celebrity-carousel__card img,
+.celebrity-carousel__card > svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.celebrity-carousel__card::after {
+  position: absolute;
+  inset: auto 0 0;
+  height: 40%;
+  background: linear-gradient(to top, rgb(0 0 0 / 65%), transparent);
+  content: '';
+  pointer-events: none;
+}
+
+.celebrity-carousel__name {
+  position: absolute;
+  z-index: 1;
+  inset: auto 0 0;
+  display: flex;
+  align-items: center;
+  gap: 0.4em;
+  padding: 0 0.9rem 1rem;
+  font-size: clamp(1.25rem, 3.4vw, 1.8rem);
+  font-weight: 700;
+  line-height: 1.2;
+  overflow-wrap: anywhere;
+}
+
+.celebrity-carousel__badge {
+  flex: none;
+  width: 1.1em;
+  height: 1.1em;
+  color: var(--cc-badge-color);
+}
+
+.celebrity-carousel__badge-circle,
+#SiteDrawer .celebrity-carousel__badge-seal {
+  display: none;
+}
+
+#SiteDrawer .celebrity-carousel__badge-circle {
+  display: inline;
+}
+
+.celebrity-carousel__empty {
+  padding-inline: var(--cc-inline-padding);
+}
+
+@media screen and (min-width: 750px) {
+  .celebrity-carousel {
+    --cc-card-width: clamp(14rem, 13.75vw, 32rem);
+    --cc-inline-padding: 4.6vw;
+    --cc-track-gap: clamp(0.8rem, 1vw, 2rem);
+  }
+
+  .celebrity-carousel__heading {
+    margin-bottom: clamp(3rem, 4.4vw, 6.8rem);
+    font-size: clamp(3rem, 3.15vw, 5.8rem);
+  }
+
+  .celebrity-carousel__name {
+    justify-content: center;
+    padding: 0 1.1rem 1.2rem;
+    font-size: clamp(1.45rem, 1.26vw, 2.4rem);
+  }
+}
+
+#SiteDrawer .celebrity-carousel {
+  --cc-card-width: 40cqw;
+  --cc-card-ratio: 2 / 3;
+  --cc-track-gap: 1.2rem;
+  --cc-inline-padding: 2rem;
+  --cc-badge-color: #2f9bf0;
+  padding-block: 0;
+}
+
+#SiteDrawer .celebrity-carousel__heading {
+  margin: 1.4rem var(--cc-inline-padding) 2rem;
+  font-size: 2.4rem;
+  font-size: 6.2cqw;
+}
+
+#SiteDrawer .celebrity-carousel__track {
+  padding-inline: var(--cc-inline-padding);
+}
+
+#SiteDrawer .celebrity-carousel__name {
+  justify-content: flex-start;
+  padding: 0 1.2rem 1.3rem;
+  font-size: 1.5rem;
+}

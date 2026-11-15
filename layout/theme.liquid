@@ -68,6 +68,8 @@
     <script src="{{ 'wishlist.js' | asset_url }}" defer="defer"></script>
     {{ 'site-drawer.css' | asset_url | stylesheet_tag }}
     <script src="{{ 'site-drawer.js' | asset_url }}" defer="defer"></script>
+    {{ 'celebrity-carousel.css' | asset_url | stylesheet_tag }}
+    <script src="{{ 'celebrity-carousel.js' | asset_url }}" defer="defer"></script>
 
     <script src="{{ 'cart-disclosure-modal.js' | asset_url }}" defer="defer"></script>
     <script src="{{ 'cart-disclosure-tooltip.js' | asset_url }}" defer="defer"></script>
@@ -309,7 +311,13 @@
     {%- unless settings.type_body_font.system? -%}
       {% comment %}theme-check-disable AssetPreload{% endcomment %}
       <link rel="preload" as="font" href="{{ settings.type_body_font | font_url }}" type="font/woff2" crossorigin>
-      <link rel="preload" as="font" href="{{ settings.type_body_font | font_modify: 'weight', 'bold' | font_url }}" type="font/woff2" crossorigin>
+      <link
+        rel="preload"
+        as="font"
+        href="{{ settings.type_body_font | font_modify: 'weight', 'bold' | font_url }}"
+        type="font/woff2"
+        crossorigin
+      >
       {% comment %}theme-check-enable AssetPreload{% endcomment %}
     {%- endunless -%}
     {%- unless settings.type_header_font.system? -%}
@@ -439,7 +447,16 @@
     {%- endif -%}
 
     <dialog id="SiteDrawer" class="site-drawer" aria-label="Menu">
-      {% sections 'drawer-group' %}
+      <div
+        class="sd"
+        {% if request.design_mode %}
+          data-sd-design-mode
+        {% endif %}
+      >
+        <div class="sd__stack">
+          {% sections 'drawer-group' %}
+        </div>
+      </div>
     </dialog>
   </body>
 </html>
