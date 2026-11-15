@@ -48,7 +48,10 @@
         "size_guide": {
           "type": "size_guide",
           "settings": {
-            "text": "Size Guide"
+            "text": "Size Guide",
+            "modal_title": "Find Your Perfect Size",
+            "modal_description": "<p>Smaller sizes (3–5mm) offer a subtle everyday shine, while larger stones (8–10mm) make a bold, standout statement.</p>",
+            "modal_image": "shopify://shop_images/mens-vvs-moissanite-stud-earrings.jpg"
           }
         },
         "variant_picker": {
