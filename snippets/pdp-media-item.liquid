@@ -1,0 +1,75 @@
+{%- doc -%}
+  商品详情页（product.pdp）画廊里的单个媒体：主图幻灯片或缩略图。
+  主图列表和缩略图列表共用这一个文件，保证两边的顺序、ID 一致。
+
+  @param {media} media - 商品媒体（图片、视频、3D 模型）
+  @param {string} mode - 'slide' 或 'thumb'
+  @param {string} section_id - 所属区块 ID，用来拼 data-media-id，需要和 product-info.js 的约定一致
+  @param {number} index - 从 1 开始的位置
+  @param {string} product_title - 商品标题，图片没有 alt 时使用
+
+  @example
+  {% render 'pdp-media-item', media: media, mode: 'slide', section_id: section.id, index: 1, product_title: product.title %}
+{%- enddoc -%}
+
+{%- assign pdp_alt = media.alt | default: product_title | escape -%}
+{%- assign pdp_media_key = section_id | append: '-' | append: media.id -%}
+
+{%- if mode == 'slide' -%}
+  <li
+    id="Slide-{{ section_id }}-{{ media.id }}"
+    class="pdp-gallery__slide{% if index == 1 %} is-active{% endif %}"
+    data-media-id="{{ pdp_media_key }}"
+    data-media-type="{{ media.media_type }}"
+    data-thumb="{{ media.preview_image | image_url: width: 240 }}"
+    data-alt="{{ pdp_alt }}"
+  >
+    {%- if media.media_type == 'image' -%}
+      {%- if index == 1 -%}
+        {{
+          media.preview_image
+          | image_url: width: 1600
+          | image_tag:
+            loading: 'eager',
+            fetchpriority: 'high',
+            sizes: '(min-width: 990px) 52vw, 100vw',
+            widths: '500, 750, 1000, 1400, 1600',
+            alt: pdp_alt
+        }}
+      {%- else -%}
+        {{
+          media.preview_image
+          | image_url: width: 1600
+          | image_tag:
+            loading: 'lazy',
+            sizes: '(min-width: 990px) 52vw, 100vw',
+            widths: '500, 750, 1000, 1400, 1600',
+            alt: pdp_alt
+        }}
+      {%- endif -%}
+    {%- else -%}
+      {{- media | media_tag: image_size: '1400x', controls: true, preload: 'none' -}}
+    {%- endif -%}
+  </li>
+{%- else -%}
+  <button
+    type="button"
+    class="pdp-thumb{% if index == 1 %} is-active{% endif %}"
+    data-target="{{ pdp_media_key }}"
+    aria-label="{{ 'products.product.media.load_image' | t: index: index }}"
+    {% if index == 1 %}
+      aria-current="true"
+    {% endif %}
+  >
+    {{
+      media.preview_image
+      | image_url: width: 240
+      | image_tag: loading: 'lazy', sizes: '96px', widths: '96, 192, 240', alt: ''
+    }}
+    {%- if media.media_type != 'image' -%}
+      <span class="pdp-thumb__play" aria-hidden="true">
+        <svg viewBox="0 0 24 24" width="22" height="22"><circle cx="12" cy="12" r="12" fill="rgba(0,0,0,.55)"/><path d="M10 8.2v7.6l6-3.8z" fill="#fff"/></svg>
+      </span>
+    {%- endif -%}
+  </button>
+{%- endif -%}

@@ -1,0 +1,901 @@
+/* ==========================================================
+   商品详情页（product.pdp）
+   断点：990px，与头部的桌面/移动切换一致
+   ========================================================== */
+
+product-info.pdp {
+  display: block;
+  --pdp-grey: #f7f7f7;
+  --pdp-line: rgba(var(--color-foreground), 0.15);
+  --pdp-accent: #2b72b8;
+  --pdp-accent-bg: #eef5fc;
+  --pdp-green: #0aa56a;
+  --pdp-green-bg: #e9f6ef;
+  --pdp-green-text: #17794f;
+  --pdp-radius: 1.6rem;
+  --pdp-top: calc(var(--header-height, 0px) + var(--pdp-sticky, 20px));
+}
+
+.pdp__wrap {
+  max-width: var(--pdp-max, 1700px);
+  margin: 0 auto;
+}
+
+.pdp-dot {
+  flex: none;
+  width: 1rem;
+  height: 1rem;
+  border-radius: 50%;
+  background: var(--pdp-green);
+  box-shadow: 0 0 0 0.5rem rgba(10, 165, 106, 0.18);
+}
+
+/* ---------- 画廊 ---------- */
+.pdp-gallery {
+  display: block;
+}
+
+.pdp-gallery__stage {
+  position: relative;
+  overflow: hidden;
+  background: var(--pdp-grey);
+}
+
+.pdp-gallery__track {
+  position: relative;
+  display: flex;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scroll-snap-type: x mandatory;
+  overscroll-behavior-x: contain;
+  scrollbar-width: none;
+  aspect-ratio: var(--pdp-ratio-m, 5 / 6);
+  max-height: 90svh;
+}
+.pdp-gallery__track::-webkit-scrollbar {
+  display: none;
+}
+
+.pdp-gallery__slide {
+  position: relative;
+  flex: 0 0 100%;
+  min-width: 0;
+  scroll-snap-align: start;
+  scroll-snap-stop: always;
+}
+.pdp-gallery__slide img,
+.pdp-gallery__slide video,
+.pdp-gallery__slide iframe,
+.pdp-gallery__slide model-viewer {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: var(--pdp-fit, cover);
+  border: 0;
+}
+.pdp-gallery__slide video {
+  object-fit: contain;
+  background: #000;
+}
+
+.pdp-gallery__badge {
+  position: absolute;
+  top: 1.6rem;
+  left: 1.6rem;
+  z-index: 2;
+  display: inline-flex;
+  align-items: center;
+  gap: 1rem;
+  margin: 0;
+  padding: 0.9rem 1.4rem 0.9rem 1.1rem;
+  border: 1px solid #bfe3cf;
+  border-radius: 1.2rem;
+  background: var(--pdp-green-bg);
+  color: var(--pdp-green-text);
+  font-size: 1.5rem;
+  font-weight: 700;
+  line-height: 1.2;
+  pointer-events: none;
+}
+
+/* 左右箭头：第一张没有左箭头，最后一张没有右箭头（由 pdp.js 切换 hidden） */
+.pdp-arrow {
+  position: absolute;
+  top: 50%;
+  z-index: 2;
+  display: grid;
+  place-items: center;
+  width: 4.4rem;
+  height: 4.4rem;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: #fff;
+  color: #000;
+  box-shadow: 0 0.1rem 0.6rem rgba(0, 0, 0, 0.14);
+  transform: translateY(-50%);
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+.pdp-arrow[hidden] {
+  display: none;
+}
+.pdp-arrow--prev {
+  left: 1.2rem;
+}
+.pdp-arrow--next {
+  right: 1.2rem;
+}
+.pdp-arrow--prev svg {
+  transform: scaleX(-1);
+}
+.pdp-arrow svg {
+  stroke-width: 2.4;
+}
+@media (hover: hover) {
+  .pdp-arrow:hover {
+    transform: translateY(-50%) scale(1.06);
+    box-shadow: 0 0.2rem 1rem rgba(0, 0, 0, 0.2);
+  }
+}
+.pdp-arrow:focus-visible,
+.pdp-thumb:focus-visible {
+  outline: 0.2rem solid rgb(var(--color-foreground));
+  outline-offset: 0.2rem;
+}
+
+/* 缩略图：移动端在主图下方横排，不留缝，未选中半透明 */
+.pdp-thumbs__list {
+  position: relative;
+  display: flex;
+  gap: 0;
+  overflow-x: auto;
+  scrollbar-width: none;
+  background: #fff;
+}
+.pdp-thumbs__list::-webkit-scrollbar {
+  display: none;
+}
+.pdp-thumb {
+  position: relative;
+  flex: 0 0 22%;
+  aspect-ratio: 3 / 4;
+  min-width: 0;
+  padding: 0;
+  border: 0;
+  background: var(--pdp-grey);
+  overflow: hidden;
+  opacity: 0.5;
+  cursor: pointer;
+  transition: opacity 0.2s ease;
+}
+.pdp-thumb.is-active,
+.pdp-thumb:hover {
+  opacity: 1;
+}
+.pdp-thumb img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.pdp-thumb__play {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  pointer-events: none;
+}
+
+/* ---------- 跑马灯（移动端） ---------- */
+.pdp-marquee {
+  background: var(--ms-bg, var(--pdp-grey));
+}
+.pdp-marquee marquee-strip.ms {
+  padding: 1.4rem 0;
+}
+.pdp-marquee .ms__inner {
+  gap: 0.8rem;
+  padding: 0;
+}
+.pdp-marquee .ms__name {
+  font-weight: 800;
+  text-transform: uppercase;
+}
+.pdp-marquee .pdp-icon {
+  flex: none;
+  stroke-width: 2.6;
+}
+.pdp-empty {
+  padding: 1rem 2rem;
+  text-align: center;
+  opacity: 0.6;
+}
+
+/* ---------- 信息区 ---------- */
+.pdp__info {
+  min-width: 0;
+}
+.pdp-info {
+  position: relative;
+  padding: 2rem 1.5rem 0;
+}
+/* 区块之间统一的纵向间距；个别区块在下面单独调整 */
+.pdp-info > * + * {
+  margin-top: 1.8rem;
+}
+.pdp-info > :first-child {
+  margin-top: 0;
+}
+.pdp-title {
+  margin-bottom: 0;
+}
+.pdp-acc__heading {
+  margin: 0;
+}
+
+.pdp-rating {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.4rem 1rem;
+  min-height: 4.4rem;
+  padding-right: 5rem; /* 给右上角的心愿按钮留位置 */
+  font-size: 1.7rem;
+  line-height: 1.3;
+}
+.pdp-rating + .pdp-title {
+  margin-top: 0.6rem;
+}
+.pdp-stars {
+  display: inline-flex;
+  gap: 0.2rem;
+}
+.pdp-stars svg {
+  display: block;
+  width: 2.4rem;
+  height: 2.4rem;
+}
+
+.pdp-wish {
+  position: absolute;
+  top: 2rem;
+  right: 0;
+  margin: 0 !important;
+}
+.pdp-wish .wl-btn {
+  position: static;
+  width: 4.4rem;
+  height: 4.4rem;
+}
+.pdp-wish .wl-btn svg {
+  width: 3rem;
+  height: 3rem;
+}
+
+.pdp-title {
+  font-family: var(--font-heading-family);
+  font-size: clamp(2.8rem, 6.4vw, 3.4rem);
+  font-weight: 800;
+  line-height: 1.15;
+  letter-spacing: 0;
+  text-transform: uppercase;
+}
+
+.pdp-info > .pdp-badge {
+  margin-top: 1.6rem;
+}
+.pdp-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.8rem;
+  margin: 0;
+  padding: 0.9rem 1.6rem;
+  border: 1px solid #cfe3f4;
+  border-radius: 999px;
+  background: var(--pdp-accent-bg);
+  color: var(--pdp-accent);
+  font-size: 1.7rem;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.pdp-price {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.8rem 1.4rem;
+}
+.pdp-price.hidden {
+  display: none;
+}
+.pdp-price__now {
+  font-size: clamp(3.4rem, 8vw, 4.4rem);
+  font-weight: 800;
+  line-height: 1;
+}
+.pdp-price__was {
+  font-size: 2.4rem;
+  font-weight: 700;
+  color: rgba(var(--color-foreground), 0.7);
+}
+.pdp-price__save {
+  padding: 0.9rem 1.6rem;
+  border-radius: 999px;
+  background: var(--pdp-green-bg);
+  color: var(--pdp-green-text);
+  font-size: 1.7rem;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.pdp-installments {
+  padding-bottom: 2rem;
+  border-bottom: 1px solid var(--pdp-line);
+  font-size: 1.7rem;
+}
+.pdp-installments form {
+  margin: 0;
+}
+.pdp-installments shopify-payment-terms,
+.pdp-installments .shopify-installments {
+  font-size: inherit;
+}
+
+.pdp-pill-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1.2rem 2rem;
+  border: 1px solid rgba(var(--color-foreground), 0.35);
+  border-radius: 999px;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  font-size: 1.8rem;
+  font-weight: 700;
+  line-height: 1;
+  cursor: pointer;
+  transition: border-color 0.15s ease, background-color 0.15s ease;
+}
+.pdp-pill-btn:hover {
+  border-color: rgb(var(--color-foreground));
+  background: rgba(var(--color-foreground), 0.04);
+}
+
+/* ---------- 变体选择 ---------- */
+.pdp-variants variant-selects {
+  display: block;
+}
+.pdp-variants .product-form__input {
+  margin: 0 0 2.2rem;
+  padding: 0;
+  border: 0;
+}
+.pdp-variants .form__label {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.8rem 1.2rem;
+  margin: 0 0 1.2rem;
+  padding: 0;
+  font-size: 1.8rem;
+  font-weight: 800;
+  letter-spacing: 0;
+  text-transform: uppercase;
+}
+.pdp-variants .form__label [data-selected-value],
+.pdp-variants .pdp-selected {
+  font-weight: 500;
+  text-transform: none;
+  color: rgba(var(--color-foreground), 0.75);
+}
+.pdp-variants .pdp-legend-dot .swatch {
+  --swatch--size: 2.6rem;
+  display: block;
+}
+.pdp-variants .pdp-hint {
+  padding: 0.5rem 1.2rem;
+  border: 1px solid var(--pdp-line);
+  border-radius: 999px;
+  background: #f6f6f6;
+  color: rgba(var(--color-foreground), 0.65);
+  font-size: 1.5rem;
+  font-weight: 600;
+  text-transform: none;
+}
+
+/* 按钮式选项 */
+.pdp-variants .product-form__input--pill input[type='radio'] + label {
+  margin: 0 0.8rem 0.8rem 0;
+  padding: 1.5rem 2.4rem;
+  border: 1px solid #cfcfcf;
+  border-radius: 1.2rem;
+  background: #fff;
+  box-shadow: none;
+  color: #000;
+  font-size: 2rem;
+  font-weight: 800;
+  letter-spacing: 0;
+  text-transform: uppercase;
+}
+.pdp-variants .product-form__input--pill input[type='radio'] + label::before {
+  content: none;
+}
+.pdp-variants .product-form__input--pill input[type='radio']:checked + label {
+  border-color: var(--pdp-accent);
+  background: var(--pdp-accent-bg);
+  color: var(--pdp-accent);
+}
+
+/* 色块式选项：圆点 + 名称，做成和按钮一样的外观 */
+.pdp-variants .swatch-input__input + .swatch-input__label {
+  --swatch-input--size: 2.4rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 1.2rem;
+  margin: 0 0.8rem 0.8rem 0;
+  padding: 1.5rem 2.4rem 1.5rem 1.6rem;
+  border: 1px solid #cfcfcf;
+  border-radius: 1.2rem;
+  background: #fff;
+  outline: none;
+  max-width: none;
+}
+.pdp-variants .swatch-input__input + .swatch-input__label::after {
+  content: attr(title);
+  color: #000;
+  font-size: 2rem;
+  font-weight: 800;
+  line-height: 1;
+}
+.pdp-variants .swatch-input__input:checked + .swatch-input__label {
+  border-color: var(--pdp-accent);
+  background: var(--pdp-accent-bg);
+  outline: none;
+}
+.pdp-variants .swatch-input__input:checked + .swatch-input__label::after {
+  color: var(--pdp-accent);
+}
+.pdp-variants .swatch-input__input + .swatch-input__label:hover {
+  outline: none;
+  border-color: rgb(var(--color-foreground));
+}
+.pdp-variants .swatch-input__input:checked + .swatch-input__label:hover {
+  border-color: var(--pdp-accent);
+}
+.pdp-variants .swatch-input__input:focus-visible + .swatch-input__label {
+  outline: 0.2rem solid rgba(var(--color-foreground), 0.55);
+  outline-offset: 0.2rem;
+}
+
+/* ---------- 加购 ---------- */
+.pdp-info > .pdp-buy {
+  margin-top: 2.4rem;
+}
+.pdp-buy .product-form {
+  margin: 0;
+}
+.pdp-buy .product-form__buttons {
+  max-width: none;
+  margin: 0;
+}
+.pdp-buy .product-form__submit {
+  min-height: 6.4rem;
+  border-radius: 0;
+  background: #000;
+  color: #fff;
+  font-size: 2.2rem;
+  font-weight: 800;
+  letter-spacing: 0;
+  text-transform: uppercase;
+}
+.pdp-buy .product-form__submit::before,
+.pdp-buy .product-form__submit::after {
+  box-shadow: none;
+  border-radius: 0;
+}
+.pdp-buy .product-form__submit[disabled],
+.pdp-buy .product-form__submit[aria-disabled='true'] {
+  background: #777;
+  color: #fff;
+  opacity: 1;
+}
+
+.pdp-stock {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1.2rem;
+  margin: 0;
+  padding: 1.4rem 1rem;
+  background: #e9f3f0;
+  font-size: 1.8rem;
+  line-height: 1.3;
+  text-align: center;
+}
+.pdp-stock[hidden] {
+  display: none;
+}
+.pdp-buy + .pdp-stock {
+  margin-top: 0;
+}
+
+.pdp-info > .pdp-pay {
+  margin-top: 2rem;
+}
+.pdp-info > .pdp-acc:not(.pdp-acc + .pdp-acc) {
+  margin-top: 3.2rem;
+}
+.pdp-pay img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+.pdp-pay__list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.8rem;
+  margin: 0;
+  padding: 0;
+}
+.pdp-pay__list svg {
+  width: 4.4rem;
+  height: auto;
+}
+
+.pdp-feature {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin: 0;
+  font-size: 1.8rem;
+  line-height: 1.3;
+}
+.pdp-feature__icon {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  min-width: 2.4rem;
+}
+.pdp-feature__icon img {
+  display: block;
+  height: 2.4rem;
+  width: auto;
+}
+.pdp-info > .pdp-feature + .pdp-feature {
+  margin-top: 1.2rem;
+}
+
+/* ---------- 手风琴 ---------- */
+.pdp-acc {
+  border: 1px solid #e1e1e1;
+  background: #f8f8f8;
+}
+.pdp-info > .pdp-acc + .pdp-acc {
+  margin-top: 1.4rem;
+}
+.pdp-acc summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.6rem;
+  padding: 2rem;
+  list-style: none;
+  cursor: pointer;
+}
+.pdp-acc summary::-webkit-details-marker {
+  display: none;
+}
+.pdp-acc__title {
+  display: flex;
+  align-items: center;
+  gap: 1.6rem;
+  min-width: 0;
+}
+.pdp-acc__heading {
+  font-size: 2rem;
+  font-weight: 800;
+  line-height: 1.2;
+}
+.pdp-acc__chev {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 4rem;
+  height: 4rem;
+  border: 1px solid #e1e1e1;
+  border-radius: 50%;
+  background: #fff;
+  color: #555;
+}
+.pdp-acc__chev svg {
+  stroke-width: 2.4;
+  transform: rotate(90deg);
+  transition: transform 0.25s ease;
+}
+.pdp-acc details[open] .pdp-acc__chev svg {
+  transform: rotate(-90deg);
+}
+.pdp-acc summary:focus-visible {
+  outline: 0.2rem solid rgb(var(--color-foreground));
+  outline-offset: -0.4rem;
+}
+.pdp-acc__body {
+  padding: 0 2rem 2.4rem;
+  font-size: 1.8rem;
+  line-height: 1.7;
+}
+.pdp-acc__body > :first-child {
+  margin-top: 0;
+}
+.pdp-acc__body > :last-child {
+  margin-bottom: 0;
+}
+
+/* 支持的浏览器里让手风琴平滑展开，不支持的直接展开 */
+@supports (interpolate-size: allow-keywords) {
+  .pdp-acc details {
+    interpolate-size: allow-keywords;
+  }
+  .pdp-acc details::details-content {
+    block-size: 0;
+    overflow: hidden;
+    transition: block-size 0.3s ease, content-visibility 0.3s ease allow-discrete;
+  }
+  .pdp-acc details[open]::details-content {
+    block-size: auto;
+  }
+}
+
+/* ---------- 吸底加购栏（仅桌面） ---------- */
+.pdp-bar {
+  display: none;
+}
+
+/* ==========================================================
+   桌面端 ≥ 990px
+   ========================================================== */
+@media screen and (min-width: 990px) {
+  .pdp__wrap {
+    padding: 0 3.2rem;
+  }
+
+  .pdp__grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr);
+    gap: 4.8rem;
+    align-items: start;
+  }
+
+  /* 画廊固定：右侧信息区因手风琴展开变长时，画廊停在原位，
+     直到信息区滚到底（两栏底边对齐）后一起随页面上移 */
+  .pdp__media {
+    position: sticky;
+    top: var(--pdp-top);
+    align-self: start;
+  }
+
+  .pdp-gallery {
+    display: grid;
+    grid-template-columns: 9.6rem minmax(0, 1fr);
+    gap: 1.6rem;
+  }
+  .pdp-gallery__stage {
+    grid-column: 2;
+    grid-row: 1;
+    border-radius: var(--pdp-radius);
+  }
+  .pdp-gallery__track {
+    aspect-ratio: var(--pdp-ratio-d, 1 / 1);
+    max-height: calc(100svh - var(--pdp-top) - 2rem);
+    min-height: 40rem;
+  }
+
+  /* 缩略图竖排，高度跟随主图，超出时在自己内部滚动 */
+  .pdp-thumbs {
+    grid-column: 1;
+    grid-row: 1;
+    position: relative;
+  }
+  .pdp-thumbs__list {
+    position: absolute;
+    inset: 0;
+    flex-direction: column;
+    gap: 1.2rem;
+    overflow-x: hidden;
+    overflow-y: auto;
+    background: transparent;
+  }
+  .pdp-thumb {
+    flex: none;
+    width: 100%;
+    aspect-ratio: 4 / 5;
+    border-radius: 1.4rem;
+  }
+
+  .pdp-arrow--prev {
+    left: 1.6rem;
+  }
+  .pdp-arrow--next {
+    right: 1.6rem;
+  }
+
+  /* 跑马灯默认只在移动端 */
+  .pdp-marquee:not(.pdp-marquee--desktop) {
+    display: none;
+  }
+  .pdp-marquee--desktop {
+    margin-top: 1.2rem;
+    border-radius: var(--pdp-radius);
+    overflow: hidden;
+  }
+
+  .pdp-info {
+    padding: 0;
+  }
+  .pdp-wish {
+    top: 0;
+  }
+  .pdp-title {
+    font-size: clamp(3rem, 2.3vw, 4rem);
+  }
+  .pdp-rating {
+    font-size: 1.8rem;
+  }
+
+  /* 吸底加购栏：主加购按钮向下滚出视口后出现 */
+  .pdp-bar {
+    position: fixed;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 30;
+    display: block;
+    padding: 0 3.2rem 1.2rem;
+    pointer-events: none;
+    transform: translateY(calc(100% + 2rem));
+    transition: transform 0.3s ease;
+  }
+  .pdp-bar.is-visible {
+    transform: translateY(0);
+  }
+  .pdp-bar__inner {
+    display: flex;
+    align-items: stretch;
+    gap: 0;
+    max-width: var(--pdp-max, 1700px);
+    margin: 0 auto;
+    background: #eeeff1;
+    box-shadow: 0 0.2rem 2.4rem rgba(0, 0, 0, 0.18);
+    pointer-events: auto;
+  }
+  .pdp-bar__thumb {
+    flex: none;
+    display: grid;
+    place-items: center;
+    width: 11.6rem;
+    background: #f7f7f7;
+  }
+  .pdp-bar__thumb img {
+    display: block;
+    width: 6.4rem;
+    height: 6.4rem;
+    object-fit: contain;
+  }
+  .pdp-bar__info {
+    flex: 1 1 auto;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 0.4rem;
+    padding: 1.2rem 2rem;
+  }
+  .pdp-bar__title {
+    margin: 0;
+    overflow: hidden;
+    font-size: 1.8rem;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .pdp-bar__price {
+    display: flex;
+    align-items: baseline;
+    gap: 1rem;
+    margin: 0;
+  }
+  .pdp-bar__price .pdp-price__now {
+    font-size: 3rem;
+  }
+  .pdp-bar__price .pdp-price__was {
+    font-size: 2rem;
+  }
+  .pdp-bar__btn {
+    flex: 0 1 52%;
+    align-self: center;
+    min-height: 6rem;
+    margin: 1.2rem 1.2rem 1.2rem 0;
+    border: 0;
+    background: #000;
+    color: #fff;
+    font: inherit;
+    font-size: 2.2rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    cursor: pointer;
+  }
+  .pdp-bar__btn[disabled] {
+    background: #777;
+    cursor: not-allowed;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pdp-bar,
+  .pdp-acc__chev svg,
+  .pdp-arrow,
+  .pdp-thumb {
+    transition: none;
+  }
+  .pdp-acc details::details-content {
+    transition: none;
+  }
+}
+
+/* 小屏微调：让“评分一行”“价格一行”“颜色两个按钮一行”在 390px 宽的手机上放得下 */
+@media screen and (max-width: 749px) {
+  .pdp-badge,
+  .pdp-installments,
+  .pdp-feature {
+    font-size: 1.6rem;
+  }
+  .pdp-installments {
+    line-height: 1.5;
+  }
+  .pdp-stock {
+    gap: 0.8rem;
+    font-size: 1.5rem;
+  }
+  .pdp-rating {
+    gap: 0.4rem 0.8rem;
+    font-size: 1.4rem;
+  }
+  .pdp-stars svg {
+    width: 1.8rem;
+    height: 1.8rem;
+  }
+  .pdp-price {
+    gap: 0.6rem 1rem;
+  }
+  .pdp-price__now {
+    font-size: 3.2rem;
+  }
+  .pdp-price__was {
+    font-size: 2rem;
+  }
+  .pdp-price__save {
+    padding: 0.8rem 1.2rem;
+    font-size: 1.4rem;
+  }
+  .pdp-variants .product-form__input--pill input[type='radio'] + label {
+    padding: 1.3rem 1.8rem;
+    font-size: 1.7rem;
+  }
+  .pdp-variants .swatch-input__input + .swatch-input__label {
+    --swatch-input--size: 2rem;
+    gap: 0.8rem;
+    margin-right: 0.6rem;
+    padding: 1.3rem 1.4rem 1.3rem 1.2rem;
+  }
+  .pdp-variants .swatch-input__input + .swatch-input__label::after {
+    font-size: 1.7rem;
+  }
+  .pdp-acc__heading {
+    font-size: 1.9rem;
+  }
+}

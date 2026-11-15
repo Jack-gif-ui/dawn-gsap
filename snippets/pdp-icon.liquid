@@ -1,0 +1,52 @@
+{%- doc -%}
+  商品详情页（product.pdp）用的小图标，线条风格，颜色跟随文字（currentColor）。
+
+  @param {string} name - 图标名：diamond, shield, truck, gift, star, flame, ruler, chevron-right, check, heart, box
+  @param {number} [size] - 像素尺寸，默认 20
+
+  @example
+  {% render 'pdp-icon', name: 'diamond' %}
+{%- enddoc -%}
+
+{%- assign pdp_icon_size = size | default: 20 -%}
+{%- if name != 'none' and name != blank -%}
+  <svg
+    class="pdp-icon pdp-icon--{{ name }}"
+    xmlns="http://www.w3.org/2000/svg"
+    viewBox="0 0 24 24"
+    width="{{ pdp_icon_size }}"
+    height="{{ pdp_icon_size }}"
+    fill="none"
+    stroke="currentColor"
+    stroke-width="1.7"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+    aria-hidden="true"
+    focusable="false"
+  >
+    {%- case name -%}
+      {%- when 'diamond' -%}
+        <path d="M6 3h12l4 6-10 12L2 9z"/><path d="M11 3 8 9l4 12 4-12-3-6"/><path d="M2 9h20"/>
+      {%- when 'shield' -%}
+        <path d="M12 3 4.5 6v5.5c0 4.6 3.2 8 7.5 9.5 4.3-1.5 7.5-4.9 7.5-9.5V6z"/><path d="m8.8 12 2.4 2.4 4.2-4.6"/>
+      {%- when 'truck' -%}
+        <path d="M2 6h12v10H2z"/><path d="M14 9h4l4 4v3h-8"/><circle cx="7" cy="18" r="2"/><circle cx="17" cy="18" r="2"/>
+      {%- when 'gift' -%}
+        <rect x="3" y="8" width="18" height="4" rx="1"/><path d="M5 12v9h14v-9"/><path d="M12 8v13"/><path d="M12 8C10.500 4.500 6.500 4.500 6.500 6.500S9.500 8 12 8z"/><path d="M12 8c1.500-3.500 5.500-3.500 5.500-1.500S14.500 8 12 8z"/>
+      {%- when 'star' -%}
+        <path d="m12 3 2.700 5.600 6.100.8-4.500 4.200 1.100 6.100L12 16.800 6.600 19.700l1.100-6.100L3.200 9.400l6.100-.8z"/>
+      {%- when 'flame' -%}
+        <path d="M12 21c-3.900 0-6.500-2.700-6.500-6.200 0-2.800 1.700-4.600 3.200-6.300 1-1.200 1.800-2.400 1.800-4.500 3.300 1.600 5.300 4.300 5.500 6.800.9-.6 1.500-1.700 1.600-2.900 1.500 1.700 2.400 3.700 2.400 5.700 0 3.800-3.100 7.400-8 7.400z"/><path d="M12 21c-1.600 0-2.700-1.100-2.700-2.600 0-1.500 1.100-2.200 1.800-3.200.5-.7.700-1.300.7-1.900 1.600 1 2.900 2.500 2.900 4.200 0 2-1.100 3.500-2.700 3.500z"/>
+      {%- when 'ruler' -%}
+        <path d="m3 17 14-14 4 4L7 21z"/><path d="m7 13 2 2M10 10l2 2M13 7l2 2"/>
+      {%- when 'chevron-right' -%}
+        <path d="m9 6 6 6-6 6"/>
+      {%- when 'check' -%}
+        <path d="m5 12.500 4.500 4.500L19 7.500"/>
+      {%- when 'heart' -%}
+        <path d="M12 20s-7-4.400-7-10a4.200 4.200 0 0 1 7-3 4.200 4.200 0 0 1 7 3c0 5.600-7 10-7 10z"/>
+      {%- when 'box' -%}
+        <path d="m3 7.500 9-4.500 9 4.500v9l-9 4.500-9-4.500z"/><path d="m3 7.500 9 4.500 9-4.500M12 12v9"/>
+    {%- endcase -%}
+  </svg>
+{%- endif -%}

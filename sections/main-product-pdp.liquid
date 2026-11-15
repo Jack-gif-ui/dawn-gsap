@@ -1,0 +1,831 @@
+{%- comment -%}
+  商品详情页（product.pdp 模板用）
+  - 桌面端（≥990px）：左图右信息，左侧画廊 sticky，右侧手风琴展开变长时画廊固定
+  - 移动端（<990px）：主图 → 缩略图 → 跑马灯 → 信息，手风琴向下撑开
+  - 变体切换沿用 Dawn 的 product-info.js / product-form.js，不另写购物车逻辑
+{%- endcomment -%}
+
+{{ 'section-main-product.css' | asset_url | stylesheet_tag }}
+{{ 'marquee-strip-styles.css' | asset_url | stylesheet_tag }}
+{{ 'pdp.css' | asset_url | stylesheet_tag }}
+{%- unless product.has_only_default_variant -%}
+  {{ 'component-product-variant-picker.css' | asset_url | stylesheet_tag }}
+  {{ 'component-swatch-input.css' | asset_url | stylesheet_tag }}
+  {{ 'component-swatch.css' | asset_url | stylesheet_tag }}
+{%- endunless -%}
+
+{%- liquid
+  assign current_variant = product.selected_or_first_available_variant
+  assign featured_media = current_variant.featured_media
+  assign marquee_items = section.blocks | where: 'type', 'marquee_item'
+  assign bar_media = featured_media | default: product.featured_media
+  assign product_form_id = 'product-form-' | append: section.id
+-%}
+
+{%- style -%}
+  .section-{{ section.id }}-padding {
+    padding-top: {{ section.settings.padding_top | times: 0.5 | round: 0 }}px;
+    padding-bottom: {{ section.settings.padding_bottom | times: 0.75 | round: 0 }}px;
+  }
+  @media screen and (min-width: 990px) {
+    .section-{{ section.id }}-padding {
+      padding-top: {{ section.settings.padding_top }}px;
+      padding-bottom: {{ section.settings.padding_bottom }}px;
+    }
+  }
+{%- endstyle -%}
+
+<product-info
+  id="MainProduct-{{ section.id }}"
+  class="pdp section-{{ section.id }}-padding gradient color-{{ section.settings.color_scheme }}"
+  data-section="{{ section.id }}"
+  data-product-id="{{ product.id }}"
+  data-update-url="true"
+  data-url="{{ product.url }}"
+  style="
+    --pdp-max: {{ section.settings.max_width }}px;
+    --pdp-ratio-d: {{ section.settings.ratio_desktop }};
+    --pdp-ratio-m: {{ section.settings.ratio_mobile }};
+    --pdp-fit: {{ section.settings.image_fit }};
+    --pdp-sticky: {{ section.settings.sticky_offset }}px;
+  "
+>
+  <script src="{{ 'product-info.js' | asset_url }}" defer="defer"></script>
+  <script src="{{ 'product-form.js' | asset_url }}" defer="defer"></script>
+  <script src="{{ 'pdp.js' | asset_url }}" defer="defer"></script>
+  {%- if marquee_items.size > 0 and section.settings.show_marquee -%}
+    <script src="{{ 'marquee-strip.js' | asset_url }}" defer="defer"></script>
+  {%- endif -%}
+  {%- if request.design_mode -%}
+    <script src="{{ 'theme-editor.js' | asset_url }}" defer="defer"></script>
+  {%- endif -%}
+
+  <product-component view-event-payload="{{ product | standard_event_data: 'view', context: 'page' | escape }}">
+    <div class="pdp__wrap">
+      <div class="pdp__grid">
+        {%- comment -%} ===== 左：画廊（桌面 sticky） ===== {%- endcomment -%}
+        <div class="pdp__media">
+          <pdp-gallery class="pdp-gallery" id="MediaGallery-{{ section.id }}" data-section="{{ section.id }}">
+            <div class="pdp-gallery__stage">
+              {%- if section.settings.stock_badge != blank -%}
+                <p class="pdp-gallery__badge">
+                  <span class="pdp-dot" aria-hidden="true"></span>
+                  {{ section.settings.stock_badge | escape }}
+                </p>
+              {%- endif -%}
+
+              <ul
+                id="Slider-Gallery-{{ section.id }}"
+                class="pdp-gallery__track"
+                data-pdp-track
+                role="list"
+                aria-label="{{ 'products.product.media.gallery_viewer' | t }}"
+              >
+                {%- assign pdp_index = 0 -%}
+                {%- if featured_media -%}
+                  {%- assign pdp_index = pdp_index | plus: 1 -%}
+                  {% render 'pdp-media-item',
+                    media: featured_media,
+                    mode: 'slide',
+                    section_id: section.id,
+                    index: pdp_index,
+                    product_title: product.title
+                  %}
+                {%- endif -%}
+                {%- for media in product.media -%}
+                  {%- if featured_media and media.id == featured_media.id -%}
+                    {%- continue -%}
+                  {%- endif -%}
+                  {%- assign pdp_index = pdp_index | plus: 1 -%}
+                  {% render 'pdp-media-item',
+                    media: media,
+                    mode: 'slide',
+                    section_id: section.id,
+                    index: pdp_index,
+                    product_title: product.title
+                  %}
+                {%- endfor -%}
+              </ul>
+
+              {%- if product.media.size > 1 -%}
+                <button
+                  type="button"
+                  class="pdp-arrow pdp-arrow--prev"
+                  data-pdp-prev
+                  hidden
+                  aria-label="{{ 'general.slider.previous_slide' | t }}"
+                >
+                  {% render 'pdp-icon', name: 'chevron-right', size: 22 %}
+                </button>
+                <button
+                  type="button"
+                  class="pdp-arrow pdp-arrow--next"
+                  data-pdp-next
+                  aria-label="{{ 'general.slider.next_slide' | t }}"
+                >
+                  {% render 'pdp-icon', name: 'chevron-right', size: 22 %}
+                </button>
+              {%- endif -%}
+            </div>
+
+            {%- if product.media.size > 1 -%}
+              <div class="pdp-thumbs">
+                <div class="pdp-thumbs__list" data-pdp-thumbs>
+                  {%- assign pdp_index = 0 -%}
+                  {%- if featured_media -%}
+                    {%- assign pdp_index = pdp_index | plus: 1 -%}
+                    {% render 'pdp-media-item',
+                      media: featured_media,
+                      mode: 'thumb',
+                      section_id: section.id,
+                      index: pdp_index,
+                      product_title: product.title
+                    %}
+                  {%- endif -%}
+                  {%- for media in product.media -%}
+                    {%- if featured_media and media.id == featured_media.id -%}
+                      {%- continue -%}
+                    {%- endif -%}
+                    {%- assign pdp_index = pdp_index | plus: 1 -%}
+                    {% render 'pdp-media-item',
+                      media: media,
+                      mode: 'thumb',
+                      section_id: section.id,
+                      index: pdp_index,
+                      product_title: product.title
+                    %}
+                  {%- endfor -%}
+                </div>
+              </div>
+            {%- endif -%}
+          </pdp-gallery>
+
+          {%- if section.settings.show_marquee and marquee_items.size > 0 -%}
+            <div class="pdp-marquee{% if section.settings.marquee_on_desktop %} pdp-marquee--desktop{% endif %}">
+              <marquee-strip
+                class="ms ms--normalcase"
+                data-speed="{{ section.settings.marquee_speed }}"
+                style="
+                  --ms-bg: {{ section.settings.marquee_bg }};
+                  --ms-text: {{ section.settings.marquee_color }};
+                  --ms-gap: 28px;
+                  --ms-pt: 0px;
+                  --ms-pb: 0px;
+                  --ms-name-m: {{ section.settings.marquee_size }}px;
+                  --ms-name: {{ section.settings.marquee_size }}px;
+                "
+              >
+                <div class="ms__wrap">
+                  <div class="ms__track">
+                    {%- for copy in (1..2) -%}
+                      <ul
+                        class="ms__group"
+                        role="list"
+                        {% if copy == 1 %}
+                          data-ms-group
+                        {% else %}
+                          aria-hidden="true" inert
+                        {% endif %}
+                      >
+                        {%- for block in marquee_items -%}
+                          <li class="ms__item" {% if copy == 1 %}{{ block.shopify_attributes }}{% endif %}>
+                            <span class="ms__inner">
+                              {% render 'pdp-icon', name: 'check', size: 18 %}
+                              <span class="ms__name">{{ block.settings.text | escape }}</span>
+                            </span>
+                          </li>
+                        {%- endfor -%}
+                      </ul>
+                    {%- endfor -%}
+                  </div>
+                </div>
+              </marquee-strip>
+            </div>
+          {%- elsif request.design_mode and section.settings.show_marquee -%}
+            <p class="pdp-empty">在区块里添加“跑马灯文字”。</p>
+          {%- endif -%}
+        </div>
+
+        {%- comment -%} ===== 右：商品信息 ===== {%- endcomment -%}
+        <div class="pdp__info">
+          <section id="ProductInfo-{{ section.id }}" class="pdp-info">
+            {%- for block in section.blocks -%}
+              {%- case block.type -%}
+                {%- when '@app' -%}
+                  {% render block %}
+
+                {%- when 'rating' -%}
+                  {%- liquid
+                    assign rating_meta = product.metafields.reviews.rating.value
+                    if rating_meta != blank
+                      assign rating_num = rating_meta.rating | times: 1.0
+                      assign rating_label = rating_meta.rating | append: ' (' | append: product.metafields.reviews.rating_count | append: ' reviews)'
+                    else
+                      assign rating_num = block.settings.rating | times: 1.0
+                      assign rating_label = block.settings.rating | append: ' (' | append: block.settings.review_count | append: ')'
+                    endif
+                  -%}
+                  {%- if rating_num > 0 -%}
+                    <div class="pdp-rating" {{ block.shopify_attributes }}>
+                      <span class="pdp-stars" role="img" aria-label="{{ rating_label | escape }}">
+                        {%- for i in (1..5) -%}
+                          {%- assign star_fill = rating_num | minus: forloop.index0 | at_least: 0 | at_most: 1 | times: 24 -%}
+                          <svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true" focusable="false">
+                            <rect width="24" height="24" fill="#dcdce6"/>
+                            <rect width="{{ star_fill }}" height="24" fill="#00b67a"/>
+                            <polygon fill="#fff" points="12,4.4 14.3,9.5 19.8,10.1 15.6,13.8 16.9,19.2 12,16.3 7.1,19.2 8.4,13.8 4.2,10.1 9.7,9.5"/>
+                          </svg>
+                        {%- endfor -%}
+                      </span>
+                      <span class="pdp-rating__text">{{ rating_label | escape }}</span>
+                      {%- if block.settings.extra_text != blank -%}
+                        <span class="pdp-rating__extra">{{ block.settings.extra_text | escape }}</span>
+                      {%- endif -%}
+                    </div>
+                  {%- endif -%}
+
+                {%- when 'wishlist' -%}
+                  <div class="pdp-wish" {{ block.shopify_attributes }}>
+                    {% render 'wishlist-heart', card_product: product %}
+                  </div>
+
+                {%- when 'title' -%}
+                  <h1 class="pdp-title" {{ block.shopify_attributes }}>{{ product.title | escape }}</h1>
+
+                {%- when 'badge' -%}
+                  {%- if block.settings.text != blank -%}
+                    <p class="pdp-badge" {{ block.shopify_attributes }}>
+                      {% render 'pdp-icon', name: 'flame', size: 20 %}
+                      <span>{{ block.settings.text | escape }}</span>
+                    </p>
+                  {%- endif -%}
+
+                {%- when 'price' -%}
+                  <div id="price-{{ section.id }}" class="pdp-price" role="status" {{ block.shopify_attributes }}>
+                    {%- liquid
+                      assign price_now = current_variant.price
+                      assign price_was = current_variant.compare_at_price
+                      assign price_saved = price_was | minus: price_now
+                    -%}
+                    <span class="pdp-price__now">{{ price_now | money }}</span>
+                    {%- if price_was > price_now -%}
+                      <s class="pdp-price__was">{{ price_was | money }}</s>
+                      {%- if block.settings.show_savings -%}
+                        <span class="pdp-price__save">
+                          {{- block.settings.savings_prefix | escape }} {{ price_saved | money -}}
+                        </span>
+                      {%- endif -%}
+                    {%- endif -%}
+                  </div>
+
+                {%- when 'installments' -%}
+                  <div class="pdp-installments" {{ block.shopify_attributes }}>
+                    {%- assign product_form_installment_id = 'product-form-installment-' | append: section.id -%}
+                    {%- form 'product', product, id: product_form_installment_id, class: 'installment caption-large' -%}
+                      <input type="hidden" name="id" value="{{ current_variant.id }}">
+                      {{ form | payment_terms }}
+                    {%- endform -%}
+                  </div>
+
+                {%- when 'size_guide' -%}
+                  <modal-opener class="pdp-sizeguide" data-modal="#PopupModal-{{ block.id }}" {{ block.shopify_attributes }}>
+                    <button id="ProductPopup-{{ block.id }}" class="pdp-pill-btn" type="button" aria-haspopup="dialog">
+                      {% render 'pdp-icon', name: 'ruler', size: 22 %}
+                      <span>{{ block.settings.text | default: block.settings.page.title | escape }}</span>
+                      {% render 'pdp-icon', name: 'chevron-right', size: 16 %}
+                    </button>
+                  </modal-opener>
+
+                {%- when 'variant_picker' -%}
+                  <div class="pdp-variants" data-pdp-hints="{{ block.settings.option_hints | escape }}">
+                    {% render 'product-variant-picker',
+                      product: product,
+                      block: block,
+                      product_form_id: product_form_id
+                    %}
+                  </div>
+
+                {%- when 'buy_buttons' -%}
+                  <div class="pdp-buy">
+                    {%- render 'buy-buttons',
+                      block: block,
+                      product: product,
+                      product_form_id: product_form_id,
+                      section_id: section.id,
+                      show_pickup_availability: false
+                    -%}
+                  </div>
+
+                {%- when 'stock_note' -%}
+                  <p
+                    class="pdp-stock"
+                    data-pdp-stock
+                    {% unless current_variant.available %}
+                      hidden
+                    {% endunless %}
+                    {{ block.shopify_attributes }}
+                  >
+                    <span class="pdp-dot" aria-hidden="true"></span>
+                    <span>{{ block.settings.text | escape }}</span>
+                  </p>
+
+                {%- when 'payment_icons' -%}
+                  <div class="pdp-pay" {{ block.shopify_attributes }}>
+                    {%- if block.settings.image != blank -%}
+                      {{
+                        block.settings.image
+                        | image_url: width: 1200
+                        | image_tag:
+                          loading: 'lazy',
+                          widths: '400, 600, 800, 1200',
+                          sizes: '(min-width: 990px) 40vw, 100vw',
+                          alt: 'Payment methods'
+                      }}
+                    {%- else -%}
+                      <ul class="pdp-pay__list list-unstyled" role="list">
+                        {%- for type in shop.enabled_payment_types -%}
+                          <li>{{ type | payment_type_svg_tag: class: 'icon icon--full-color' }}</li>
+                        {%- endfor -%}
+                      </ul>
+                    {%- endif -%}
+                  </div>
+
+                {%- when 'feature' -%}
+                  <p class="pdp-feature" {{ block.shopify_attributes }}>
+                    <span class="pdp-feature__icon">
+                      {%- if block.settings.icon_image != blank -%}
+                        {{
+                          block.settings.icon_image
+                          | image_url: width: 120
+                          | image_tag: loading: 'lazy', width: 40, alt: ''
+                        }}
+                      {%- else -%}
+                        {% render 'pdp-icon', name: block.settings.icon, size: 22 %}
+                      {%- endif -%}
+                    </span>
+                    <span>{{ block.settings.text | escape }}</span>
+                  </p>
+
+                {%- when 'collapsible_tab' -%}
+                  <div class="pdp-acc" {{ block.shopify_attributes }}>
+                    <details id="Details-{{ block.id }}-{{ section.id }}" {% if block.settings.open_by_default %}open{% endif %}>
+                      <summary>
+                        <span class="pdp-acc__title">
+                          {% render 'pdp-icon', name: block.settings.icon, size: 24 %}
+                          <h2 class="pdp-acc__heading">{{ block.settings.heading | default: block.settings.page.title | escape }}</h2>
+                        </span>
+                        <span class="pdp-acc__chev">{% render 'pdp-icon', name: 'chevron-right', size: 16 %}</span>
+                      </summary>
+                      <div class="pdp-acc__body rte" id="ProductAccordion-{{ block.id }}-{{ section.id }}">
+                        {{ block.settings.content }}
+                        {{ block.settings.page.content }}
+                      </div>
+                    </details>
+                  </div>
+              {%- endcase -%}
+            {%- endfor -%}
+          </section>
+        </div>
+      </div>
+    </div>
+
+    {%- comment -%} 尺寸指南等弹窗，沿用 Dawn 的 modal-dialog {%- endcomment -%}
+    {%- assign popups = section.blocks | where: 'type', 'size_guide' -%}
+    {%- for block in popups -%}
+      <modal-dialog id="PopupModal-{{ block.id }}" class="product-popup-modal" {{ block.shopify_attributes }}>
+        <div
+          role="dialog"
+          aria-label="{{ block.settings.text }}"
+          aria-modal="true"
+          class="product-popup-modal__content"
+          tabindex="-1"
+        >
+          <button
+            id="ModalClose-{{ block.id }}"
+            type="button"
+            class="product-popup-modal__toggle"
+            aria-label="{{ 'accessibility.close' | t }}"
+          >
+            {{- 'icon-close.svg' | inline_asset_content -}}
+          </button>
+          <div class="product-popup-modal__content-info">
+            <h2 class="h2">{{ block.settings.page.title | default: block.settings.text | escape }}</h2>
+            <div class="rte">
+              {{ block.settings.content }}
+              {{ block.settings.page.content }}
+            </div>
+          </div>
+        </div>
+      </modal-dialog>
+    {%- endfor -%}
+
+    {%- comment -%} 桌面端：主加购按钮滚出视口（向下）后，底部出现吸底加购栏 {%- endcomment -%}
+    {%- if section.settings.enable_sticky_bar -%}
+      <pdp-sticky-bar
+        class="pdp-bar"
+        data-submit-id="ProductSubmitButton-{{ section.id }}"
+        data-price-id="price-{{ section.id }}"
+        inert
+      >
+        <div class="pdp-bar__inner">
+          {%- if bar_media -%}
+            <div class="pdp-bar__thumb">
+              {{
+                bar_media.preview_image
+                | image_url: width: 160
+                | image_tag: loading: 'lazy', width: 64, height: 64, alt: ''
+              }}
+            </div>
+          {%- endif -%}
+          <div class="pdp-bar__info">
+            <p class="pdp-bar__title">{{ product.title | escape }}</p>
+            <p class="pdp-bar__price" data-pdp-bar-price>
+              <span class="pdp-price__now">{{ current_variant.price | money }}</span>
+              {%- if current_variant.compare_at_price > current_variant.price -%}
+                <s class="pdp-price__was">{{ current_variant.compare_at_price | money }}</s>
+              {%- endif -%}
+            </p>
+          </div>
+          <button type="button" class="pdp-bar__btn" data-pdp-bar-submit>
+            {{ section.settings.bar_button_text | escape }}
+          </button>
+        </div>
+      </pdp-sticky-bar>
+    {%- endif -%}
+
+    <script type="application/ld+json">
+      {{ product | structured_data }}
+    </script>
+  </product-component>
+</product-info>
+
+{% schema %}
+{
+  "name": "商品详情（新版）",
+  "tag": "section",
+  "class": "section",
+  "blocks": [
+    {
+      "type": "@app"
+    },
+    {
+      "type": "rating",
+      "name": "评分",
+      "limit": 1,
+      "settings": [
+        {
+          "type": "paragraph",
+          "content": "商品有 reviews.rating 元字段时自动读取；没有时使用下面手填的数字。"
+        },
+        { "type": "text", "id": "rating", "label": "评分（手填）", "default": "4.7" },
+        { "type": "text", "id": "review_count", "label": "评价数（手填）", "default": "2,662 reviews" },
+        { "type": "text", "id": "extra_text", "label": "右侧附加文字", "default": "· 1M+ Customers" }
+      ]
+    },
+    {
+      "type": "wishlist",
+      "name": "心愿按钮",
+      "limit": 1,
+      "settings": [
+        {
+          "type": "paragraph",
+          "content": "显示在信息区右上角，沿用已有的心愿单功能。"
+        }
+      ]
+    },
+    {
+      "type": "title",
+      "name": "标题",
+      "limit": 1
+    },
+    {
+      "type": "badge",
+      "name": "徽章（如热销）",
+      "settings": [
+        { "type": "text", "id": "text", "label": "文字", "default": "#1 Best Seller . 1M+ sold" }
+      ]
+    },
+    {
+      "type": "price",
+      "name": "价格",
+      "limit": 1,
+      "settings": [
+        { "type": "checkbox", "id": "show_savings", "label": "显示节省金额", "default": true },
+        { "type": "text", "id": "savings_prefix", "label": "节省金额前缀", "default": "You're saving" }
+      ]
+    },
+    {
+      "type": "installments",
+      "name": "分期付款文案",
+      "limit": 1,
+      "settings": [
+        {
+          "type": "paragraph",
+          "content": "由 Shopify 的分期付款（Shop Pay 分期、Affirm 等）自动生成，需要在后台开通。"
+        }
+      ]
+    },
+    {
+      "type": "size_guide",
+      "name": "尺寸指南按钮",
+      "limit": 1,
+      "settings": [
+        { "type": "text", "id": "text", "label": "按钮文字", "default": "Size Guide" },
+        { "type": "richtext", "id": "content", "label": "弹窗内容" },
+        {
+          "type": "page",
+          "id": "page",
+          "label": "或选择页面作为弹窗内容",
+          "info": "选择页面后，弹窗显示该页面的内容。"
+        }
+      ]
+    },
+    {
+      "type": "variant_picker",
+      "name": "变体选择",
+      "limit": 1,
+      "settings": [
+        {
+          "type": "select",
+          "id": "picker_type",
+          "options": [
+            { "value": "button", "label": "按钮" },
+            { "value": "dropdown", "label": "下拉" }
+          ],
+          "default": "button",
+          "label": "选择器样式"
+        },
+        {
+          "type": "select",
+          "id": "swatch_shape",
+          "options": [
+            { "value": "circle", "label": "圆形" },
+            { "value": "square", "label": "方形" },
+            { "value": "none", "label": "不使用色块" }
+          ],
+          "default": "circle",
+          "label": "色块形状",
+          "info": "选项值配置了色块（如颜色）时，会显示为“色点 + 名称”的按钮。"
+        },
+        {
+          "type": "textarea",
+          "id": "option_hints",
+          "label": "选项提示文案",
+          "info": "每行一条，格式：选项名|选项值|提示。例如 Size|5MM|Not too flashy but noticeable"
+        }
+      ]
+    },
+    {
+      "type": "buy_buttons",
+      "name": "购买按钮",
+      "limit": 1,
+      "settings": [
+        {
+          "type": "checkbox",
+          "id": "show_dynamic_checkout",
+          "default": false,
+          "label": "显示动态结账按钮",
+          "info": "Apple Pay、Shop Pay 等，开启后加购按钮会变成次要样式。"
+        },
+        {
+          "type": "checkbox",
+          "id": "show_gift_card_recipient",
+          "default": true,
+          "label": "礼品卡显示收件人表单"
+        }
+      ]
+    },
+    {
+      "type": "stock_note",
+      "name": "发货提示条",
+      "limit": 1,
+      "settings": [
+        {
+          "type": "text",
+          "id": "text",
+          "label": "文字",
+          "default": "In Stock - Ships today from California, USA!"
+        },
+        {
+          "type": "paragraph",
+          "content": "商品缺货（按钮变为 Sold out）时自动隐藏。"
+        }
+      ]
+    },
+    {
+      "type": "payment_icons",
+      "name": "支付方式图标",
+      "limit": 1,
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "支付图标条图片",
+          "info": "上传一张横向的图标条（含 Affirm、Afterpay、Venmo 等）。不上传则显示商店已开通的支付方式。"
+        }
+      ]
+    },
+    {
+      "type": "feature",
+      "name": "卖点（图标 + 文字）",
+      "settings": [
+        {
+          "type": "select",
+          "id": "icon",
+          "label": "内置图标",
+          "options": [
+            { "value": "gift", "label": "礼盒" },
+            { "value": "star", "label": "星星" },
+            { "value": "box", "label": "包裹" },
+            { "value": "truck", "label": "卡车" },
+            { "value": "shield", "label": "盾牌" },
+            { "value": "diamond", "label": "钻石" },
+            { "value": "heart", "label": "爱心" },
+            { "value": "check", "label": "对勾" },
+            { "value": "none", "label": "无" }
+          ],
+          "default": "gift"
+        },
+        {
+          "type": "image_picker",
+          "id": "icon_image",
+          "label": "自定义图标图片",
+          "info": "上传后优先于内置图标。"
+        },
+        { "type": "text", "id": "text", "label": "文字", "default": "Ships inside a leather jewelry box" }
+      ]
+    },
+    {
+      "type": "collapsible_tab",
+      "name": "手风琴",
+      "settings": [
+        { "type": "text", "id": "heading", "label": "标题", "default": "Item Details" },
+        {
+          "type": "select",
+          "id": "icon",
+          "label": "图标",
+          "options": [
+            { "value": "diamond", "label": "钻石" },
+            { "value": "shield", "label": "盾牌" },
+            { "value": "truck", "label": "卡车" },
+            { "value": "gift", "label": "礼盒" },
+            { "value": "box", "label": "包裹" },
+            { "value": "star", "label": "星星" },
+            { "value": "heart", "label": "爱心" },
+            { "value": "check", "label": "对勾" },
+            { "value": "none", "label": "无" }
+          ],
+          "default": "diamond"
+        },
+        { "type": "richtext", "id": "content", "label": "内容" },
+        { "type": "page", "id": "page", "label": "或选择页面作为内容" },
+        { "type": "checkbox", "id": "open_by_default", "label": "默认展开", "default": false }
+      ]
+    },
+    {
+      "type": "marquee_item",
+      "name": "跑马灯文字",
+      "settings": [
+        { "type": "text", "id": "text", "label": "文字", "default": "Passes diamond tester" }
+      ]
+    }
+  ],
+  "settings": [
+    { "type": "header", "content": "布局" },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "配色方案",
+      "default": "scheme-1"
+    },
+    {
+      "type": "range",
+      "id": "max_width",
+      "min": 1200,
+      "max": 2200,
+      "step": 50,
+      "unit": "px",
+      "label": "桌面端内容最大宽度",
+      "default": 1700
+    },
+    {
+      "type": "range",
+      "id": "sticky_offset",
+      "min": 0,
+      "max": 80,
+      "step": 2,
+      "unit": "px",
+      "label": "画廊吸顶时与页头的间距",
+      "info": "桌面端画廊固定时，距离页头底部的距离。",
+      "default": 20
+    },
+
+    { "type": "header", "content": "画廊" },
+    {
+      "type": "select",
+      "id": "ratio_desktop",
+      "label": "桌面端主图比例",
+      "options": [
+        { "value": "1 / 1", "label": "1:1 方形" },
+        { "value": "4 / 5", "label": "4:5 竖图" },
+        { "value": "5 / 6", "label": "5:6 竖图" },
+        { "value": "3 / 4", "label": "3:4 竖图" }
+      ],
+      "default": "1 / 1"
+    },
+    {
+      "type": "select",
+      "id": "ratio_mobile",
+      "label": "移动端主图比例",
+      "options": [
+        { "value": "1 / 1", "label": "1:1 方形" },
+        { "value": "4 / 5", "label": "4:5 竖图" },
+        { "value": "5 / 6", "label": "5:6 竖图" },
+        { "value": "3 / 4", "label": "3:4 竖图" }
+      ],
+      "default": "5 / 6"
+    },
+    {
+      "type": "select",
+      "id": "image_fit",
+      "label": "图片填充方式",
+      "options": [
+        { "value": "cover", "label": "铺满裁切" },
+        { "value": "contain", "label": "完整显示" }
+      ],
+      "default": "cover"
+    },
+    {
+      "type": "text",
+      "id": "stock_badge",
+      "label": "主图左上角标签",
+      "info": "留空则不显示。",
+      "default": "In Stock - Ships Today!"
+    },
+
+    { "type": "header", "content": "跑马灯（主图下方）" },
+    { "type": "checkbox", "id": "show_marquee", "label": "显示跑马灯", "default": true },
+    {
+      "type": "checkbox",
+      "id": "marquee_on_desktop",
+      "label": "桌面端也显示",
+      "info": "默认只在移动端显示。",
+      "default": false
+    },
+    {
+      "type": "range",
+      "id": "marquee_speed",
+      "min": 20,
+      "max": 150,
+      "step": 5,
+      "unit": "px",
+      "label": "滚动速度（每秒像素）",
+      "default": 50
+    },
+    {
+      "type": "range",
+      "id": "marquee_size",
+      "min": 12,
+      "max": 28,
+      "step": 1,
+      "unit": "px",
+      "label": "文字大小",
+      "default": 18
+    },
+    { "type": "color", "id": "marquee_bg", "label": "背景色", "default": "#f7f7f7" },
+    { "type": "color", "id": "marquee_color", "label": "文字颜色", "default": "#000000" },
+
+    { "type": "header", "content": "吸底加购栏（仅桌面端）" },
+    {
+      "type": "checkbox",
+      "id": "enable_sticky_bar",
+      "label": "启用",
+      "info": "主加购按钮向下滚出屏幕后出现，向上滚回按钮时消失。",
+      "default": true
+    },
+    { "type": "text", "id": "bar_button_text", "label": "按钮文字", "default": "Add to cart" },
+
+    { "type": "header", "content": "间距" },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "上边距",
+      "default": 24
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "下边距",
+      "default": 40
+    }
+  ]
+}
+{% endschema %}
