@@ -1,0 +1,15 @@
+{%- liquid
+  assign price_now = variant.price
+  assign price_was = variant.compare_at_price
+  assign price_saved = price_was | minus: price_now
+-%}
+<span class="pdp-price__now">{{ price_now | money }}</span>
+{%- if price_was > price_now -%}
+  <s class="pdp-price__was">{{ price_was | money }}</s>
+  {%- if show_savings -%}
+    <span class="pdp-price__save">
+      {{ savings_prefix | escape }}
+      {{ price_saved | money }}
+    </span>
+  {%- endif -%}
+{%- endif -%}

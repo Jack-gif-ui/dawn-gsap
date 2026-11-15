@@ -58,7 +58,53 @@
   {%- if request.design_mode -%}
     <script src="{{ 'theme-editor.js' | asset_url }}" defer="defer"></script>
   {%- endif -%}
+  {%- liquid
+    assign pdp_buy_block = section.blocks | where: 'type', 'buy_buttons' | first
+    assign pdp_price_block = section.blocks | where: 'type', 'price' | first
+  -%}
 
+  {%- if pdp_buy_block
+    and pdp_buy_block.settings.show_dynamic_checkout == false
+    and product.gift_card? == false
+    and product.variants.size > 1
+    and product.variants.size <= 50
+  -%}
+    <template data-pdp-variant-states>
+      {%- for variant in product.variants -%}
+        {%- if variant.requires_selling_plan
+          or variant.selling_plan_allocations.size > 0
+          or variant.quantity_rule.min != 1
+          or variant.quantity_rule.increment != 1
+          or variant.quantity_rule.max != null
+          or variant.quantity_price_breaks.size > 0
+        -%}
+          {%- continue -%}
+        {%- endif -%}
+
+        {%- liquid
+          assign can_add = variant.available
+          if variant.inventory_management == 'shopify' and variant.inventory_policy != 'continue' and variant.quantity_rule.min > variant.inventory_quantity
+            assign can_add = false
+          endif
+        -%}
+
+        <div
+          data-variant-id="{{ variant.id }}"
+          data-option-values="{{ variant.options_with_values | map: 'value' | json | escape }}"
+          data-can-add="{{ can_add }}"
+          data-in-stock="{{ variant.available }}"
+        >
+          {%- if pdp_price_block -%}
+            {%- render 'pdp-variant-price',
+              variant: variant,
+              show_savings: pdp_price_block.settings.show_savings,
+              savings_prefix: pdp_price_block.settings.savings_prefix
+            -%}
+          {%- endif -%}
+        </div>
+      {%- endfor -%}
+    </template>
+  {%- endif -%}
   <product-component view-event-payload="{{ product | standard_event_data: 'view', context: 'page' | escape }}">
     <div class="pdp__wrap">
       <div class="pdp__grid">
@@ -271,21 +317,11 @@
 
                 {%- when 'price' -%}
                   <div id="price-{{ section.id }}" class="pdp-price" role="status" {{ block.shopify_attributes }}>
-                    {%- liquid
-                      assign price_now = current_variant.price
-                      assign price_was = current_variant.compare_at_price
-                      assign price_saved = price_was | minus: price_now
+                    {%- render 'pdp-variant-price',
+                      variant: current_variant,
+                      show_savings: block.settings.show_savings,
+                      savings_prefix: block.settings.savings_prefix
                     -%}
-                    <span class="pdp-price__now">{{ price_now | money }}</span>
-                    {%- if price_was > price_now -%}
-                      <s class="pdp-price__was">{{ price_was | money }}</s>
-                      {%- if block.settings.show_savings -%}
-                        <span class="pdp-price__save">
-                          {{- block.settings.savings_prefix | escape }}
-                          {{ price_saved | money -}}
-                        </span>
-                      {%- endif -%}
-                    {%- endif -%}
                   </div>
 
                 {%- when 'installments' -%}
@@ -311,7 +347,10 @@
                   </modal-opener>
 
                 {%- when 'variant_picker' -%}
-                  <div class="pdp-variants" data-pdp-hints="{{ block.settings.option_hints | escape }}">
+                  <div
+                    class="pdp-variants"
+                    data-pdp-hints="{{ product.metafields.custom.pdp_option_hints.value | escape }}"
+                  >
                     {% render 'product-variant-picker',
                       product: product,
                       block: block,

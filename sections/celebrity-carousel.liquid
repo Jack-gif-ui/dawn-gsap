@@ -83,7 +83,10 @@
 {% schema %}
 {
   "name": "名人卡片轮播",
-  "enabled_on": { "templates": ["collection", "product"], "groups": ["aside"] },
+  "enabled_on": {
+    "templates": ["index", "collection", "product"],
+    "groups": ["aside"]
+  },
   "settings": [
     { "type": "text", "id": "heading", "label": "标题", "default": "Worn by celebrities" },
     {
@@ -108,7 +111,16 @@
       "label": "每秒滚动像素",
       "default": 50
     },
-    { "type": "range", "id": "card_radius", "min": 0, "max": 24, "step": 2, "unit": "px", "label": "卡片圆角", "default": 14 }
+    {
+      "type": "range",
+      "id": "card_radius",
+      "min": 0,
+      "max": 24,
+      "step": 2,
+      "unit": "px",
+      "label": "卡片圆角",
+      "default": 14
+    }
   ],
   "blocks": [
     {
@@ -122,8 +134,6 @@
       ]
     }
   ],
-  "presets": [
-    { "name": "名人卡片轮播", "blocks": [{ "type": "person" }, { "type": "person" }, { "type": "person" }] }
-  ]
+  "presets": [{ "name": "名人卡片轮播", "blocks": [{ "type": "person" }, { "type": "person" }, { "type": "person" }] }]
 }
 {% endschema %}

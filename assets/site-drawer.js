@@ -11,11 +11,19 @@
 
   const getDialog = () => document.getElementById('SiteDrawer');
 
+  const placeDrawerCarousel = (dialog) => {
+    const stack = dialog.querySelector('.sd__stack');
+    const slot = stack?.querySelector('[data-sd-carousel-slot]');
+    if (!slot) return;
+
+    stack.querySelectorAll(':scope > .shopify-section > celebrity-carousel').forEach((carousel) => {
+      slot.append(carousel.parentElement);
+    });
+  };
+
   // 锁滚动只加一个类，滚动条位置由 CSS 的 scrollbar-gutter 保留，不再测量、不再补偿
   const lock = () => root.classList.add(LOCK);
   const unlock = () => root.classList.remove(LOCK);
-
- 
 
   // ===== 打开后，内容块依次淡入上浮 =====
   const intro = (dialog) => {
@@ -44,21 +52,19 @@
     if (!dialog || dialog.open || typeof dialog.showModal !== 'function') return false;
     closing = false;
 
-   
+    placeDrawerCarousel(dialog);
     lock();
     dialog.showModal();
-   dialog.querySelector('.sd').scrollTop = 0;
+    dialog.querySelector('.sd').scrollTop = 0;
     void dialog.offsetWidth; // 强制重排，滑入过渡才会播放
     dialog.classList.add('is-open');
     intro(dialog);
-    
     return true;
   };
 
   const close = (instant) => {
     const dialog = getDialog();
     if (!dialog || !dialog.open || closing) return;
-   
 
     if (instant || reduce.matches) {
       dialog.classList.remove('is-open');
@@ -80,7 +86,7 @@
       if (e.target === dialog && e.propertyName === 'transform') finish();
     };
     dialog.addEventListener('transitionend', onEnd);
-    setTimeout(finish, 500); // 兜底
+    setTimeout(finish, 700); // 兜底
   };
 
   document.addEventListener('pointerdown', (e) => (downTarget = e.target), true);
@@ -122,7 +128,7 @@
     true
   );
 
-  // 无论怎么关闭，都停掉自动滚动并解除锁定
+  // 关闭后解除页面的滚动锁定。
   document.addEventListener(
     'close',
     (event) => {
@@ -142,34 +148,34 @@
     if (e.persisted) close(true);
   });
 
-    let editorCloseFrame;
+  document.addEventListener('shopify:section:unload', ({ target }) => {
+    const stack = target.closest?.('#SiteDrawer')?.querySelector('.sd__stack');
+    const slot = target.querySelector?.('[data-sd-carousel-slot]');
+    if (stack && slot) stack.append(...slot.children);
+  });
 
-  document.addEventListener('shopify:section:select', (event) => {
-    if (!event.target.closest?.('#SiteDrawer')) return;
+  ['shopify:section:load', 'shopify:section:reorder'].forEach((name) => {
+    document.addEventListener(name, ({ target }) => {
+      const dialog = target.closest?.('#SiteDrawer');
+      if (dialog?.open) placeDrawerCarousel(dialog);
+    });
+  });
+
+  // 在主题编辑器里切换抽屉内的 Section 时，保持抽屉打开。
+  let editorCloseFrame;
+  document.addEventListener('shopify:section:select', (e) => {
+    if (!e.target.closest?.('#SiteDrawer')) return;
     cancelAnimationFrame(editorCloseFrame);
     open();
-
-    if (!event.target.querySelector('[data-sd-root]')) {
-      event.target.scrollIntoView({ block: 'nearest' });
-    }
+    if (!e.target.querySelector('[data-sd-root]')) e.target.scrollIntoView({ block: 'nearest' });
   });
-
-  document.addEventListener('shopify:section:deselect', (event) => {
-    if (event.target.closest?.('#SiteDrawer')) {
-      editorCloseFrame = requestAnimationFrame(() => close(true));
-    }
+  document.addEventListener('shopify:section:deselect', (e) => {
+    if (e.target.closest?.('#SiteDrawer')) editorCloseFrame = requestAnimationFrame(() => close(true));
   });
-
-  document.addEventListener('shopify:block:select', (event) => {
-    if (!event.target.closest?.('#SiteDrawer')) return;
+  document.addEventListener('shopify:block:select', (e) => {
+    if (!e.target.closest?.('#SiteDrawer')) return;
     cancelAnimationFrame(editorCloseFrame);
     open();
-    setTimeout(() => {
-      event.target.scrollIntoView({
-        block: 'center',
-        inline: 'nearest',
-        behavior: 'smooth',
-      });
-    }, 400);
+    setTimeout(() => e.target.scrollIntoView({ block: 'center', inline: 'nearest', behavior: 'smooth' }), 400);
   });
-  })();
+})();

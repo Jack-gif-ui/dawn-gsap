@@ -105,7 +105,7 @@
           "settings": {
             "heading": "Item Details",
             "icon": "diamond",
-            "content": "<p>The cleanest iced out rimless sunglasses you can own. Moissanite stones set across the bridge and arms.<strong>VVS Moissanite</strong></p><p>The world's shiniest gemstone. Second hardest gemstone on Earth. Extremely scratch resistant (9.25 on MOHS scale). Passes all diamond testers.</p><p>Moissanite was first discovered in 1893 by Henri Moissan in a meteor crater. Moissanite is naturally found only in meteors - making it the rarest gemstone on earth.</p><p><strong>Premium Gold Bonding</strong></p><p>Finished with a thick, multi-layer coating using advanced PVD bonding for maximum durability and shine. Available in White Gold (Rhodium), Yellow Gold (14K Gold) and Rose Gold (14K Rose Gold) depending on the item.</p><p><strong>Full Material Transparency&nbsp;</strong></p><p>In compliance with the FTC Jewelry Guides (16 CFR Part 23), we fully disclose all materials used in this piece.</p><p><strong>Made from 925 Silver</strong></p><p>Heavy, highly-durable build. Smooth and polished texture. Fully sweat & waterproof - will never tarnish.</p><p>VVS Moissanite925 Silver14K Gold BondedPasses Diamond TesterDoesn't TarnishSweat- & Waterproof<br/>&nbsp; .product-metafield &lcub;<br/>&nbsp; &nbsp; display: flex;<br/>&nbsp; &nbsp; justify-content: space-between;<br/>&nbsp; &nbsp; align-items: center;&nbsp;<br/>&nbsp; &nbsp; color: #171c25;<br/>&nbsp; &nbsp; padding: 6px 0;<br/>&nbsp; &nbsp; font-size: .9em;<br/>&nbsp; &nbsp; line-height: 21px;<br/>&nbsp; &rcub;<br/><br/>&nbsp; .main-product__details-stroke &lcub;<br/>&nbsp; &nbsp; height: 1px;<br/>&nbsp; &nbsp; margin-right: 12px;<br/>&nbsp; &nbsp; margin-left: 12px;<br/>&nbsp; &nbsp; -webkit-box-flex: 1;<br/>&nbsp; &nbsp; -webkit-flex: 1;<br/>&nbsp; &nbsp; -ms-flex: 1;<br/>&nbsp; &nbsp; flex: 1;<br/>&nbsp; &nbsp; border-bottom: 1px dashed #c9c9c9;<br/>&nbsp; &rcub;<br/><br/>&nbsp; .product-metafield__value &lcub;<br/>&nbsp; &nbsp; color: #4E4E4E;<br/>&nbsp; &nbsp; text-align: right;<br/>&nbsp; &nbsp; font-family: Montserrat;<br/>&nbsp; &nbsp; font-size: 14px;<br/>&nbsp; &nbsp; font-style: normal;<br/>&nbsp; &nbsp; font-weight: 700;<br/>&nbsp; &nbsp; line-height: 100%;<br/>&nbsp; &rcub;<br/><br/>&nbsp; .product-metafield-def &lcub;<br/>&nbsp; &nbsp; color: #4E4E4E;<br/>&nbsp; &nbsp; font-family: Montserrat;<br/>&nbsp; &nbsp; font-size: 14px;<br/>&nbsp; &nbsp; font-style: normal;<br/>&nbsp; &nbsp; font-weight: 500;<br/>&nbsp; &nbsp; line-height: 100%;<br/>&nbsp; &nbsp; letter-spacing: -0.28px;<br/>&nbsp; &rcub;<br/><br/>&nbsp; .product-metafield-info &lcub;<br/>&nbsp; &nbsp; margin-top: 20px;<br/>&nbsp; &rcub;<br/><br/>&nbsp; /* Chain / bracelet / bundle weight is recalculated in custom.js. Hide the raw<br/>&nbsp; &nbsp; &nbsp;per-inch value until then. If the script never runs, reveal it after 5s. */<br/>&nbsp; .product-metafield__value.is-weight-pending &lcub;<br/>&nbsp; &nbsp; display: inline-block;<br/>&nbsp; &nbsp; min-width: 3.5em;<br/>&nbsp; &nbsp; border-radius: 4px;<br/>&nbsp; &nbsp; color: transparent;<br/>&nbsp; &nbsp; background-color: #ececec;<br/>&nbsp; &nbsp; animation: weight-pending-pulse 1.2s ease-in-out infinite, weight-pending-reveal 0s linear 5s forwards;<br/>&nbsp; &rcub;<br/><br/>&nbsp; @keyframes weight-pending-pulse &lcub;<br/>&nbsp; &nbsp; 0%, 100% &lcub; background-color: #ececec; &rcub;<br/>&nbsp; &nbsp; 50% &lcub; background-color: #f6f6f6; &rcub;<br/>&nbsp; &rcub;<br/><br/>&nbsp; @keyframes weight-pending-reveal &lcub;<br/>&nbsp; &nbsp; to &lcub; color: #4E4E4E; background-color: transparent; &rcub;<br/>&nbsp; &rcub;<br/><br/>Size 140mmWeight 13gMetal Purity White GoldBase Material 925 SilverDiamond VVS Moissanite</p>",
+            "content": "{{ product.metafields.custom.pdp_item_details | metafield_tag }}",
             "page": "",
             "open_by_default": false
           }
@@ -125,7 +125,7 @@
           "settings": {
             "heading": "Shipping & Delivery",
             "icon": "truck",
-            "content": "<p>请在主题编辑器中填写配送说明。</p>",
+            "content": "<p>USA</p><p>Standard • 2-5 days &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;FREE</p><p>Expedited • 2 days &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; $37.53</p><p>Next Day Air • 24 hrs &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; $81.29</p><p>International</p><p>DHL/FedEx/UPS Express &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; FREE</p><p>Ships daily 7 AM-3 PM (LA time). Order before 1 PM for same-day shipping. Insured & signature on delivery. Free over $200. Ships from Los Angeles, CA.</p>",
             "page": "",
             "open_by_default": false
           }
@@ -196,57 +196,64 @@
         "trippieRedd": {
           "type": "person",
           "settings": {
-            "name": "Trippie Redd",
             "image": "shopify://shop_images/tripple_redd.jpg",
-            "show_badge": true
+            "name": "Trippie Redd",
+            "show_badge": true,
+            "link": ""
           }
         },
         "lilPump": {
           "type": "person",
           "settings": {
-            "name": "Lil Pump",
             "image": "shopify://shop_images/lil_pump_dab52f51-c8ae-4916-b887-f51a30ba6321.jpg",
-            "show_badge": true
+            "name": "Lil Pump",
+            "show_badge": true,
+            "link": ""
           }
         },
         "rubiRose": {
           "type": "person",
           "settings": {
-            "name": "Rubi Rose",
             "image": "shopify://shop_images/Rubi-Rose-icecartel-custom-diamond-jewelry.jpg",
-            "show_badge": true
+            "name": "Rubi Rose",
+            "show_badge": true,
+            "link": ""
           }
         },
         "fivioForeign": {
           "type": "person",
           "settings": {
-            "name": "Fivio Foreign",
             "image": "shopify://shop_images/fivio-foreign-icecartel-custom-diamond-pendant-iced-out-2.jpg",
-            "show_badge": true
+            "name": "Fivio Foreign",
+            "show_badge": true,
+            "link": ""
           }
         },
         "ninoBreeze": {
           "type": "person",
           "settings": {
-            "name": "Nino Breeze",
             "image": "shopify://shop_images/nino-breeze.png",
-            "show_badge": true
+            "name": "Nino Breeze",
+            "show_badge": true,
+            "link": ""
           }
         },
         "lilMosey": {
           "type": "person",
           "settings": {
-            "name": "Lil Mosey",
             "image": "shopify://shop_images/lil-mosey-icecartel-client-customer-review-jewelry-rapper.jpg",
-            "show_badge": true
+            "name": "Lil Mosey",
+            "show_badge": true,
+            "link": ""
           }
         },
         "smokepurpp": {
           "type": "person",
           "settings": {
-            "name": "SmokePurpp",
             "image": "shopify://shop_images/smokepurpp_27138c55-9e90-4380-9833-46dbc4b7cd4b.jpg",
-            "show_badge": true
+            "name": "SmokePurpp",
+            "show_badge": true,
+            "link": ""
           }
         }
       },
@@ -268,5 +275,8 @@
       }
     }
   },
-  "order": ["main", "celebrities"]
+  "order": [
+    "main",
+    "celebrities"
+  ]
 }
