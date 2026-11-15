@@ -47,7 +47,6 @@
     --pdp-ratio-d: {{ section.settings.ratio_desktop }};
     --pdp-ratio-m: {{ section.settings.ratio_mobile }};
     --pdp-fit: {{ section.settings.image_fit }};
-    --pdp-sticky: {{ section.settings.sticky_offset }}px;
   "
 >
   <script src="{{ 'product-info.js' | asset_url }}" defer="defer"></script>
@@ -188,7 +187,12 @@
                         {% endif %}
                       >
                         {%- for block in marquee_items -%}
-                          <li class="ms__item" {% if copy == 1 %}{{ block.shopify_attributes }}{% endif %}>
+                          <li
+                            class="ms__item"
+                            {% if copy == 1 %}
+                              {{- block.shopify_attributes -}}
+                            {% endif %}
+                          >
                             <span class="ms__inner">
                               {% render 'pdp-icon', name: 'check', size: 18 %}
                               <span class="ms__name">{{ block.settings.text | escape }}</span>
@@ -229,7 +233,12 @@
                     <div class="pdp-rating" {{ block.shopify_attributes }}>
                       <span class="pdp-stars" role="img" aria-label="{{ rating_label | escape }}">
                         {%- for i in (1..5) -%}
-                          {%- assign star_fill = rating_num | minus: forloop.index0 | at_least: 0 | at_most: 1 | times: 24 -%}
+                          {%- assign star_fill = rating_num
+                            | minus: forloop.index0
+                            | at_least: 0
+                            | at_most: 1
+                            | times: 24
+                          -%}
                           <svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true" focusable="false">
                             <rect width="24" height="24" fill="#dcdce6"/>
                             <rect width="{{ star_fill }}" height="24" fill="#00b67a"/>
@@ -272,7 +281,8 @@
                       <s class="pdp-price__was">{{ price_was | money }}</s>
                       {%- if block.settings.show_savings -%}
                         <span class="pdp-price__save">
-                          {{- block.settings.savings_prefix | escape }} {{ price_saved | money -}}
+                          {{- block.settings.savings_prefix | escape }}
+                          {{ price_saved | money -}}
                         </span>
                       {%- endif -%}
                     {%- endif -%}
@@ -288,10 +298,14 @@
                   </div>
 
                 {%- when 'size_guide' -%}
-                  <modal-opener class="pdp-sizeguide" data-modal="#PopupModal-{{ block.id }}" {{ block.shopify_attributes }}>
+                  <modal-opener
+                    class="pdp-sizeguide"
+                    data-modal="#PopupModal-{{ block.id }}"
+                    {{ block.shopify_attributes }}
+                  >
                     <button id="ProductPopup-{{ block.id }}" class="pdp-pill-btn" type="button" aria-haspopup="dialog">
                       {% render 'pdp-icon', name: 'ruler', size: 22 %}
-                      <span>{{ block.settings.text | default: block.settings.page.title | escape }}</span>
+                      <span>{{ block.settings.text | escape }}</span>
                       {% render 'pdp-icon', name: 'chevron-right', size: 16 %}
                     </button>
                   </modal-opener>
@@ -368,11 +382,18 @@
 
                 {%- when 'collapsible_tab' -%}
                   <div class="pdp-acc" {{ block.shopify_attributes }}>
-                    <details id="Details-{{ block.id }}-{{ section.id }}" {% if block.settings.open_by_default %}open{% endif %}>
+                    <details
+                      id="Details-{{ block.id }}-{{ section.id }}"
+                      {% if block.settings.open_by_default %}
+                        open
+                      {% endif %}
+                    >
                       <summary>
                         <span class="pdp-acc__title">
                           {% render 'pdp-icon', name: block.settings.icon, size: 24 %}
-                          <h2 class="pdp-acc__heading">{{ block.settings.heading | default: block.settings.page.title | escape }}</h2>
+                          <h2 class="pdp-acc__heading">
+                            {{ block.settings.heading | default: block.settings.page.title | escape }}
+                          </h2>
                         </span>
                         <span class="pdp-acc__chev">{% render 'pdp-icon', name: 'chevron-right', size: 16 %}</span>
                       </summary>
@@ -392,10 +413,10 @@
     {%- comment -%} 尺寸指南等弹窗，沿用 Dawn 的 modal-dialog {%- endcomment -%}
     {%- assign popups = section.blocks | where: 'type', 'size_guide' -%}
     {%- for block in popups -%}
-      <modal-dialog id="PopupModal-{{ block.id }}" class="product-popup-modal" {{ block.shopify_attributes }}>
+      <modal-dialog id="PopupModal-{{ block.id }}" class="product-popup-modal pdp-modal" {{ block.shopify_attributes }}>
         <div
           role="dialog"
-          aria-label="{{ block.settings.text }}"
+          aria-label="{{ block.settings.modal_title | default: block.settings.text | escape }}"
           aria-modal="true"
           class="product-popup-modal__content"
           tabindex="-1"
@@ -408,12 +429,25 @@
           >
             {{- 'icon-close.svg' | inline_asset_content -}}
           </button>
-          <div class="product-popup-modal__content-info">
-            <h2 class="h2">{{ block.settings.page.title | default: block.settings.text | escape }}</h2>
-            <div class="rte">
-              {{ block.settings.content }}
-              {{ block.settings.page.content }}
-            </div>
+          <div class="product-popup-modal__content-info pdp-modal__body">
+            {%- if block.settings.modal_title != blank -%}
+              <h2 class="pdp-modal__title">{{ block.settings.modal_title | escape }}</h2>
+            {%- endif -%}
+            {%- if block.settings.modal_description != blank -%}
+              <div class="pdp-modal__text rte">{{ block.settings.modal_description }}</div>
+            {%- endif -%}
+            {%- if block.settings.modal_image != blank -%}
+              {{
+                block.settings.modal_image
+                | image_url: width: 1400
+                | image_tag:
+                  loading: 'lazy',
+                  class: 'pdp-modal__image',
+                  widths: '600, 900, 1200, 1400',
+                  sizes: '(min-width: 750px) 640px, 92vw',
+                  alt: block.settings.modal_title
+              }}
+            {%- endif -%}
           </div>
         </div>
       </modal-dialog>
@@ -501,9 +535,7 @@
     {
       "type": "badge",
       "name": "徽章（如热销）",
-      "settings": [
-        { "type": "text", "id": "text", "label": "文字", "default": "#1 Best Seller . 1M+ sold" }
-      ]
+      "settings": [{ "type": "text", "id": "text", "label": "文字", "default": "#1 Best Seller . 1M+ sold" }]
     },
     {
       "type": "price",
@@ -531,12 +563,14 @@
       "limit": 1,
       "settings": [
         { "type": "text", "id": "text", "label": "按钮文字", "default": "Size Guide" },
-        { "type": "richtext", "id": "content", "label": "弹窗内容" },
+        { "type": "header", "content": "弹窗内容" },
+        { "type": "text", "id": "modal_title", "label": "弹窗标题", "default": "Find Your Perfect Size" },
+        { "type": "richtext", "id": "modal_description", "label": "弹窗描述" },
         {
-          "type": "page",
-          "id": "page",
-          "label": "或选择页面作为弹窗内容",
-          "info": "选择页面后，弹窗显示该页面的内容。"
+          "type": "image_picker",
+          "id": "modal_image",
+          "label": "弹窗图片",
+          "info": "例如尺寸对照图，建议宽度 1200px 以上。"
         }
       ]
     },
@@ -685,9 +719,7 @@
     {
       "type": "marquee_item",
       "name": "跑马灯文字",
-      "settings": [
-        { "type": "text", "id": "text", "label": "文字", "default": "Passes diamond tester" }
-      ]
+      "settings": [{ "type": "text", "id": "text", "label": "文字", "default": "Passes diamond tester" }]
     }
   ],
   "settings": [
@@ -708,17 +740,6 @@
       "label": "桌面端内容最大宽度",
       "default": 1700
     },
-    {
-      "type": "range",
-      "id": "sticky_offset",
-      "min": 0,
-      "max": 80,
-      "step": 2,
-      "unit": "px",
-      "label": "画廊吸顶时与页头的间距",
-      "info": "桌面端画廊固定时，距离页头底部的距离。",
-      "default": 20
-    },
 
     { "type": "header", "content": "画廊" },
     {
@@ -731,7 +752,7 @@
         { "value": "5 / 6", "label": "5:6 竖图" },
         { "value": "3 / 4", "label": "3:4 竖图" }
       ],
-      "default": "1 / 1"
+      "default": "4 / 5"
     },
     {
       "type": "select",
@@ -743,7 +764,7 @@
         { "value": "5 / 6", "label": "5:6 竖图" },
         { "value": "3 / 4", "label": "3:4 竖图" }
       ],
-      "default": "5 / 6"
+      "default": "4 / 5"
     },
     {
       "type": "select",

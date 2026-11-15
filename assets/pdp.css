@@ -899,3 +899,454 @@ product-info.pdp {
     font-size: 1.9rem;
   }
 }
+/* ==========================================================
+   v2 调整
+   ========================================================== */
+product-info.pdp {
+  --pdp-top: 1.2rem;
+}
+
+/* ---- 固定比例矩形，图片绝对定位铺满，不会留白 ---- */
+.pdp-gallery__track {
+  aspect-ratio: var(--pdp-ratio-m, 4 / 5);
+  max-height: none;
+  min-height: 0;
+}
+.pdp-gallery__slide img,
+.pdp-gallery__slide video,
+.pdp-gallery__slide iframe,
+.pdp-gallery__slide model-viewer {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  max-width: none;
+  object-fit: var(--pdp-fit, cover);
+}
+.pdp-gallery__slide video {
+  object-fit: contain;
+}
+
+/* ---- 缩略图：未选中盖一层灰白遮罩，选中的没有遮罩 ---- */
+.pdp-thumb {
+  opacity: 1;
+}
+.pdp-thumb::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: rgba(246, 246, 246, 0.7);
+  pointer-events: none;
+  transition: opacity 0.2s ease;
+}
+.pdp-thumb.is-active::after,
+.pdp-thumb:hover::after {
+  opacity: 0;
+}
+.pdp-thumb__play {
+  z-index: 1;
+}
+
+/* ---- 右侧文字缩小 ---- */
+.pdp-info > * + * {
+  margin-top: 1.6rem;
+}
+.pdp-rating {
+  min-height: 3.6rem;
+  gap: 0.4rem 0.8rem;
+  font-size: 1.4rem;
+}
+.pdp-stars svg {
+  width: 1.8rem;
+  height: 1.8rem;
+}
+.pdp-wish .wl-btn {
+  width: 3.6rem;
+  height: 3.6rem;
+}
+.pdp-wish .wl-btn svg {
+  width: 2.4rem;
+  height: 2.4rem;
+}
+.pdp-title {
+  font-size: clamp(2.2rem, 5.8vw, 2.6rem);
+  line-height: 1.2;
+}
+.pdp-info > .pdp-badge {
+  margin-top: 1.4rem;
+}
+.pdp-badge {
+  gap: 0.6rem;
+  padding: 0.6rem 1.3rem;
+  font-size: 1.3rem;
+}
+.pdp-badge svg {
+  width: 1.4rem;
+  height: 1.4rem;
+}
+.pdp-price {
+  gap: 0.6rem 1rem;
+}
+.pdp-price__now {
+  font-size: 3.2rem;
+}
+.pdp-price__was {
+  font-size: 1.8rem;
+}
+.pdp-price__save {
+  padding: 0.6rem 1.2rem;
+  font-size: 1.3rem;
+}
+.pdp-installments {
+  padding-bottom: 1.6rem;
+  font-size: 1.4rem;
+  line-height: 1.5;
+}
+.pdp-pill-btn {
+  gap: 0.8rem;
+  padding: 1rem 1.6rem;
+  font-size: 1.4rem;
+}
+.pdp-pill-btn .pdp-icon {
+  width: 1.6rem;
+  height: 1.6rem;
+}
+.pdp-variants .product-form__input {
+  margin-bottom: 1.8rem;
+}
+.pdp-variants .form__label {
+  gap: 0.6rem 1rem;
+  margin-bottom: 1rem;
+  font-size: 1.5rem;
+}
+.pdp-variants .pdp-legend-dot .swatch {
+  --swatch--size: 1.6rem;
+}
+.pdp-variants .pdp-hint {
+  padding: 0.4rem 1rem;
+  font-size: 1.2rem;
+}
+.pdp-variants .product-form__input--pill input[type='radio'] + label {
+  margin: 0 0.6rem 0.6rem 0;
+  padding: 1.1rem 1.8rem;
+  border-color: rgba(0, 0, 0, 0.2);
+  border-radius: 0.8rem;
+  font-size: 1.4rem;
+  font-weight: 700;
+}
+.pdp-variants .product-form__input--pill input[type='radio']:checked + label {
+  border-color: #298fd1;
+  background: #f1f7fd;
+  color: #2b6ea9;
+}
+.pdp-variants .swatch-input__input + .swatch-input__label {
+  --swatch-input--size: 1.4rem;
+  gap: 1rem;
+  margin: 0 0.6rem 0.6rem 0;
+  padding: 1rem 1.5rem;
+  border-color: rgba(0, 0, 0, 0.2);
+  border-radius: 0.8rem;
+}
+.pdp-variants .swatch-input__input + .swatch-input__label::after {
+  font-size: 1.4rem;
+  font-weight: 700;
+}
+.pdp-variants .swatch-input__input:checked + .swatch-input__label {
+  border-color: #298fd1;
+  background: #f1f7fd;
+}
+.pdp-variants .swatch-input__input:checked + .swatch-input__label::after {
+  color: #2b6ea9;
+}
+.pdp-info > .pdp-buy {
+  margin-top: 2rem;
+}
+.pdp-buy .product-form__submit {
+  min-height: 5.2rem;
+  font-size: 1.6rem;
+}
+.pdp-stock {
+  gap: 1rem;
+  padding: 1.1rem 1rem;
+  font-size: 1.4rem;
+}
+.pdp-dot {
+  width: 0.9rem;
+  height: 0.9rem;
+  box-shadow: 0 0 0 0.45rem rgba(10, 165, 106, 0.18);
+}
+.pdp-feature {
+  font-size: 1.4rem;
+}
+.pdp-acc summary {
+  padding: 1.6rem 1.8rem;
+}
+.pdp-acc__title {
+  gap: 1.2rem;
+}
+.pdp-acc__heading {
+  font-size: 1.6rem;
+}
+.pdp-acc__chev {
+  width: 3.2rem;
+  height: 3.2rem;
+}
+.pdp-acc__body {
+  padding: 0 1.8rem 2rem;
+  font-size: 1.4rem;
+  line-height: 1.7;
+}
+.pdp-gallery__badge {
+  padding: 0.7rem 1.2rem 0.7rem 1rem;
+  font-size: 1.3rem;
+}
+
+/* ---- 尺寸指南弹窗 ---- */
+.pdp-modal .product-popup-modal__content {
+  top: 50%;
+  height: auto;
+  max-height: 88svh;
+  width: min(92%, 64rem);
+  margin-top: 0;
+  padding: 2.4rem 2.4rem 3rem;
+  border-radius: 2rem;
+  background: #fff;
+  transform: translate(-50%, -50%);
+}
+.pdp-modal .product-popup-modal__content-info {
+  padding-right: 0;
+}
+.pdp-modal .product-popup-modal__toggle {
+  position: absolute;
+  top: 1.6rem;
+  right: 1.6rem;
+  width: 3.6rem;
+  height: 3.6rem;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: #000;
+}
+.pdp-modal .pdp-modal__title {
+  margin: 0 4.4rem 1.2rem 0;
+  font-size: 2.2rem;
+  font-weight: 800;
+  line-height: 1.3;
+  text-align: left;
+}
+.pdp-modal .pdp-modal__text {
+  margin: 0 0 1.6rem;
+  font-size: 1.5rem;
+  line-height: 1.6;
+}
+.pdp-modal .pdp-modal__image {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+@media screen and (min-width: 990px) {
+  .pdp__grid {
+    grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
+    gap: 4rem;
+  }
+  .pdp-gallery__track {
+    aspect-ratio: var(--pdp-ratio-d, 4 / 5);
+    max-height: none;
+    min-height: 0;
+  }
+  .pdp-title {
+    font-size: clamp(2.4rem, 1.9vw, 2.9rem);
+  }
+  .pdp-rating {
+    font-size: 1.5rem;
+  }
+  .pdp-wish {
+    top: 0;
+  }
+  .pdp-bar__thumb {
+    width: 9rem;
+  }
+  .pdp-bar__thumb img {
+    width: 5.2rem;
+    height: 5.2rem;
+  }
+  .pdp-bar__title {
+    font-size: 1.5rem;
+  }
+  .pdp-bar__price .pdp-price__now {
+    font-size: 2.4rem;
+  }
+  .pdp-bar__price .pdp-price__was {
+    font-size: 1.6rem;
+  }
+  .pdp-bar__btn {
+    min-height: 5rem;
+    font-size: 1.8rem;
+  }
+}
+
+/* ==========================================================
+   v3 调整：按原站的比例
+   正文 14px、行高 1.9、字距 0、两栏 50/50、区块间距约 25px、
+   选项 14px/600、小标签 12px、按钮直角
+   ========================================================== */
+.pdp-info {
+  font-size: 1.4rem;
+  line-height: 1.9;
+  letter-spacing: 0;
+}
+
+/* 区块间距 */
+.pdp-info > * + * {
+  margin-top: 2.4rem;
+}
+.pdp-rating + .pdp-title {
+  margin-top: 1rem;
+}
+.pdp-info > .pdp-badge {
+  margin-top: 1.6rem;
+}
+.pdp-price + .pdp-installments {
+  margin-top: 1.2rem;
+}
+.pdp-info > .pdp-buy {
+  margin-top: 2.4rem;
+}
+.pdp-info > .pdp-pay {
+  margin-top: 2rem;
+}
+.pdp-info > .pdp-acc:not(.pdp-acc + .pdp-acc) {
+  margin-top: 3rem;
+}
+.pdp-info > .pdp-acc + .pdp-acc {
+  margin-top: 1.4rem;
+}
+
+/* 评分 */
+.pdp-rating {
+  min-height: 3.2rem;
+  font-size: 1.4rem;
+  line-height: 1.4;
+}
+.pdp-stars svg {
+  width: 1.6rem;
+  height: 1.6rem;
+}
+
+/* 标题：行高 1.1，字距 0 */
+.pdp-title {
+  font-weight: 700;
+  font-size: clamp(2.2rem, 5.6vw, 2.6rem);
+  line-height: 1.1;
+  letter-spacing: 0;
+}
+
+/* 徽章：12px */
+.pdp-badge {
+  padding: 0.6rem 1.2rem;
+  font-size: 1.2rem;
+  line-height: 1.4;
+}
+.pdp-badge svg {
+  width: 1.2rem;
+  height: 1.2rem;
+}
+
+/* 价格 */
+.pdp-price {
+  line-height: 1.1;
+}
+.pdp-price__now {
+  font-size: 3rem;
+}
+.pdp-price__was {
+  font-size: 1.6rem;
+}
+.pdp-price__save {
+  padding: 0.5rem 1.2rem;
+  font-size: 1.2rem;
+  line-height: 1.5;
+}
+
+.pdp-installments {
+  font-size: 1.4rem;
+  line-height: 1.6;
+}
+.pdp-pill-btn {
+  font-size: 1.4rem;
+  line-height: 1.2;
+}
+
+/* 选项：标题 16px，选项 14px/600，圆角 8px，内边距 10px 15px */
+.pdp-variants .form__label {
+  font-size: 1.6rem;
+  line-height: 1.3;
+}
+.pdp-variants .form__label [data-selected-value],
+.pdp-variants .pdp-selected {
+  font-size: 1.4rem;
+  font-weight: 500;
+}
+.pdp-variants .pdp-hint {
+  font-size: 1.2rem;
+  line-height: 1.4;
+}
+.pdp-variants .product-form__input--pill input[type='radio'] + label {
+  padding: 1rem 1.5rem;
+  font-size: 1.4rem;
+  font-weight: 600;
+  line-height: 1.2;
+}
+.pdp-variants .swatch-input__input + .swatch-input__label {
+  padding: 1rem 1.5rem;
+}
+.pdp-variants .swatch-input__input + .swatch-input__label::after {
+  font-size: 1.4rem;
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+/* 加购：直角 */
+.pdp-buy .product-form__submit {
+  min-height: 5rem;
+  font-size: 1.6rem;
+  font-weight: 700;
+}
+.pdp-stock {
+  font-size: 1.4rem;
+  line-height: 1.4;
+}
+.pdp-feature {
+  font-size: 1.4rem;
+  line-height: 1.5;
+}
+
+/* 手风琴 */
+.pdp-acc__heading {
+  font-size: 1.6rem;
+  line-height: 1.3;
+  font-weight: 700;
+}
+.pdp-acc__body {
+  font-size: 1.4rem;
+  line-height: 1.8;
+}
+
+@media screen and (min-width: 990px) {
+  /* 左右两栏 50/50 */
+  .pdp__grid {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: 4rem;
+  }
+  .pdp-title {
+    font-size: clamp(2.4rem, 1.9vw, 2.8rem);
+  }
+  .pdp-rating {
+    font-size: 1.4rem;
+  }
+  .pdp-price__now {
+    font-size: 3.4rem;
+  }
+}

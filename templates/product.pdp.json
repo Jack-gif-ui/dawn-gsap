@@ -48,9 +48,7 @@
         "size_guide": {
           "type": "size_guide",
           "settings": {
-            "text": "Size Guide",
-            "content": "<p>Smaller sizes (3–5mm) offer a subtle everyday shine, while larger stones (8–10mm) make a bold, standout statement.</p>",
-            "page": ""
+            "text": "Size Guide"
           }
         },
         "variant_picker": {
@@ -173,9 +171,8 @@
       "settings": {
         "color_scheme": "scheme-1",
         "max_width": 1400,
-        "sticky_offset": 0,
         "ratio_desktop": "4 / 5",
-        "ratio_mobile": "5 / 6",
+        "ratio_mobile": "4 / 5",
         "image_fit": "cover",
         "stock_badge": "In Stock - Ships Today!",
         "show_marquee": true,
