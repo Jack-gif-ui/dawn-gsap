@@ -186,7 +186,7 @@
         "marquee_color": "#000000",
         "enable_sticky_bar": true,
         "bar_button_text": "Add to cart",
-        "padding_top": 24,
+        "padding_top": 12,
         "padding_bottom": 40
       }
     }

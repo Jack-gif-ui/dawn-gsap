@@ -95,8 +95,8 @@ product-info.pdp {
 
 .pdp-gallery__badge {
   position: absolute;
-  top: 1.6rem;
-  left: 1.6rem;
+  top: 1rem;
+  left: 1rem;
   z-index: 2;
   display: inline-flex;
   align-items: center;
@@ -107,7 +107,7 @@ product-info.pdp {
   border-radius: 1.2rem;
   background: var(--pdp-green-bg);
   color: var(--pdp-green-text);
-  font-size: 1.3rem;
+  font-size: 1rem;
   font-weight: 700;
   line-height: 1.2;
   pointer-events: none;
@@ -120,8 +120,8 @@ product-info.pdp {
   z-index: 2;
   display: grid;
   place-items: center;
-  width: 4.4rem;
-  height: 4.4rem;
+  width: 3.4rem;
+  height: 3.4rem;
   padding: 0;
   border: 0;
   border-radius: 50%;
@@ -130,7 +130,9 @@ product-info.pdp {
   box-shadow: 0 0.1rem 0.6rem rgba(0, 0, 0, 0.14);
   transform: translateY(-50%);
   cursor: pointer;
-  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  transition:
+    transform 0.15s ease,
+    box-shadow 0.15s ease;
 }
 .pdp-arrow[hidden] {
   display: none;
@@ -190,7 +192,7 @@ product-info.pdp {
   object-fit: cover;
 }
 .pdp-thumb::after {
-  content: '';
+  content: "";
   position: absolute;
   inset: 0;
   background: rgba(246, 246, 246, 0.7);
@@ -247,7 +249,8 @@ product-info.pdp {
 .pdp-info > * + * {
   margin-top: 2.4rem;
 }
-.pdp-info > :first-child {
+
+.pdp-info > .pdp-rating {
   margin-top: 0;
 }
 .pdp-info h1,
@@ -393,7 +396,9 @@ product-info.pdp {
   font-weight: 700;
   line-height: 1.2;
   cursor: pointer;
-  transition: border-color 0.15s ease, background-color 0.15s ease;
+  transition:
+    border-color 0.15s ease,
+    background-color 0.15s ease;
 }
 .pdp-pill-btn:hover {
   border-color: rgb(var(--color-foreground));
@@ -454,7 +459,7 @@ product-info.pdp {
 }
 
 /* 按钮式选项（Size、Lens color 等） */
-.pdp .pdp-variants .product-form__input--pill input[type='radio'] + label {
+.pdp .pdp-variants .product-form__input--pill input[type="radio"] + label {
   margin: 0 0.6rem 0.6rem 0;
   padding: 1rem 1.5rem;
   border: 1px solid rgba(0, 0, 0, 0.2);
@@ -468,22 +473,42 @@ product-info.pdp {
   letter-spacing: 0;
   text-transform: uppercase;
 }
-.pdp .pdp-variants .product-form__input--pill input[type='radio'] + label::before {
+.pdp
+  .pdp-variants
+  .product-form__input--pill
+  input[type="radio"]
+  + label::before {
   content: none;
 }
-.pdp .pdp-variants .product-form__input--pill input[type='radio'] + label:hover {
+.pdp
+  .pdp-variants
+  .product-form__input--pill
+  input[type="radio"]
+  + label:hover {
   border-color: #000;
 }
 /* 选中态 */
-.pdp .pdp-variants .product-form__input--pill input[type='radio']:checked + label {
+.pdp
+  .pdp-variants
+  .product-form__input--pill
+  input[type="radio"]:checked
+  + label {
   border: 1px solid var(--pdp-sel-border);
   border-radius: 8px;
   background: var(--pdp-sel-bg);
   color: var(--pdp-sel-text);
 }
 /* 售罄/不可选 */
-.pdp .pdp-variants .product-form__input--pill input[type='radio'].disabled + label,
-.pdp .pdp-variants .product-form__input--pill input[type='radio']:disabled + label {
+.pdp
+  .pdp-variants
+  .product-form__input--pill
+  input[type="radio"].disabled
+  + label,
+.pdp
+  .pdp-variants
+  .product-form__input--pill
+  input[type="radio"]:disabled
+  + label {
   border-color: rgba(0, 0, 0, 0.1);
   color: rgba(0, 0, 0, 0.4);
   text-decoration: line-through;
@@ -557,7 +582,7 @@ product-info.pdp {
   border-radius: 0;
 }
 .pdp-buy .product-form__submit[disabled],
-.pdp-buy .product-form__submit[aria-disabled='true'] {
+.pdp-buy .product-form__submit[aria-disabled="true"] {
   background: #777;
   color: #fff;
   opacity: 1;
@@ -575,7 +600,7 @@ product-info.pdp {
   margin: 0;
   padding: 1.1rem 1rem;
   background: #e9f3f0;
-  font-size: 1.4rem;
+  font-size: 1.2rem;
   line-height: 1.4;
   text-align: center;
 }
@@ -707,7 +732,9 @@ product-info.pdp {
   .pdp-acc details::details-content {
     block-size: 0;
     overflow: hidden;
-    transition: block-size 0.3s ease, content-visibility 0.3s ease allow-discrete;
+    transition:
+      block-size 0.3s ease,
+      content-visibility 0.3s ease allow-discrete;
   }
   .pdp-acc details[open]::details-content {
     block-size: auto;
@@ -775,7 +802,9 @@ product-info.pdp {
   /* 左右两栏 50 / 50 */
   .pdp__grid {
     display: grid;
-    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    grid-template-columns:
+      minmax(0, calc((100% - 4rem) / 2 + 100px))
+      minmax(0, 1fr);
     gap: 4rem;
     align-items: start;
   }
