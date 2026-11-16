@@ -178,10 +178,15 @@
       "type": "horizontal-gallery",
       "name": "横向滚动画廊",
       "settings": {
-        "heading": "新品推荐",
-        "collection": "frontpage",
+        "heading": "NEW IN",
+        "collection": "chain",
         "products_to_show": 8,
-        "card_width": 20
+        "align_card_width": true,
+        "card_width": 20,
+        "enable_card_gallery": false,
+        "enable_card_badges": true,
+        "badge_scale": 70,
+        "enable_wishlist": true
       }
     },
     "rich_text_gPx6tz": {

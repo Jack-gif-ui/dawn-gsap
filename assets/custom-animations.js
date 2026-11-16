@@ -11,7 +11,6 @@
   const reduceMotion = window.matchMedia(
     "(prefers-reduced-motion: reduce)",
   ).matches;
-  if (reduceMotion) return;
 
   // 效果 1：滚动淡入上浮
   function initFadeUp(root = document) {
@@ -42,33 +41,75 @@
     root
       .querySelectorAll("[data-gsap-horizontal]:not([data-gsap-init])")
       .forEach((section) => {
-        section.setAttribute("data-gsap-init", "");
+        const viewport = section.querySelector("[data-gsap-viewport]");
         const track = section.querySelector("[data-gsap-track]");
-        if (!track) return;
+        if (!viewport || !track) return;
 
+        section.setAttribute("data-gsap-init", "");
         const mm = gsap.matchMedia();
         section._mm = mm;
 
-        mm.add("(min-width: 750px)", () => {
-          section.classList.add("is-gsap");
-          const getDistance = () => track.scrollWidth - window.innerWidth;
+        const query = "(min-width: 990px) and (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference)";
+        mm.add(query, () => {
+          let tween;
+          let frame = 0;
+          const getDistance = () => Math.max(0, viewport.scrollWidth - viewport.clientWidth);
+          const getHeaderHeight = () => document.querySelector("sticky-header")?.offsetHeight || 0;
 
-          gsap.to(track, {
-            x: () => -getDistance(),
-            ease: "none",
-            scrollTrigger: {
-              trigger: section,
-              start: "top top",
-              end: () => "+=" + getDistance(),
-              pin: true,
-              scrub: 1,
-              anticipatePin: 1,
-              invalidateOnRefresh: true,
-            },
-          });
+          const stop = () => {
+            if (!tween) return;
+            tween.scrollTrigger?.kill();
+            tween.kill();
+            tween = undefined;
+            section.classList.remove("is-gsap");
+            viewport.scrollLeft = 0;
+          };
 
-          // 离开桌面断点时清理
-          return () => section.classList.remove("is-gsap");
+          const update = () => {
+            frame = 0;
+            // Exclude the fallback scrollbar when measuring whether the cards fit.
+            const height = section.offsetHeight - viewport.offsetHeight + track.offsetHeight;
+            if (getDistance() <= 1 || height + getHeaderHeight() > window.innerHeight) {
+              if (tween) {
+                stop();
+                ScrollTrigger.refresh(true);
+              }
+              return;
+            }
+
+            if (!tween) {
+              section.classList.add("is-gsap");
+              tween = gsap.fromTo(viewport, { scrollLeft: 0 }, {
+                scrollLeft: getDistance,
+                ease: "none",
+                scrollTrigger: {
+                  trigger: section,
+                  start: () => "top " + getHeaderHeight() + "px",
+                  end: () => "+=" + getDistance(),
+                  pin: true,
+                  scrub: true,
+                  anticipatePin: 1,
+                  invalidateOnRefresh: true,
+                },
+              });
+            }
+            ScrollTrigger.refresh(true);
+          };
+
+          const scheduleUpdate = () => {
+            if (!frame) frame = requestAnimationFrame(update);
+          };
+          const resizeObserver = typeof ResizeObserver === "function" ? new ResizeObserver(scheduleUpdate) : null;
+          resizeObserver?.observe(track);
+          window.addEventListener("resize", scheduleUpdate, { passive: true });
+          update();
+
+          return () => {
+            resizeObserver?.disconnect();
+            window.removeEventListener("resize", scheduleUpdate);
+            cancelAnimationFrame(frame);
+            stop();
+          };
         });
       });
   }
@@ -251,8 +292,9 @@
 
 
   function initAll(root = document) {
-    initFadeUp(root);
     initHorizontal(root);
+    if (reduceMotion) return;
+    initFadeUp(root);
     initBento(root);
     initDrawerStagger(root);
     initHeroGlow(root);
@@ -266,6 +308,7 @@
     initAll(e.target);
     ScrollTrigger.refresh();
   });
+  document.addEventListener("shopify:section:reorder", () => ScrollTrigger.refresh(true));
   document.addEventListener("shopify:section:unload", (e) => {
     ScrollTrigger.getAll()
       .filter((st) => st.trigger && e.target.contains(st.trigger))

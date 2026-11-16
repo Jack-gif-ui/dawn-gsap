@@ -3,6 +3,7 @@
 
   @param {product} [card_product] - The product to display. When blank, a placeholder card is rendered.
   @param {string} [media_aspect_ratio] - The product image aspect ratio. Allowed values are `adapt`, `portrait`, and `square`. Defaults to `square`.
+  @param {string} [image_sizes] - The responsive sizes attribute for card images. Defaults to the product grid sizes.
   @param {string} [image_shape] - The product image mask. Allowed values are `default`, `arch`, `blob`, `chevronleft`, `chevronright`, `diamond`, `parallelogram`, and `round`. Defaults to `default`.
   @param {boolean} [show_secondary_image] - Whether to show the second product image on hover. Defaults to `false`.
   @param {boolean} [show_vendor] - Whether to show the product vendor. Defaults to `false`.
@@ -44,6 +45,14 @@
     endif
     if ratio == 0 or ratio == null
       assign ratio = 1
+    endif
+    assign card_image_sizes = image_sizes
+    if card_image_sizes == blank
+      capture card_image_sizes
+        echo '(min-width: ' | append: settings.page_width | append: 'px) '
+        echo settings.page_width | minus: 130 | divided_by: 4 | append: 'px, '
+        echo '(min-width: 990px) calc((100vw - 130px) / 4), (min-width: 750px) calc((100vw - 120px) / 3), calc((100vw - 35px) / 2)'
+      endcapture
     endif
     assign use_listing_price = false
     assign card_price = card_product.price
@@ -111,16 +120,13 @@
             {%- comment -%} 多图翻页（card-gallery）：只有传入 card_gallery 且最终图片不少于 2 张时才生效，否则走下面原来的单图渲染 {%- endcomment -%}
             {%- assign gallery_markup = '' -%}
             {%- if card_gallery -%}
-              {%- capture gallery_sizes -%}
-                (min-width: {{ settings.page_width }}px) {{ settings.page_width | minus: 130 | divided_by: 4 }}px, (min-width: 990px) calc((100vw - 130px) / 4), (min-width: 750px) calc((100vw - 120px) / 3), calc((100vw - 35px) / 2)
-              {%- endcapture -%}
               {%- capture gallery_markup -%}
                 {%- render 'card-gallery',
                   card_product: card_product,
                   lazy_load: lazy_load,
                   max_images: gallery_max,
                   skip_last: gallery_skip_last,
-                  sizes: gallery_sizes
+                  sizes: card_image_sizes
                 -%}
               {%- endcapture -%}
               {%- assign gallery_markup = gallery_markup | strip -%}
@@ -142,7 +148,7 @@
                       {{ card_product.featured_media | image_url }} {{ card_product.featured_media.width }}w
                     "
                     src="{{ card_product.featured_media | image_url: width: 533 }}"
-                    sizes="(min-width: {{ settings.page_width }}px) {{ settings.page_width | minus: 130 | divided_by: 4 }}px, (min-width: 990px) calc((100vw - 130px) / 4), (min-width: 750px) calc((100vw - 120px) / 3), calc((100vw - 35px) / 2)"
+                    sizes="{{ card_image_sizes | escape }}"
                     alt="{{ card_product.featured_media.alt | escape }}"
                     class="motion-reduce"
                     {% unless lazy_load == false %}
@@ -165,7 +171,7 @@
                         {{ card_product.media[1] | image_url }} {{ card_product.media[1].width }}w
                       "
                       src="{{ card_product.media[1] | image_url: width: 533 }}"
-                      sizes="(min-width: {{ settings.page_width }}px) {{ settings.page_width | minus: 130 | divided_by: 4 }}px, (min-width: 990px) calc((100vw - 130px) / 4), (min-width: 750px) calc((100vw - 120px) / 3), calc((100vw - 35px) / 2)"
+                      sizes="{{ card_image_sizes | escape }}"
                       alt="{{ card_product.media[1].alt | escape }}"
                       class="motion-reduce"
                       loading="lazy"

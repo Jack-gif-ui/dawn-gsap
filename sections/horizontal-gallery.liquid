@@ -1,35 +1,146 @@
-{{ 'horizontal-gallery-styles.css' | asset_url | stylesheet_tag }}
-<section class="hg" data-gsap-horizontal style="--hg-card-width: {{ section.settings.card_width }}vw;">
-  <div class="hg__inner page-width">
-    {%- if section.settings.heading != blank -%}
-      <h2 class="hg__heading">{{ section.settings.heading }}</h2>
-    {%- endif -%}
-  </div>
+{%- liquid
+  assign gallery_collection = section.settings.collection
+  assign gallery_has_products = false
+  if gallery_collection != blank and gallery_collection.products_count > 0
+    assign gallery_has_products = true
+  endif
+  assign custom_card_width = false
+  if section.settings.align_card_width == false
+    assign custom_card_width = true
+  endif
+  assign body_scale = settings.body_scale | default: 100
+  assign max_grid_image_width = settings.page_width | times: body_scale | divided_by: 400.0 | ceil
+-%}
 
-  <ul class="hg__track" data-gsap-track role="list">
-    {%- for product in section.settings.collection.products limit: section.settings.products_to_show -%}
-      <li class="hg__item">
-        <a href="{{ product.url }}" class="hg__link">
-          <div class="hg__media">
-            {%- if product.featured_image -%}
-              {{
-                product.featured_image
-                | image_url: width: 900
-                | image_tag:
-                  loading: 'lazy',
-                  widths: '450, 700, 900',
-                  sizes: '(min-width: 750px) 30vw, 70vw',
-                  alt: product.featured_image.alt
-              }}
-            {%- endif -%}
-          </div>
-          <p class="hg__title">{{ product.title }}</p>
-          <p class="hg__price">{{ product.price | money }}</p>
-        </a>
-      </li>
-    {%- endfor -%}
-  </ul>
-</section>
+{%- if gallery_has_products or request.design_mode -%}
+  {{ 'component-card.css' | asset_url | stylesheet_tag }}
+  {{ 'component-price.css' | asset_url | stylesheet_tag }}
+  {{ 'blog-carousel-styles.css' | asset_url | stylesheet_tag }}
+  {{ 'horizontal-gallery-styles.css' | asset_url | stylesheet_tag }}
+
+  {%- unless request.design_mode -%}
+    {%- if gallery_has_products -%}
+      <script src="{{ 'blog-carousel.js' | asset_url }}" defer="defer"></script>
+    {%- endif -%}
+    {%- if section.settings.enable_card_gallery -%}
+      {{ 'card-gallery.css' | asset_url | stylesheet_tag }}
+      <script src="{{ 'card-gallery.js' | asset_url }}" defer="defer"></script>
+    {%- endif -%}
+    {%- if section.settings.enable_card_badges -%}
+      {{ 'card-badges.css' | asset_url | stylesheet_tag }}
+    {%- endif -%}
+  {%- endunless -%}
+
+  <blog-carousel
+    class="bc hg is-static{% if custom_card_width %} hg--custom-card-width{% endif %}"
+    {% if custom_card_width %}
+      style="--hg-card-width: {{ section.settings.card_width }}vw;"
+    {% endif %}
+  >
+    <div class="page-width">
+      {%- if section.settings.heading != blank or gallery_has_products -%}
+        <div class="bc__head">
+          {%- if section.settings.heading != blank -%}
+            <h2 class="bc__heading" id="HorizontalGalleryHeading-{{ section.id }}">
+              {{- section.settings.heading | escape -}}
+            </h2>
+          {%- endif -%}
+
+          {%- if gallery_has_products -%}
+            <div class="bc__progress bc__progress--progress" aria-hidden="true">
+              <span class="bc__progress-fill" data-bc-fill></span>
+            </div>
+            <div class="bc__nav">
+              <button
+                type="button"
+                class="bc__arrow bc__arrow--prev"
+                data-bc-prev
+                aria-controls="HorizontalGalleryTrack-{{ section.id }}"
+                aria-label="{{ 'general.slider.previous_slide' | t }}"
+              >
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                  <path d="M20 12H4M10 6l-6 6 6 6"/>
+                </svg>
+              </button>
+              <button
+                type="button"
+                class="bc__arrow bc__arrow--next"
+                data-bc-next
+                aria-controls="HorizontalGalleryTrack-{{ section.id }}"
+                aria-label="{{ 'general.slider.next_slide' | t }}"
+              >
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                  <path d="M4 12h16M14 6l6 6-6 6"/>
+                </svg>
+              </button>
+            </div>
+            <div class="bc__dots">
+              <button
+                type="button"
+                class="bc__dot is-active"
+                data-bc-pill="prev"
+                aria-controls="HorizontalGalleryTrack-{{ section.id }}"
+                aria-label="{{ 'general.slider.previous_slide' | t }}"
+              ></button>
+              <button
+                type="button"
+                class="bc__dot"
+                data-bc-pill="next"
+                aria-controls="HorizontalGalleryTrack-{{ section.id }}"
+                aria-label="{{ 'general.slider.next_slide' | t }}"
+              ></button>
+            </div>
+          {%- endif -%}
+        </div>
+      {%- endif -%}
+
+      {%- if gallery_has_products -%}
+        {%- capture image_sizes -%}
+          {%- if custom_card_width -%}
+            (min-width: 990px) {{ section.settings.card_width }}vw, 50vw
+          {%- else -%}
+            (min-width: 990px) min(25vw, {{ max_grid_image_width }}px), 50vw
+          {%- endif -%}
+        {%- endcapture -%}
+        <ul
+          id="HorizontalGalleryTrack-{{ section.id }}"
+          class="bc__track hg__viewport hg__track grid grid--2-col-tablet-down grid--4-col-desktop{% if section.settings.enable_card_badges %} product-grid--card-badges{% endif %}"
+          data-bc-track
+          role="list"
+          tabindex="0"
+          {% if section.settings.heading != blank %}
+            aria-labelledby="HorizontalGalleryHeading-{{ section.id }}"
+          {% else %}
+            aria-label="{{ gallery_collection.title | escape }}"
+          {% endif %}
+        >
+          {%- assign skip_card_styles = false -%}
+          {%- for product in gallery_collection.products limit: section.settings.products_to_show -%}
+            <li class="hg__item grid__item">
+              {%- render 'card-product',
+                card_product: product,
+                section_id: section.id,
+                section: section,
+                media_aspect_ratio: 'portrait',
+                image_sizes: image_sizes,
+                product_view_context: 'collection',
+                listing_card_details: true,
+                card_gallery: section.settings.enable_card_gallery,
+                gallery_max: 7,
+                extend_height: true,
+                quick_add: 'none',
+                skip_styles: skip_card_styles
+              -%}
+            </li>
+            {%- assign skip_card_styles = true -%}
+          {%- endfor -%}
+        </ul>
+      {%- elsif request.design_mode -%}
+        <p>选择有商品的集合，在这里预览画廊。</p>
+      {%- endif -%}
+    </div>
+  </blog-carousel>
+{%- endif -%}
 
 
 
@@ -50,6 +161,12 @@
       "label": "商品数量"
     },
     {
+      "type": "checkbox",
+      "id": "align_card_width",
+      "label": "桌面卡宽对齐商品网格",
+      "default": true
+    },
+    {
       "type": "range",
       "id": "card_width",
       "min": 15,
@@ -57,7 +174,36 @@
       "step": 1,
       "unit": "vw",
       "default": 20,
-      "label": "桌面端卡片宽度"
+      "label": "桌面端卡片宽度",
+      "visible_if": "{{ section.settings.align_card_width == false }}"
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_card_gallery",
+      "label": "启用桌面端商品卡多图翻页",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_card_badges",
+      "label": "显示库存和折扣徽章",
+      "default": true
+    },
+    {
+      "type": "range",
+      "id": "badge_scale",
+      "min": 70,
+      "max": 140,
+      "step": 5,
+      "unit": "%",
+      "default": 70,
+      "label": "徽章大小"
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_wishlist",
+      "label": "显示商品卡心愿按钮",
+      "default": true
     }
   ],
   "presets": [{ "name": "横向滚动画廊" }]
