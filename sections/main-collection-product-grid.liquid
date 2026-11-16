@@ -43,7 +43,12 @@
     }
   }
 {%- endstyle -%}
-
+{%- liquid
+  assign listing_card_details = false
+  if template.suffix == 'earrings'
+    assign listing_card_details = true
+  endif
+-%}
 <collection-component
   view-event-payload="{{ collection | standard_event_data: 'view' | escape }}"
   data-collection-id="{{ collection.id }}"
@@ -190,6 +195,7 @@
                       quick_add: section.settings.quick_add,
                       section_id: section.id,
                       product_view_context: 'collection',
+                                            listing_card_details: listing_card_details,
                       card_gallery: section.settings.enable_card_gallery,
                       gallery_max: section.settings.gallery_max,
                       gallery_skip_last: section.settings.gallery_skip_last

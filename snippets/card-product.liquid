@@ -21,6 +21,7 @@
   @param {boolean} [gallery_skip_last] - Whether to skip the last product media image in the gallery. Defaults to `true`.
   @param {block} [block] - The current section block, used for optional card description content.
   @param {object} [section] - The current section context, supplied implicitly when rendered from a section and used by quick-add controls.
+  @param {boolean} [listing_card_details] - Whether to use the listing card title layout and lowest-variant price.
 
   @example
   {% render 'card-product', card_product: product, media_aspect_ratio: 'adapt', show_secondary_image: true, section_id: section.id, quick_add: 'standard', product_view_context: 'collection' %}
@@ -44,9 +45,51 @@
     if ratio == 0 or ratio == null
       assign ratio = 1
     endif
+    assign use_listing_price = false
+    assign card_price = card_product.price
+    assign card_compare_at_price = card_product.compare_at_price
+    assign listing_variant = nil
+
+    if listing_card_details and card_product.quantity_price_breaks_configured? != true
+      assign use_listing_price = true
+      assign card_price = card_product.price_min
+      assign card_compare_at_price = nil
+      assign listing_variants = card_product.variants
+      assign variant_batch_count = listing_variants.size | divided_by: 50.0 | ceil
+
+      # Liquid allows at most 50 iterations per for loop.
+      for batch in (1..variant_batch_count)
+        assign variant_offset = batch | minus: 1 | times: 50
+        for variant in listing_variants limit: 50 offset: variant_offset
+          if variant.price != card_price
+            continue
+          endif
+
+          if listing_variant == nil
+            assign listing_variant = variant
+          endif
+
+          # Among equally priced variants, prefer one with a valid compare-at price.
+          if variant.compare_at_price > card_price
+            assign listing_variant = variant
+            assign card_compare_at_price = variant.compare_at_price
+            break
+          endif
+        endfor
+
+        if card_compare_at_price != nil
+          break
+        endif
+      endfor
+    endif
   -%}
 
-  <product-component view-event-payload="{{ card_product | standard_event_data: 'view', context: product_view_context | escape }}">
+  <product-component
+    {% if listing_card_details %}
+      class="listing-product-card"
+    {% endif %}
+    view-event-payload="{{ card_product | standard_event_data: 'view', context: product_view_context | escape }}"
+  >
     <div class="card-wrapper product-card-wrapper underline-links-hover">
       <div
         class="
@@ -139,7 +182,9 @@
                   sale_text: section.settings.badge_sale_text,
                   soldout_text: section.settings.badge_soldout_text,
                   color: section.settings.badge_color,
-                  scale: section.settings.badge_scale
+                  scale: section.settings.badge_scale,
+                  price: card_price,
+                  compare_at_price: card_compare_at_price
                 -%}
               {%- endif -%}
             </div>
@@ -159,9 +204,9 @@
                   href="{{ card_product.url }}"
                   id="StandardCardNoMediaLink-{{ section_id }}-{{ card_product.id }}"
                   class="full-unstyled-link"
-                  aria-labelledby="StandardCardNoMediaLink-{{ section_id }}-{{ card_product.id }}{% if card_product.available == false or card_product.compare_at_price > card_product.price %} NoMediaStandardBadge-{{ section_id }}-{{ card_product.id }}{% endif %}"
+                  aria-labelledby="StandardCardNoMediaLink-{{ section_id }}-{{ card_product.id }}{% if card_product.available == false or card_compare_at_price > card_price %} NoMediaStandardBadge-{{ section_id }}-{{ card_product.id }}{% endif %}"
                 >
-                  {{ card_product.title | escape }}
+                  <span class="card__title-text">{{ card_product.title | escape }}</span>
                 </a>
               </h3>
             </div>
@@ -173,7 +218,7 @@
                 >
                   {{- 'products.product.sold_out' | t -}}
                 </span>
-              {%- elsif card_product.compare_at_price > card_product.price and card_product.available -%}
+              {%- elsif card_compare_at_price > card_price and card_product.available -%}
                 <span
                   id="NoMediaStandardBadge-{{ section_id }}-{{ card_product.id }}"
                   class="badge badge--bottom-left color-{{ settings.sale_badge_color_scheme }}"
@@ -196,9 +241,9 @@
                 href="{{ card_product.url }}"
                 id="CardLink-{{ section_id }}-{{ card_product.id }}"
                 class="full-unstyled-link"
-                aria-labelledby="CardLink-{{ section_id }}-{{ card_product.id }}{% if card_product.available == false or card_product.compare_at_price > card_product.price %} Badge-{{ section_id }}-{{ card_product.id }}{% endif %}"
+                aria-labelledby="CardLink-{{ section_id }}-{{ card_product.id }}{% if card_product.available == false or card_compare_at_price > card_price %} Badge-{{ section_id }}-{{ card_product.id }}{% endif %}"
               >
-                {{ card_product.title | escape }}
+                <span class="card__title-text">{{ card_product.title | escape }}</span>
               </a>
             </h3>
             <div class="card-information">
@@ -207,7 +252,9 @@
                 <div class="caption-with-letter-spacing light">{{ card_product.vendor }}</div>
               {%- endif -%}
 
-              <span class="caption-large light">{{ block.settings.description | escape }}</span>
+              {%- unless listing_card_details and block.settings.description == blank -%}
+                <span class="caption-large light">{{ block.settings.description | escape }}</span>
+              {%- endunless -%}
 
               {%- if show_rating and card_product.metafields.reviews.rating.value != blank -%}
                 {% liquid
@@ -245,7 +292,15 @@
                 </p>
               {%- endif -%}
 
-              {% render 'price', product: card_product, price_class: '', show_compare_at_price: true %}
+              {%- if use_listing_price -%}
+                {%- render 'card-listing-price',
+                  price: card_price,
+                  compare_at_price: card_compare_at_price,
+                  variant: listing_variant
+                -%}
+              {%- else -%}
+                {% render 'price', product: card_product, price_class: '', show_compare_at_price: true %}
+              {%- endif -%}
               {%- if card_product.quantity_price_breaks_configured? -%}
                 {% if card_product.variants_count == 1 and quick_add == 'bulk' %}
                   {% liquid
@@ -597,7 +652,7 @@
               >
                 {{- 'products.product.sold_out' | t -}}
               </span>
-            {%- elsif card_product.compare_at_price > card_product.price and card_product.available -%}
+            {%- elsif card_compare_at_price > card_price and card_product.available -%}
               <span
                 id="Badge-{{ section_id }}-{{ card_product.id }}"
                 class="badge badge--bottom-left color-{{ settings.sale_badge_color_scheme }}"

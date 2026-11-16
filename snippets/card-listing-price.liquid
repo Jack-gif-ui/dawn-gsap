@@ -1,0 +1,43 @@
+{%- doc -%}
+  Renders a listing variant's current and compare-at prices.
+
+  @param {number} price - The current price.
+  @param {number} [compare_at_price] - The same variant's compare-at price.
+  @param {variant} [variant] - The matched variant for unit price information.
+{%- enddoc -%}
+
+{%- liquid
+  assign listing_money = price | money
+  if settings.currency_code_enabled
+    assign listing_money = price | money_with_currency
+  endif
+-%}
+
+<div class="card__listing-price">
+  <span class="visually-hidden">
+    {%- if compare_at_price > price -%}
+      {{- 'products.product.price.sale_price' | t -}}
+    {%- else -%}
+      {{- 'products.product.price.regular_price' | t -}}
+    {%- endif -%}
+  </span>
+  <span class="card__listing-price-current">{{ listing_money }}</span>
+
+  {%- if compare_at_price > price -%}
+    <span class="visually-hidden">{{ 'products.product.price.regular_price' | t }}</span>
+    <s class="card__listing-price-compare">
+      {%- if settings.currency_code_enabled -%}
+        {{- compare_at_price | money_with_currency -}}
+      {%- else -%}
+        {{- compare_at_price | money_without_trailing_zeros -}}
+      {%- endif -%}
+    </s>
+  {%- endif -%}
+</div>
+
+{%- if variant.unit_price_measurement -%}
+  {%- render 'unit-price',
+    price: variant.unit_price,
+    measurement: variant.unit_price_measurement
+  -%}
+{%- endif -%}

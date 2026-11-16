@@ -7,6 +7,8 @@
   @param {string} [soldout_text] - 售罄徽章文字，默认 Sold out
   @param {string} [color] - 主色，默认 #2b6ea9
   @param {number} [scale] - 大小百分比，默认 100
+  @param {number} [price] - 商品卡显示的现价
+  @param {number} [compare_at_price] - 商品卡显示的划线价，可为空
 {% enddoc %}
 
 {%- liquid
@@ -17,6 +19,10 @@
 
   assign cp = card_product.compare_at_price
   assign pr = card_product.price
+  if price != nil
+    assign cp = compare_at_price
+    assign pr = price
+  endif
   assign percent = 0
   if cp > pr
     assign percent = cp | minus: pr | times: 100.0 | divided_by: cp | round

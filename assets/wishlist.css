@@ -90,3 +90,18 @@
 .header__icon.wl-header[data-has-items] .wl-header__dot {
   display: block;
 }
+.product-grid--card-badges .card__inner > .wl-btn {
+  top: 0;
+  right: 0.1rem;
+  place-items: start end;
+}
+
+.product-grid--card-badges .card__inner > .wl-btn svg {
+  margin-block-start: -0.35rem;
+}
+
+@media screen and (min-width: 750px) {
+  .product-grid--card-badges .card__inner > .wl-btn svg {
+    margin-block-start: -0.1rem;
+  }
+}
