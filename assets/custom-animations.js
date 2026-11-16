@@ -113,8 +113,7 @@
         });
       });
   }
-    // 效果 3：Bento 画廊（直接补间 x/y/width/height，中间图扩展到全屏）
-  // 格子编号：[起始行, 起始列, 结束行, 结束列]（结束为开区间，和 CSS grid-area 一致）
+    // Bento 画廊的坐标与 CSS grid-area 一致。
   const BENTO_TILE_AREAS = [
     [1, 1, 3, 2],
     [1, 2, 2, 3],
@@ -126,53 +125,109 @@
   ];
   const BENTO_CENTER_AREA = [2, 2, 4, 3];
 
-  // 给定容器尺寸和网格参数，算出某个格子区域的矩形（网格整体在容器内居中）
-  function bentoRect(W, H, colW, rowH, gap, area) {
-    const [r1, c1, r2, c2] = area;
-    const gridW = colW * 3 + gap * 2;
-    const gridH = rowH * 4 + gap * 3;
-    const x0 = (W - gridW) / 2;
-    const y0 = (H - gridH) / 2;
+  function bentoRect({ x, y, column, row, gap }, [rowStart, colStart, rowEnd, colEnd]) {
+    const columns = colEnd - colStart;
+    const rows = rowEnd - rowStart;
     return {
-      x: x0 + (c1 - 1) * (colW + gap),
-      y: y0 + (r1 - 1) * (rowH + gap),
-      width: (c2 - c1) * colW + (c2 - c1 - 1) * gap,
-      height: (r2 - r1) * rowH + (r2 - r1 - 1) * gap,
+      x: x + (colStart - 1) * (column + gap),
+      y: y + (rowStart - 1) * (row + gap),
+      width: columns * column + (columns - 1) * gap,
+      height: rows * row + (rows - 1) * gap,
     };
   }
 
   function initBento(root = document) {
     root.querySelectorAll('[data-gsap-bento-flip]:not([data-gsap-init])').forEach((section) => {
-      section.setAttribute('data-gsap-init', '');
       const grid = section.querySelector('[data-gsap-bento-grid]');
       const center = section.querySelector('[data-gsap-bento-center]');
-      const tiles = [...section.querySelectorAll('[data-gsap-bento-item]:not([data-gsap-bento-center])')];
       if (!grid || !center) return;
 
-      const mm = gsap.matchMedia();
-      section._mm = mm;
+      section.setAttribute('data-gsap-init', '');
+      const media = gsap.matchMedia();
+      section._mm = media;
 
-      mm.add('(min-width: 750px)', () => {
+      media.add('(width < 990px) and (prefers-reduced-motion: no-preference)', () => {
+        const frame = section.querySelector('[data-bf-story-frame]');
+        if (!frame) return;
+
+        const shots = [...frame.querySelectorAll('[data-bf-shot]')];
+        if (shots.length < 2) return;
+
+        gsap.set(shots, { autoAlpha: 0 });
+        gsap.set(shots[0], { autoAlpha: 1 });
+
+        const timeline = gsap.timeline({
+          defaults: { ease: 'none' },
+          scrollTrigger: {
+            trigger: frame,
+            start: () => {
+              const headerHeight = document.querySelector('sticky-header')?.offsetHeight || 0;
+              const centeredTop = (window.innerHeight - frame.offsetHeight) / 2;
+              return 'top ' + Math.round(Math.max(centeredTop, headerHeight)) + 'px';
+            },
+            end: () => '+=' + Math.round(window.innerHeight * (shots.length === 3 ? 0.9 : 0.65)),
+            pin: true,
+            scrub: true,
+            anticipatePin: 1,
+          },
+        });
+
+        for (const shot of shots.slice(1)) {
+          if (shot.dataset.bfShot === 'craft') {
+            gsap.set(shot, { clipPath: 'inset(0 100% 0 0)' });
+            timeline.set(shot, { autoAlpha: 1 }, '+=0.24');
+            timeline.to(shot, { clipPath: 'inset(0 0% 0 0)', duration: 0.3 }, '<');
+          } else {
+            timeline.to(shot, { autoAlpha: 1, duration: 0.26 }, '+=0.24');
+          }
+        }
+
+        // Hold the last shot before the frame returns to the normal page flow.
+        timeline.to({}, { duration: 0.3 });
+      });
+
+      media.add('(min-width: 990px) and (prefers-reduced-motion: no-preference)', () => {
+        if (!center.hasAttribute('data-bf-desktop-ready')) return;
         section.classList.add('is-gsap');
 
-        // 起点：每格 32.5vw × 23vh，间距 1vh；终点：每列 100vw，每行 49.5vh，间距 1vh
-        const startRect = (area) => {
-          const W = grid.clientWidth;
-          const H = grid.clientHeight;
-          return bentoRect(W, H, W * 0.325, H * 0.23, H * 0.01, area);
-        };
-        const endRect = (area) => {
-          const W = grid.clientWidth;
-          const H = grid.clientHeight;
-          return bentoRect(W, H, W, H * 0.495, H * 0.01, area);
-        };
+        let startLayout;
+        let endLayout;
+        const measure = () => {
+          const style = getComputedStyle(grid);
+          const gap = parseFloat(style.columnGap) || 0;
+          const left = parseFloat(style.paddingLeft) || 0;
+          const right = parseFloat(style.paddingRight) || 0;
+          const top = parseFloat(style.paddingTop) || 0;
+          const bottom = parseFloat(style.paddingBottom) || 0;
+          const width = section.clientWidth;
+          const height = grid.clientHeight;
+          const endRow = (height - gap) / 2;
 
-        const items = tiles
-          .slice(0, BENTO_TILE_AREAS.length)
-          .map((el, i) => ({ el, area: BENTO_TILE_AREAS[i] }));
+          startLayout = {
+            x: left,
+            y: top,
+            column: (grid.clientWidth - left - right - 2 * gap) / 3,
+            row: (height - top - bottom - 3 * gap) / 4,
+            gap,
+          };
+          endLayout = {
+            x: -grid.offsetLeft - width - gap,
+            y: -endRow - gap,
+            column: width,
+            row: endRow,
+            gap,
+          };
+        };
+        measure();
+
+        const tiles = [...grid.querySelectorAll('[data-gsap-bento-item]:not([data-gsap-bento-center])')];
+        const items = tiles.slice(0, BENTO_TILE_AREAS.length).map((el, index) => ({
+          el,
+          area: BENTO_TILE_AREAS[index],
+        }));
         items.push({ el: center, area: BENTO_CENTER_AREA });
 
-        const tl = gsap.timeline({
+        const timeline = gsap.timeline({
           defaults: { ease: 'none' },
           scrollTrigger: {
             trigger: section,
@@ -182,32 +237,32 @@
             pin: true,
             anticipatePin: 1,
             invalidateOnRefresh: true,
+            onRefreshInit: measure,
           },
         });
 
-        items.forEach(({ el, area }) => {
-          tl.fromTo(
-            el,
-            {
-              x: () => startRect(area).x,
-              y: () => startRect(area).y,
-              width: () => startRect(area).width,
-              height: () => startRect(area).height,
-            },
-            {
-              x: () => endRect(area).x,
-              y: () => endRect(area).y,
-              width: () => endRect(area).width,
-              height: () => endRect(area).height,
-            },
-            0
-          );
-        });
+        for (const { el, area } of items) {
+          timeline.fromTo(el, {
+            x: () => bentoRect(startLayout, area).x,
+            y: () => bentoRect(startLayout, area).y,
+            width: () => bentoRect(startLayout, area).width,
+            height: () => bentoRect(startLayout, area).height,
+          }, {
+            x: () => bentoRect(endLayout, area).x,
+            y: () => bentoRect(endLayout, area).y,
+            width: () => bentoRect(endLayout, area).width,
+            height: () => bentoRect(endLayout, area).height,
+          }, 0);
+        }
+        timeline.to(center, { borderRadius: 0 }, 0);
 
         return () => section.classList.remove('is-gsap');
       });
     });
   }
+
+
+
   
     // 效果 4：抽屉菜单项依次入场（一级、二级、三级通用）
   function initDrawerStagger(root = document) {
@@ -293,9 +348,10 @@
 
   function initAll(root = document) {
     initHorizontal(root);
+    initBento(root);
     if (reduceMotion) return;
     initFadeUp(root);
-    initBento(root);
+    
     initDrawerStagger(root);
     initHeroGlow(root);
     // 后面的效果都在这里注册

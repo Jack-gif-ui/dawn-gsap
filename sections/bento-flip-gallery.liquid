@@ -1,6 +1,11 @@
 {{ 'bento-flip-gallery-styles.css' | asset_url | stylesheet_tag }}
-<section class="bf" data-gsap-bento-flip>
-  <div class="bf__grid" data-gsap-bento-grid>
+{%- liquid
+  assign chapters = 'detail,craft,worn' | split: ','
+  assign mobile_image = section.settings.mobile_worn_image | default: section.settings.mobile_craft_image | default: section.settings.mobile_detail_image
+-%}
+
+<section class="bf"{% if section.settings.center_image != blank or mobile_image != blank %} data-gsap-bento-flip{% endif %}>
+  <div class="bf__grid page-width" data-gsap-bento-grid>
     {%- for block in section.blocks -%}
       <div class="bf__item bf__item--{{ forloop.index }}" data-gsap-bento-item {{ block.shopify_attributes }}>
         {%- if block.settings.image -%}
@@ -15,7 +20,12 @@
       </div>
     {%- endfor -%}
 
-    <div class="bf__item bf__item--center" data-gsap-bento-item data-gsap-bento-center>
+    <div
+      class="bf__item bf__item--center"
+      data-gsap-bento-item
+      data-gsap-bento-center
+      {% if section.settings.center_image != blank %}data-bf-desktop-ready{% endif %}
+    >
       {%- if section.settings.center_image -%}
         {{
           section.settings.center_image
@@ -27,6 +37,43 @@
       {%- endif -%}
     </div>
   </div>
+
+  {%- if mobile_image != blank or section.settings.center_image != blank -%}
+    <div class="bf__mobile page-width">
+      <div class="bf__story-frame" data-bf-story-frame>
+        {%- if mobile_image != blank -%}
+          {%- for chapter in chapters -%}
+            {%- liquid
+              assign setting_id = 'mobile_' | append: chapter | append: '_image'
+              assign shot_image = section.settings[setting_id]
+              if shot_image == blank
+                continue
+              endif
+            -%}
+            <div class="bf__story-shot" data-bf-shot="{{ chapter }}">
+              {{
+                shot_image
+                | image_url: width: 1600
+                | image_tag: loading: 'lazy', widths: '400, 600, 800, 1200, 1600', sizes: '100vw', class: 'bf__img'
+              }}
+            </div>
+          {%- endfor -%}
+        {%- else -%}
+          <div class="bf__story-shot" data-bf-shot="center">
+            {{
+              section.settings.center_image
+              | image_url: width: 1600
+              | image_tag: loading: 'lazy', widths: '400, 600, 800, 1200, 1600', sizes: '100vw', class: 'bf__img'
+            }}
+          </div>
+        {%- endif -%}
+      </div>
+    </div>
+  {%- elsif request.design_mode -%}
+    <div class="bf__mobile page-width">
+      <p>在「手机端品牌故事」里选择图片。</p>
+    </div>
+  {%- endif -%}
 </section>
 
 
@@ -41,7 +88,11 @@
       "type": "image_picker",
       "id": "center_image",
       "label": "中间图片（滚动时放大到全屏）"
-    }
+    },
+    { "type": "header", "content": "手机端品牌故事" },
+    { "type": "image_picker", "id": "mobile_detail_image", "label": "第一幕 · 细节" },
+    { "type": "image_picker", "id": "mobile_craft_image", "label": "第二幕 · 工艺" },
+    { "type": "image_picker", "id": "mobile_worn_image", "label": "第三幕 · 上身" }
   ],
   "blocks": [
     {

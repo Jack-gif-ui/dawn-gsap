@@ -3,7 +3,7 @@ blog-carousel {
   }
   .bc {
     --bc-gap: 1.6rem;
-    --bc-bleed: 1.5rem;
+    --bc-bleed: 0.5rem;
     padding: var(--bc-pt, 36px) 0 var(--bc-pb, 36px);
   }
 

@@ -289,7 +289,10 @@
       ],
       "name": "Bento Flip 画廊",
       "settings": {
-        "center_image": "shopify://shop_images/handful-of-acorns.jpg"
+        "center_image": "shopify://shop_images/handful-of-acorns.jpg",
+        "mobile_detail_image": "shopify://shop_images/moissanite-cuban-link-bracelet-10mm-white-lifestyle-1.jpg",
+        "mobile_craft_image": "shopify://shop_images/s925-moissanite-cuban-bracelet-14k-gold-all-sizes-new-px-10mm-15mm-lifestyle.jpg",
+        "mobile_worn_image": "shopify://shop_images/miami-kash-shoot-10mm-cuban-bundle.jpg"
       }
     },
     "blog_carousel_MBYypp": {
