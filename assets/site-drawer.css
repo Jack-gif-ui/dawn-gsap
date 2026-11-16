@@ -158,11 +158,9 @@ html.site-drawer-open {
 }
 
 .sd__stack {
+  gap: 2rem;
+  padding-top: 0.6rem;
   padding-bottom: 2rem;
-}
-
-.sd__stack > .shopify-section + .shopify-section {
-  margin-top: 2rem;
 }
 
 .sd__body {
@@ -170,16 +168,18 @@ html.site-drawer-open {
   padding-inline: 2rem;
 }
 
-.sd__body--top {
-  padding-top: 0.6rem;
-}
-.sd__carousel-slot {
-  margin-inline: -2rem;
+.drawer-promotions.page-width {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  padding-block: 2rem;
 }
 
-.sd__carousel-slot:empty {
-  display: none;
+#SiteDrawer .drawer-promotions.page-width {
+  max-width: none;
+  padding: 0 2rem;
 }
+
 /* 活动 banner */
 .sd__banner {
   position: relative;
@@ -237,11 +237,20 @@ html.site-drawer-open {
   text-underline-offset: 0.35em;
 }
 
-/* 图片分类：连续的分类块自动排成两列 */
+/* 图片分类 */
 .sd__tiles {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 1.8rem 1.2rem;
+}
+@media screen and (min-width: 990px) {
+  .drawer-promotions .sd__tiles {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+
+  #SiteDrawer .sd__tiles {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
 }
 .sd__tile {
   display: block;

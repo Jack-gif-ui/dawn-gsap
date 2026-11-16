@@ -11,14 +11,15 @@
 
   const getDialog = () => document.getElementById('SiteDrawer');
 
-  const placeDrawerCarousel = (dialog) => {
+  const placeDrawerBar = (dialog) => {
     const stack = dialog.querySelector('.sd__stack');
-    const slot = stack?.querySelector('[data-sd-carousel-slot]');
-    if (!slot) return;
+    const bar = stack?.querySelector('[data-sd-bar]');
+    if (!bar) return;
 
-    stack.querySelectorAll(':scope > .shopify-section > celebrity-carousel').forEach((carousel) => {
-      slot.append(carousel.parentElement);
-    });
+    // Keep the logo and close button sticky while Shopify keeps the sections in group order.
+    const currentBar = stack.parentElement.querySelector(':scope > [data-sd-bar]');
+    if (currentBar) currentBar.replaceWith(bar);
+    else stack.before(bar);
   };
 
   // 锁滚动只加一个类，滚动条位置由 CSS 的 scrollbar-gutter 保留，不再测量、不再补偿
@@ -52,7 +53,7 @@
     if (!dialog || dialog.open || typeof dialog.showModal !== 'function') return false;
     closing = false;
 
-    placeDrawerCarousel(dialog);
+    placeDrawerBar(dialog);
     lock();
     dialog.showModal();
     dialog.querySelector('.sd').scrollTop = 0;
@@ -149,16 +150,14 @@
   });
 
   document.addEventListener('shopify:section:unload', ({ target }) => {
-    const stack = target.closest?.('#SiteDrawer')?.querySelector('.sd__stack');
-    const slot = target.querySelector?.('[data-sd-carousel-slot]');
-    if (stack && slot) stack.append(...slot.children);
+    if (!target.querySelector?.('[data-sd-root]')) return;
+    const dialog = target.closest?.('#SiteDrawer');
+    dialog?.querySelector('.sd > [data-sd-bar]')?.remove();
   });
 
-  ['shopify:section:load', 'shopify:section:reorder'].forEach((name) => {
-    document.addEventListener(name, ({ target }) => {
-      const dialog = target.closest?.('#SiteDrawer');
-      if (dialog?.open) placeDrawerCarousel(dialog);
-    });
+  document.addEventListener('shopify:section:load', ({ target }) => {
+    const dialog = target.closest?.('#SiteDrawer');
+    if (dialog?.open) placeDrawerBar(dialog);
   });
 
   // 在主题编辑器里切换抽屉内的 Section 时，保持抽屉打开。

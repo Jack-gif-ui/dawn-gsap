@@ -273,10 +273,72 @@
         "people_speed": 50,
         "card_radius": 14
       }
+    },
+    "drawer_promotions_pV3Xcf": {
+      "type": "drawer-promotions",
+      "blocks": {
+        "banner_fENNeM": {
+          "type": "banner",
+          "settings": {
+            "image": "shopify://shop_images/chain-stack.jpg",
+            "title": "Black Friday",
+            "subtitle": "View all",
+            "link": "",
+            "ratio": "2.3 / 1",
+            "overlay": 30,
+            "text_scale": 100
+          }
+        },
+        "tile_R8tie9": {
+          "type": "tile",
+          "settings": {
+            "collection": "braceletes",
+            "label": "",
+            "link": ""
+          }
+        },
+        "tile_reJ8fK": {
+          "type": "tile",
+          "settings": {
+            "collection": "pendents",
+            "label": "",
+            "link": ""
+          }
+        },
+        "tile_WcJHtQ": {
+          "type": "tile",
+          "settings": {
+            "collection": "rings",
+            "label": "",
+            "link": ""
+          }
+        },
+        "tile_mLzBPg": {
+          "type": "tile",
+          "settings": {
+            "collection": "watches",
+            "label": "",
+            "link": ""
+          }
+        }
+      },
+      "block_order": [
+        "banner_fENNeM",
+        "tile_R8tie9",
+        "tile_reJ8fK",
+        "tile_WcJHtQ",
+        "tile_mLzBPg"
+      ],
+      "name": "活动与图片分类",
+      "settings": {
+        "card_radius": 12,
+        "tile_ratio": "3 / 4"
+      }
     }
   },
   "order": [
     "main",
-    "celebrities"
+    "celebrities",
+    "drawer_promotions_pV3Xcf"
   ]
 }

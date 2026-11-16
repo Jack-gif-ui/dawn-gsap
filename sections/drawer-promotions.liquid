@@ -1,0 +1,208 @@
+{%- liquid
+  assign banner_sizes = '(min-width: 750px) calc(100vw - 100px), calc(100vw - 10px)'
+  assign tile_sizes = '(min-width: 990px) 25vw, 50vw'
+  if section.location == 'aside'
+    assign banner_sizes = '(min-width: 750px) 600px, 92vw'
+    assign tile_sizes = '(min-width: 750px) 300px, 45vw'
+  endif
+-%}
+
+{%- capture promotions -%}
+  {%- for block in section.blocks -%}
+    {%- case block.type -%}
+      {%- when 'banner' -%}
+        {%- liquid
+          assign banner = block.settings
+          assign banner_tag = 'div'
+          assign banner_alt = banner.image.alt | default: banner.title
+          if banner.link != blank
+            assign banner_tag = 'a'
+          endif
+        -%}
+        <{{ banner_tag }}
+          class="sd__banner"
+          data-sd-item
+          style="--sd-ratio: {{ banner.ratio }}; --sd-overlay: {{ banner.overlay | divided_by: 100.0 }}; --sd-ts: {{ banner.text_scale | divided_by: 100.0 }};"
+          {% if banner.link != blank %}
+            href="{{ banner.link | escape }}"
+          {% endif %}
+          {{ block.shopify_attributes }}
+        >
+          {%- if banner.image != blank -%}
+            {{
+              banner.image
+              | image_url: width: 2000
+              | image_tag: loading: 'lazy', widths: '360, 500, 750, 1000, 1200, 1600, 2000', sizes: banner_sizes, alt: banner_alt
+            }}
+          {%- endif -%}
+          <span class="sd__banner-text">
+            {%- if banner.title != blank -%}
+              <span class="sd__banner-title">{{ banner.title | escape }}</span>
+            {%- endif -%}
+            {%- if banner.subtitle != blank -%}
+              <span class="sd__banner-sub">{{ banner.subtitle | escape }}</span>
+            {%- endif -%}
+          </span>
+        </{{ banner_tag }}>
+
+      {%- when 'tile' -%}
+        {%- liquid
+          assign previous_index = forloop.index0 | minus: 1
+          if previous_index >= 0 and section.blocks[previous_index].type == 'tile'
+            continue
+          endif
+          assign first_tile_index = forloop.index0
+        -%}
+        {%- capture tiles -%}
+          {%- for tile in section.blocks offset: first_tile_index -%}
+            {%- liquid
+              if tile.type != 'tile'
+                break
+              endif
+              assign collection = tile.settings.collection
+              assign tile_img = tile.settings.image | default: collection.image | default: collection.featured_image
+              assign tile_label = tile.settings.label | default: collection.title
+              assign tile_url = tile.settings.link | default: collection.url
+            -%}
+            {%- if tile_url != blank or request.design_mode -%}
+              <a
+                class="sd__tile"
+                data-sd-item
+                {% if tile_url != blank %}
+                  href="{{ tile_url | escape }}"
+                {% endif %}
+                {{ tile.shopify_attributes }}
+              >
+                <span class="sd__tile-media">
+                  {%- if tile_img != blank -%}
+                    {{
+                      tile_img
+                      | image_url: width: 900
+                      | image_tag: loading: 'lazy', widths: '240, 300, 450, 600, 900', sizes: tile_sizes, alt: tile_label
+                    }}
+                  {%- else -%}
+                    {{ 'image' | placeholder_svg_tag: 'placeholder-svg' }}
+                  {%- endif -%}
+                </span>
+                <span class="sd__tile-label">{{ tile_label | escape }}</span>
+              </a>
+            {%- endif -%}
+          {%- endfor -%}
+        {%- endcapture -%}
+        {%- if tiles != blank -%}
+          <div class="sd__tiles">{{ tiles }}</div>
+        {%- endif -%}
+    {%- endcase -%}
+  {%- endfor -%}
+{%- endcapture -%}
+
+{%- if promotions != blank or request.design_mode -%}
+  <div
+    class="drawer-promotions page-width"
+    style="--sd-radius: {{ section.settings.card_radius }}px; --sd-tile-ratio: {{ section.settings.tile_ratio }};"
+  >
+    {{ promotions }}
+    {%- if promotions == blank and request.design_mode -%}
+      <p>添加「活动 Banner」或「图片分类」区块。</p>
+    {%- endif -%}
+  </div>
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "活动与图片分类",
+  "enabled_on": {
+    "templates": ["index", "collection", "product"],
+    "groups": ["aside"]
+  },
+  "max_blocks": 50,
+  "settings": [
+    {
+      "type": "range",
+      "id": "card_radius",
+      "min": 0,
+      "max": 24,
+      "step": 2,
+      "unit": "px",
+      "label": "图片圆角",
+      "default": 12
+    },
+    {
+      "type": "select",
+      "id": "tile_ratio",
+      "label": "图片分类的图片比例",
+      "default": "5 / 4",
+      "options": [
+        { "value": "5 / 4", "label": "5:4（横）" },
+        { "value": "4 / 3", "label": "4:3（横）" },
+        { "value": "1 / 1", "label": "1:1（方）" },
+        { "value": "3 / 4", "label": "3:4（竖）" }
+      ]
+    }
+  ],
+  "blocks": [
+    {
+      "type": "banner",
+      "name": "活动 Banner",
+      "settings": [
+        { "type": "image_picker", "id": "image", "label": "图片" },
+        { "type": "text", "id": "title", "label": "标题", "default": "Black Friday" },
+        { "type": "text", "id": "subtitle", "label": "副标题（带下划线）", "default": "View all" },
+        { "type": "url", "id": "link", "label": "链接" },
+        {
+          "type": "select",
+          "id": "ratio",
+          "label": "图片比例",
+          "default": "2.3 / 1",
+          "options": [
+            { "value": "2.3 / 1", "label": "2.3:1（扁）" },
+            { "value": "16 / 9", "label": "16:9" },
+            { "value": "3 / 2", "label": "3:2" }
+          ]
+        },
+        {
+          "type": "range",
+          "id": "overlay",
+          "min": 0,
+          "max": 70,
+          "step": 5,
+          "unit": "%",
+          "label": "图片遮罩深度",
+          "info": "让白色文字在亮图上也能看清",
+          "default": 30
+        },
+        {
+          "type": "range",
+          "id": "text_scale",
+          "min": 70,
+          "max": 140,
+          "step": 5,
+          "unit": "%",
+          "label": "文字大小",
+          "default": 100
+        }
+      ]
+    },
+    {
+      "type": "tile",
+      "name": "图片分类",
+      "settings": [
+        { "type": "collection", "id": "collection", "label": "集合", "info": "图片默认取集合自己的图，文字默认是集合名称" },
+        { "type": "image_picker", "id": "image", "label": "图片（覆盖集合图，可选）" },
+        { "type": "text", "id": "label", "label": "文字（覆盖集合名称，可选）" },
+        { "type": "url", "id": "link", "label": "链接（覆盖集合链接，可选）" }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "活动与图片分类",
+      "blocks": [
+        { "type": "banner" },
+        { "type": "tile" },
+        { "type": "tile" }
+      ]
+    }
+  ]
+}
+{% endschema %}

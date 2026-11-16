@@ -11,8 +11,8 @@
   "name": "抽屉",
   "type": "aside",
   "sections": {
-    "site-drawer": {
-      "type": "site-drawer",
+    "drawerPromotions": {
+      "type": "drawer-promotions",
       "blocks": {
         "banner-1": {
           "type": "banner",
@@ -101,54 +101,6 @@
             "label": "",
             "link": ""
           }
-        },
-        "button-1": {
-          "type": "button",
-          "settings": {
-            "label": "Get quote for custom jewelry",
-            "link": "",
-            "bg_color": "#298fd1",
-            "text_color": "#ffffff",
-            "radius": 18
-          }
-        },
-        "chip-1": {
-          "type": "chip",
-          "settings": {
-            "label": "Contact support",
-            "link": ""
-          }
-        },
-        "chip-2": {
-          "type": "chip",
-          "settings": {
-            "label": "Track order",
-            "link": ""
-          }
-        },
-        "chip-3": {
-          "type": "chip",
-          "settings": {
-            "label": "Reviews",
-            "link": ""
-          }
-        },
-        "contact-1": {
-          "type": "contact",
-          "settings": {
-            "phone_label": "Call Us",
-            "phone": "+1 212 000 0000",
-            "email_label": "Email Us",
-            "email": "support@example.com",
-            "instagram_url": "https://www.instagram.com/icecartel",
-            "facebook_url": "",
-            "tiktok_url": "",
-            "youtube_url": "",
-            "pinterest_url": "",
-            "twitter_url": "",
-            "chat_url": "https://wa.me/12122030584",
-            "chat_label": "WhatsApp"
-          }
         }
       },
       "block_order": [
@@ -161,21 +113,11 @@
         "tile_AYwF7N",
         "tile-2",
         "tile-3",
-        "tile-4",
-        "button-1",
-        "chip-1",
-        "chip-2",
-        "chip-3",
-        "contact-1"
+        "tile-4"
       ],
       "settings": {
-        "logo_width": 140,
-        "bg_color": "#ffffff",
-        "text_color": "#111111",
         "card_radius": 12,
-        "tile_ratio": "5 / 4",
-        "tablet_width": 520,
-        "animate": true
+        "tile_ratio": "5 / 4"
       }
     },
     "drawerCelebrities": {
@@ -241,10 +183,78 @@
         "people_speed": 50,
         "card_radius": 12
       }
+    },
+    "site-drawer": {
+      "type": "site-drawer",
+      "blocks": {
+        "button-1": {
+          "type": "button",
+          "settings": {
+            "label": "Get quote for custom jewelry",
+            "link": "",
+            "bg_color": "#298fd1",
+            "text_color": "#ffffff",
+            "radius": 18
+          }
+        },
+        "chip-1": {
+          "type": "chip",
+          "settings": {
+            "label": "Contact support",
+            "link": ""
+          }
+        },
+        "chip-2": {
+          "type": "chip",
+          "settings": {
+            "label": "Track order",
+            "link": ""
+          }
+        },
+        "chip-3": {
+          "type": "chip",
+          "settings": {
+            "label": "Reviews",
+            "link": ""
+          }
+        },
+        "contact-1": {
+          "type": "contact",
+          "settings": {
+            "phone_label": "Call Us",
+            "phone": "+1 212 000 0000",
+            "email_label": "Email Us",
+            "email": "support@example.com",
+            "instagram_url": "https://www.instagram.com/icecartel",
+            "facebook_url": "",
+            "tiktok_url": "",
+            "youtube_url": "",
+            "pinterest_url": "",
+            "twitter_url": "",
+            "chat_url": "https://wa.me/12122030584",
+            "chat_label": "WhatsApp"
+          }
+        }
+      },
+      "block_order": [
+        "button-1",
+        "chip-1",
+        "chip-2",
+        "chip-3",
+        "contact-1"
+      ],
+      "settings": {
+        "logo_width": 140,
+        "bg_color": "#ffffff",
+        "text_color": "#111111",
+        "tablet_width": 520,
+        "animate": true
+      }
     }
   },
   "order": [
-    "site-drawer",
-    "drawerCelebrities"
+    "drawerPromotions",
+    "drawerCelebrities",
+    "site-drawer"
   ]
 }
